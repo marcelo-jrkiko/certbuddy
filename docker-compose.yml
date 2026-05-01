@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - db:/var/lib/postgresql
+    networks:
+      - default
+    restart: unless-stopped
+
+  data_backend:
+    image: directus/directus:latest
+    ports:
+      - "8055:8055"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - data_backend_uploads:/directus/uploads
+      - data_backend_extensions:/directus/extensions
+    networks:
+      - default
+    restart: unless-stopped
+
+
+volumes:
+  db:
+  data_backend_uploads:
+  data_backend_extensions:
+
+networks:
+  default:
+    driver: bridge
