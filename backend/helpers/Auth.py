@@ -6,6 +6,8 @@ import logging
 from functools import wraps
 from flask import request, jsonify, current_app
 
+from backend.helpers.DataBackend import BackendClient
+
 
 def require_bearer_token(f):
     """
@@ -40,9 +42,22 @@ def require_bearer_token(f):
             }
         
         token = parts[1]
+        
+        # Recover user data from backend
+        backend = BackendClient(current_app.config["core"], token)
+        user_data = backend.get_user_info()
+        
+        if not user_data:
+            logging.warning("Invalid token provided, no user data found")
+            return {
+                'authenticated': False,
+                'message': 'Invalid token'
+            }, 401
+        
         request.authdata = {
-            'token': token
-        }
+            'token': token,
+            'user_data': user_data
+        }        
         
         # Token is valid, proceed to the route handler
         return f(*args, **kwargs)

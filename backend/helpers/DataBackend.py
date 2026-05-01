@@ -39,15 +39,10 @@ class BackendClient:
             logging.error(f"Backend request failed: {e} -> {response.text if response else 'No response'}")
             raise Exception(f"Failed to request the backend!")
 
-    def get_client(self, name: str) -> Dict[str, Any]:
-        """Get client details by slug"""
-        filter_obj = {"slug": {"_eq": name}}
-        params = {
-            "filter": json.dumps(filter_obj)
-        }
-        response = self._make_request("GET", "/items/Client", params=params)
-        items = response.get("data", [])
-        return items[0] if items else None
+    def get_user_info(self) -> Dict[str, Any]:
+        """Get user information based on the token"""
+        response = self._make_request("GET", "/users/me")
+        return response.get("data", {})
     
     def search(self, collection_name: str, query: Dict[str, Any], fields: list = None) -> list:
         """Search for items in a collection"""

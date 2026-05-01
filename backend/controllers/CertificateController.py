@@ -9,10 +9,12 @@ certificates_blueprint = Blueprint('certificates', __name__, url_prefix='/certif
 def register_certificate_routes(app):
     
     
-    @certificates_blueprint.route('/<user_id>', methods=['GET'])
+    @certificates_blueprint.route('/', methods=['GET'])
     @require_bearer_token
-    def get_certificates(user_id: str):        
+    def get_certificates():        
         try:
+            user_id = request.authdata['user_data'].get('id')
+
             # Get the list of certificates for the user from Directus
             client = BackendClient(app.config["core"], request.authdata['token'])
             
@@ -31,10 +33,12 @@ def register_certificate_routes(app):
             }, 500
     
     
-    @certificates_blueprint.route('/<user_id>/<common_name>', methods=['POST'])
+    @certificates_blueprint.route('/<common_name>', methods=['POST'])
     @require_bearer_token
-    def add_certificate(user_id: str, common_name: str):
+    def add_certificate(common_name: str):
         try:
+            user_id = request.authdata['user_data'].get('id')
+            
             # Check if certificate and key files are provided
             if 'certificate_file' not in request.files:
                 return {
@@ -121,10 +125,17 @@ def register_certificate_routes(app):
     @require_bearer_token
     def activate_certificate(certificate_id: str):
         try:
+            user_id = request.authdata['user_data'].get('id')
             client = BackendClient(app.config["core"], request.authdata['token'])
             
             # Get the certificate to retrieve its common_name
-            certificate = client.search("Certificates", {"id": {"_eq": certificate_id}})
+            certificate = client.search("Certificates",
+                    {
+                        "id": {"_eq": certificate_id},
+                        "issued_to": {"_eq": user_id}
+                    }, 
+                    fields=["common_name", "issued_to"]
+                )
             
             if not certificate:
                 return {
@@ -136,7 +147,8 @@ def register_certificate_routes(app):
             
             # Get all certificates with the same common_name
             same_name_certs = client.search("Certificates", {
-                "common_name": {"_eq": common_name}
+                "common_name": {"_eq": common_name},
+                "issued_to": {"_eq": user_id}
             }, fields=["id"])
             
             # Mark all other certificates with same common_name as inactive
