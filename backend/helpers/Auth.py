@@ -6,7 +6,7 @@ import logging
 from functools import wraps
 from flask import request, jsonify, current_app
 
-from backend.helpers.DataBackend import BackendClient
+from helpers.DataBackend import BackendClient
 
 
 def require_bearer_token(f):

@@ -2,8 +2,8 @@ import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
-from backend.controllers.CertificateController import register_certificate_routes
-from backend.utils import Config
+from controllers.CertificateController import register_certificate_routes
+from utils import Config
 import logging
 
 # Load environment variables

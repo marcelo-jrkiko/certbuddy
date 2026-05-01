@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 
-from backend.helpers.Auth import require_bearer_token
-from backend.helpers.DataBackend import BackendClient
+from helpers.Auth import require_bearer_token
+from helpers.DataBackend import BackendClient
 import uuid
 
 certificates_blueprint = Blueprint('certificates', __name__, url_prefix='/certificates')
