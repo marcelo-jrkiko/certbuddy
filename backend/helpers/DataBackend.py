@@ -79,3 +79,26 @@ class BackendClient:
     def delete(self, collection_name: str, item_id: str) -> None:
         """Delete an item from a collection"""
         self._make_request("DELETE", f"/items/{collection_name}/{item_id}")
+    
+    def upload_file(self, file_obj, filename: str = None) -> Dict[str, Any]:
+        """Upload a file to Directus files library"""
+        url = f"{self.base_url}/files"
+        
+        # Create headers without Content-Type for multipart/form-data
+        headers = {
+            "Authorization": f"Bearer {self.token}"
+        }
+        
+        try:
+            files = {'file': (filename or file_obj.filename, file_obj.stream, file_obj.content_type)}
+            response = requests.post(url, headers=headers, files=files)
+            
+            if response.status_code >= 400:
+                logging.error(f"File upload failed: {response.status_code} \r\n\t - {response.text}")
+                response.raise_for_status()
+            
+            data = response.json().get("data", {})
+            return data
+        except requests.exceptions.RequestException as e:
+            logging.error(f"File upload failed: {e}")
+            raise Exception(f"Failed to upload file: {str(e)}")
