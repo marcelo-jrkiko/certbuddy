@@ -46,7 +46,8 @@ import {
   certificatesService,
   type Certificate,
 } from "@/lib/certificates";
-import { CheckCircle2, Trash2, Upload, Plus } from "lucide-react";
+import { CheckCircle2, Trash2, Upload, Plus, FilePlus } from "lucide-react";
+import { RequestCertificateDialog } from "@/components/certificates/RequestCertificateDialog";
 
 export const Route = createFileRoute("/certificates")({
   head: () => ({
@@ -67,6 +68,7 @@ function CertificatesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Certificate | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -144,7 +146,23 @@ function CertificatesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+              <Dialog open={requestOpen} onOpenChange={setRequestOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <FilePlus className="mr-2 h-4 w-4" />
+                    New certificate
+                  </Button>
+                </DialogTrigger>
+                <RequestCertificateDialog
+                  open={requestOpen}
+                  onClose={() => setRequestOpen(false)}
+                  onCreated={async () => {
+                    setRequestOpen(false);
+                    await load();
+                  }}
+                />
+              </Dialog>
               <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
                 <DialogTrigger asChild>
                   <Button>
