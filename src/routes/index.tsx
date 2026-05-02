@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { isAuthenticated } from "@/lib/directus";
+import { directusService } from "@/lib/directus";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
   useEffect(() => {
-    navigate({ to: isAuthenticated() ? "/dashboard" : "/login" });
+    navigate({ to: directusService.isAuthenticated() ? "/dashboard" : "/login" });
   }, [navigate]);
   return null;
 }

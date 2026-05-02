@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  getCurrentUser,
-  isAuthenticated,
-  logout,
+  directusService,
   type DirectusUser,
 } from "@/lib/directus";
 
@@ -27,11 +25,12 @@ function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!directusService.isAuthenticated()) {
       navigate({ to: "/login" });
       return;
     }
-    getCurrentUser()
+        
+    directusService.getCurrentUser()
       .then(setUser)
       .catch((e) => {
         setError(e instanceof Error ? e.message : "Failed to load user");
@@ -41,7 +40,7 @@ function DashboardPage() {
   }, [navigate]);
 
   async function handleLogout() {
-    await logout();
+    await directusService.logout();
     navigate({ to: "/login" });
   }
 

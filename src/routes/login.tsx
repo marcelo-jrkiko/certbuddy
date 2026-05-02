@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { login, isAuthenticated } from "@/lib/directus";
+import { directusService } from "@/lib/directus";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -24,7 +24,7 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated()) navigate({ to: "/dashboard" });
+    if (directusService.isAuthenticated()) navigate({ to: "/dashboard" });
   }, [navigate]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -32,7 +32,7 @@ function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      await login(email, password);
+      await directusService.login(email, password);
       navigate({ to: "/dashboard" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");

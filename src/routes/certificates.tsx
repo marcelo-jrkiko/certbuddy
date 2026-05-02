@@ -41,12 +41,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { isAuthenticated } from "@/lib/directus";
+import { directusService } from "@/lib/directus";
 import {
-  activateCertificate,
-  deleteCertificate,
-  listCertificates,
-  uploadCertificate,
+  certificatesService,
   type Certificate,
 } from "@/lib/certificates";
 import { CheckCircle2, Trash2, Upload, Plus } from "lucide-react";
@@ -74,7 +71,7 @@ function CertificatesPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!directusService.isAuthenticated()) {
       navigate({ to: "/login" });
       return;
     }
@@ -85,7 +82,7 @@ function CertificatesPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await listCertificates();
+      const data = await certificatesService.listCertificates();
       setCerts(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load certificates");
@@ -97,7 +94,7 @@ function CertificatesPage() {
   async function handleActivate(c: Certificate) {
     setBusyId(c.id);
     try {
-      await activateCertificate(c.id);
+      await certificatesService.activateCertificate(c.id);
       toast.success(`Activated ${c.common_name}`);
       await load();
     } catch (e) {
@@ -111,7 +108,7 @@ function CertificatesPage() {
     if (!deleteTarget) return;
     setBusyId(deleteTarget.id);
     try {
-      await deleteCertificate(deleteTarget.id);
+      await certificatesService.deleteCertificate(deleteTarget.id);
       toast.success(`Deleted ${deleteTarget.common_name}`);
       setDeleteTarget(null);
       await load();
@@ -209,7 +206,7 @@ function CertificatesPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
-                            {(c.tags ?? []).map((t) => (
+                            {(c.tags as string[] ?? []).map((t: string) => (
                               <Badge key={t} variant="outline">
                                 {t}
                               </Badge>
@@ -321,7 +318,7 @@ function UploadDialog({
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean);
-      await uploadCertificate({
+      await certificatesService.uploadCertificate({
         commonName: commonName.trim(),
         certificateFile: certFile,
         certificateKey: keyFile,
