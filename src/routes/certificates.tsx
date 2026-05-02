@@ -46,7 +46,8 @@ import {
   certificatesService,
   type Certificate,
 } from "@/lib/certificates";
-import { CheckCircle2, Trash2, Upload, Plus } from "lucide-react";
+import { CheckCircle2, Trash2, Upload, Plus, FilePlus } from "lucide-react";
+import { RequestCertificateDialog } from "@/components/certificates/RequestCertificateDialog";
 
 export const Route = createFileRoute("/certificates")({
   head: () => ({
