@@ -4,7 +4,7 @@ import tempfile
 
 from flask import Blueprint, request
 
-from engine.models.certificate_request import CertificateRequest
+from engine.models.certificate_request import CertificateRequest, CertificateRequestType
 from engine.CertificateRequester import CertificateRequester
 from helpers.Auth import require_bearer_token
 from helpers.DataBackend import BackendClient
@@ -112,6 +112,7 @@ def register_engine_routes(app):
         newRequest.config = request.json.get("config", {})
         newRequest.status = "pending"
         newRequest.date_created = datetime.datetime.now().isoformat()
+        newRequest.type = CertificateRequestType.ISSUER
         
         backendCreated = backendClient.create("certificate_request", newRequest)
         newRequest.id = backendCreated.id

@@ -13,6 +13,10 @@ class CertificateRequestStatus(str, Enum):
     ISSUED = "issued"
     FAILED = "failed"
 
+class CertificateRequestType(str, Enum):
+    """Type enum for certificate requests."""
+    ISSUER = "issuer"
+    PULLER = "puller"
 
 class CertificateRequest(BaseModel):
     """Model for certificate request."""
@@ -25,6 +29,7 @@ class CertificateRequest(BaseModel):
     certificate_authority: Optional[str] = Field(None, description="Certificate authority type")
     config: Optional[dict[str, Any]] = Field(None, description="Configuration data")
     certificate: Optional[str] = Field(None, description="UUID of the issued certificate")
+    type: Optional[CertificateRequestType] = Field(None, description="Type of certificate request")
 
     class Config:
         from_attributes = True

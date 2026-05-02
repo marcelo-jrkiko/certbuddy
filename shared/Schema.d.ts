@@ -2045,6 +2045,7 @@ export interface components {
       certificate_authority?: string | null;
       config?: unknown;
       certificate?: string | components["schemas"]["ItemsCertificates"] | null;
+      type?: string | null;
     };
   };
   responses: {

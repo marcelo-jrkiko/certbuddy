@@ -1,6 +1,6 @@
 
 
-from engine.models.certificate_request import CertificateRequest
+from engine.models.certificate_request import CertificateRequest, CertificateRequestType
 from engine.repositories.UserRepository import UserRepository
 from engine.repositories.CA_AccountRepository import CA_AccountRepository
 from engine.authorities.BaseCertificateAuthority import BaseCertificateAuthority
@@ -84,4 +84,5 @@ class LetsEncryptCA(BaseCertificateAuthority):
             message="Certificate issued successfully",
             certificate_key=csr_pem.decode(),
             certificate_file=finalized_order.fullchain_pem,
+            type=CertificateRequestType.ISSUER
         )

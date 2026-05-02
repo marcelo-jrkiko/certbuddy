@@ -8,7 +8,7 @@ from engine.models.ca_response import CA_Response
 from engine.authorities import LetsEncryptCA
 from engine.challenges.CloudflareChallenge import CloudflareDnsChallenge
 from engine.repositories.UserRepository import UserRepository
-from engine.models.certificate_request import CertificateRequest, CertificateRequestStatus
+from engine.models.certificate_request import CertificateRequest, CertificateRequestStatus, CertificateRequestType
 import datetime
 import threading
 import uuid
@@ -185,7 +185,8 @@ class CertificateRequester:
         # Update the request with the certificate details and mark it as completed
         backendClient.update("certificate_request", request.id, {
             "status": CertificateRequestStatus.ISSUED,
-            "certificate": new_certificate.get('id')
+            "certificate": new_certificate.get('id'),
+            "type": ca_response.type
         })
         
         self.logger.debug(f"Certificate request {request.id} marked as ISSUED with certificate ID: {new_certificate.get('id')}")
