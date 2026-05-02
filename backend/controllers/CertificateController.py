@@ -1,8 +1,10 @@
+import datetime
+
 from flask import Blueprint, request
 
 from helpers.Auth import require_bearer_token
 from helpers.DataBackend import BackendClient
-import uuid
+
 
 certificates_blueprint = Blueprint('certificates', __name__, url_prefix='/certificates')
 
@@ -19,7 +21,7 @@ def register_certificate_routes(app):
             client = BackendClient(app.config["core"], request.authdata['token'])
             
             # Get the certificates for the user
-            certificates = client.search("Certificates", 
+            certificates = client.search("certificates", 
                 {
                     "issued_to": user_id
                 }, 
@@ -66,7 +68,7 @@ def register_certificate_routes(app):
             client = BackendClient(app.config["core"], request.authdata['token'])
             
             # Generete a unique id for the certificate file name
-            cert_filename = f"{common_name}_{user_id}_{uuid.uuid4()}"
+            cert_filename = f"{common_name}_{user_id[0:8]}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
             
             # Upload certificate and key files to Directus
             cert_data = client.upload_file(cert_file, f"{cert_filename}.crt")
@@ -80,11 +82,19 @@ def register_certificate_routes(app):
                     "error": "Failed to upload certificate files"
                 }, 500
             
-            # Get tags from JSON body if provided
-            tags = request.get_json().get('tags', []) if request.is_json else []
+            # Get tags from form data or JSON body if provided
+            tags = []
+            if request.is_json:
+                tags = request.get_json().get('tags', [])
+            elif 'tags' in request.form:
+                import json
+                try:
+                    tags = json.loads(request.form.get('tags', '[]'))
+                except json.JSONDecodeError:
+                    tags = []
             
             # Create a new certificate record in Directus with file references
-            new_certificate = client.create("Certificates", {
+            new_certificate = client.create("certificates", {
                 "issued_to": user_id,
                 "common_name": common_name,
                 "certificate_file": cert_file_id,
@@ -108,7 +118,7 @@ def register_certificate_routes(app):
             client = BackendClient(app.config["core"], request.authdata['token'])
             
             # Delete the certificate by ID
-            client.delete("Certificates", certificate_id)
+            client.delete("certificates", certificate_id)
             
             return {
                 "success": True,
@@ -129,7 +139,7 @@ def register_certificate_routes(app):
             client = BackendClient(app.config["core"], request.authdata['token'])
             
             # Get the certificate to retrieve its common_name
-            certificate = client.search("Certificates",
+            certificate = client.search("certificates",
                     {
                         "id": {"_eq": certificate_id},
                         "issued_to": {"_eq": user_id}
@@ -154,10 +164,10 @@ def register_certificate_routes(app):
             # Mark all other certificates with same common_name as inactive
             for cert in same_name_certs:
                 if cert.get("id") != certificate_id:
-                    client.update("Certificates", cert.get("id"), {"is_active": False})
+                    client.update("certificates", cert.get("id"), {"is_active": False})
             
             # Mark the target certificate as active
-            updated_certificate = client.update("Certificates", certificate_id, {"is_active": True})
+            updated_certificate = client.update("certificates", certificate_id, {"is_active": True})
             
             return {
                 "success": True,

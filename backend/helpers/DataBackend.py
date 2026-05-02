@@ -51,7 +51,8 @@ class BackendClient:
         }
         
         if fields:
-            params["fields"] = fields
+            # Convert list to comma-separated string for Directus API
+            params["fields"] = ",".join(fields) if isinstance(fields, list) else fields
             
         response = self._make_request("GET", f"/items/{collection_name}", params=params)
         return response.get("data", [])
