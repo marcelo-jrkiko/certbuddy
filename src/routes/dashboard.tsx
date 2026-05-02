@@ -21,7 +21,7 @@ import { certificatesService, type Certificate } from "@/lib/certificates";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard" },
+      { title: "Certbuddy - Dashboard" },
       { name: "description", content: "Your account dashboard." },
     ],
   }),

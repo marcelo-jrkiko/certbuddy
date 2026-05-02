@@ -51,7 +51,7 @@ import { CheckCircle2, Trash2, Upload, Plus } from "lucide-react";
 export const Route = createFileRoute("/certificates")({
   head: () => ({
     meta: [
-      { title: "Certificates" },
+      { title: "Certbuddy - Certificates" },
       {
         name: "description",
         content: "Manage your SSL/TLS certificates: upload, activate, delete.",

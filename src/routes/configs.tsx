@@ -30,7 +30,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/configs")({
   head: () => ({
     meta: [
-      { title: "Configurations" },
+      { title: "Certbuddy - Configurations" },
       {
         name: "description",
         content: "Manage challenges, CAs and shared configurations.",

@@ -9,7 +9,7 @@ import { directusService } from "@/lib/directus";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Sign in" },
+      { title: "Certbuddy - Sign in" },
       { name: "description", content: "Sign in to access your dashboard." },
     ],
   }),
