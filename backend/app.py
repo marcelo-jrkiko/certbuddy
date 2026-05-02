@@ -2,20 +2,15 @@ import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
+from startup import load_config
 from controllers.CertificateController import register_certificate_routes
 from controllers.EngineController import register_engine_routes
 from utils import Config
 import logging
 from flasgger import Swagger
 
-# Load environment variables
-load_dotenv()
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-config = Config()
+config = load_config()
 
 # Initialize Flask app
 app = Flask(__name__)

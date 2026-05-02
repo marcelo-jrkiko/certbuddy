@@ -189,5 +189,18 @@ class CertificateRequester:
             "type": ca_response.type
         })
         
+        # Mark all other ceritificate of the same domain and user as inactive except the newly issued one
+        existing_certs = backendClient.search("certificates", {
+            "issued_to": request.issue_to,
+            "common_name": request.domain,
+            "is_active": True,
+            "id": {"_ne": new_certificate.get('id')
+            }
+        })
+        for cert in existing_certs:
+            backendClient.update("certificates", cert['id'], {
+                "is_active": False
+            })
+        
         self.logger.debug(f"Certificate request {request.id} marked as ISSUED with certificate ID: {new_certificate.get('id')}")
                 

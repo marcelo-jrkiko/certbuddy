@@ -45,7 +45,7 @@ def register_engine_routes(app):
         """
         
         # -
-        backendClient = BackendClient()
+        backendClient = BackendClient(app.config["core"], request.authdata['token'])
         
         thread_status = requester.get_request_status(thread_id)        
         request_details = backendClient.get_item("certificate_request", thread_status.get("request_id"))
@@ -100,7 +100,7 @@ def register_engine_routes(app):
         """
         
         # -
-        backendClient = BackendClient()
+        backendClient = BackendClient(app.config["core"], request.authdata['token'])
         
         # -
         newRequest = CertificateRequest()  
