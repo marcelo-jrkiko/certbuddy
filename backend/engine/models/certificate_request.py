@@ -17,13 +17,14 @@ class CertificateRequestStatus(str, Enum):
 class CertificateRequest(BaseModel):
     """Model for certificate request."""
     id: str = Field(..., description="UUID identifier")
-    domain: Optional[str] = None
+    date_created: Optional[datetime] = Field(None, description="Creation timestamp")
+    domain: Optional[str] = Field(None, description="Domain name")
     issue_to: Optional[str] = Field(None, description="UUID of the user to issue to")
     status: Optional[CertificateRequestStatus] = None
-    challenge_type: Optional[str] = None
-    certificate_authority: Optional[str] = None
-    config: Optional[dict[str, Any]] = None
-    date_created: Optional[datetime] = None
+    challenge_type: Optional[str] = Field(None, description="Type of challenge (dns, http, etc)")
+    certificate_authority: Optional[str] = Field(None, description="Certificate authority type")
+    config: Optional[dict[str, Any]] = Field(None, description="Configuration data")
+    certificate: Optional[str] = Field(None, description="UUID of the issued certificate")
 
     class Config:
         from_attributes = True

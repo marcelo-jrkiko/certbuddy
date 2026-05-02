@@ -64,6 +64,11 @@ class BackendClient:
         response = self._make_request("GET", f"/items/{collection_name}", params=params)
         return response.get("data", [])
 
+    def get_item(self, collection_name: str, item_id: str) -> Dict[str, Any]:
+        """Get a single item from a collection by ID"""
+        response = self._make_request("GET", f"/items/{collection_name}/{item_id}")
+        return response.get("data", {})
+
     def get_collection(self, collection_name: str) -> list:
         """Get all items from a collection"""
         response = self._make_request("GET", f"/items/{collection_name}")

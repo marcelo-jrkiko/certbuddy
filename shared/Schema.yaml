@@ -487,6 +487,49 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: certificate_request
+    field: certificate
+    type: uuid
+    meta:
+      collection: certificate_request
+      conditions: null
+      display: null
+      display_options: null
+      field: certificate
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        enableCreate: false
+        template: '{{common_name}}'
+      readonly: false
+      required: false
+      searchable: true
+      sort: 10
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: certificate
+      table: certificate_request
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: certificates
+      foreign_key_column: id
   - collection: certificateauthority_account
     field: id
     type: uuid
@@ -1844,6 +1887,27 @@ relations:
       foreign_key_table: directus_users
       foreign_key_column: id
       constraint_name: certificate_request_issue_to_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: certificate_request
+    field: certificate
+    related_collection: certificates
+    meta:
+      junction_field: null
+      many_collection: certificate_request
+      many_field: certificate
+      one_allowed_collections: null
+      one_collection: certificates
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: certificate_request
+      column: certificate
+      foreign_key_table: certificates
+      foreign_key_column: id
+      constraint_name: certificate_request_certificate_foreign
       on_update: NO ACTION
       on_delete: SET NULL
   - collection: certificateauthority_account

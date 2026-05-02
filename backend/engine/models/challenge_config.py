@@ -11,6 +11,7 @@ class ChallengeConfig(BaseModel):
     challenge_key: Optional[str] = Field(None, description="Challenge key")
     config: Optional[dict[str, Any]] = Field(None, description="Configuration data")
     domain: Optional[str] = Field(None, description="Domain")
+    merged_config: Optional[str] = Field(None, description="UUID of merged shared configuration")
 
     class Config:
         from_attributes = True

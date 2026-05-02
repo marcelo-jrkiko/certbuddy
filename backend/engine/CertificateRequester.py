@@ -10,6 +10,9 @@ from engine.challenges.CloudflareChallenge import CloudflareDnsChallenge
 from engine.repositories.UserRepository import UserRepository
 from engine.models.certificate_request import CertificateRequest, CertificateRequestStatus
 import datetime
+import threading
+import uuid
+from collections import defaultdict
 
 class CertificateRequester:
     def __init__(self):
@@ -32,6 +35,58 @@ class CertificateRequester:
             }
         }
         
+    # Global thread pool
+    _thread_pool = {}
+    _thread_pool_lock = threading.Lock()
+
+    def start_request_async(self, request: CertificateRequest):
+        """Start certificate request processing in a separate thread"""
+        thread_id = str(uuid.uuid4())
+        
+        thread = threading.Thread(
+            target=self.process_request,
+            args=(request,),
+            name=f"CertRequest-{thread_id}",
+            daemon=False
+        )
+        
+        with self._thread_pool_lock:
+            self._thread_pool[thread_id] = {
+                "thread": thread,
+                "request_id": request.id,
+            }
+        
+        thread.start()
+        self.logger.debug(f"Started certificate request processing in thread {thread_id}")
+        
+        return thread_id
+    
+    def get_request_status(self, thread_id: str):
+        """Get the status of a certificate request thread"""
+        with self._thread_pool_lock:
+            thread_info = self._thread_pool.get(thread_id)
+        
+        if not thread_info:
+            return {
+                "status": "not_found",
+                "message": f"No thread found with ID {thread_id}"
+            }
+        
+        thread = thread_info["thread"]
+        if thread.is_alive():
+            return {
+                "status": "processing",
+                "message": f"Thread {thread_id} is still processing",
+                "request_id": thread_info["request_id"]
+            }
+        else:
+            return {
+                "status": "completed",
+                "message": f"Thread {thread_id} has completed",
+                "request_id": thread_info["request_id"]
+            }
+    
+    
         
     def process_request(self, request: CertificateRequest):    
         self.logger.debug(f"Processing certificate request {request.id} for domain {request.domain} and user {request.issue_to}")

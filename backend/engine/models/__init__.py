@@ -16,6 +16,9 @@ from .certificate import (
 from .challenge_config import (
     ChallengeConfig,
 )
+from .shared_config import (
+    SharedConfig,
+)
 
 __all__ = [
     "CertificateRequest",
@@ -24,4 +27,5 @@ __all__ = [
     "CertificateAuthorityConfig",
     "Certificate",
     "ChallengeConfig",
+    "SharedConfig",
 ]
