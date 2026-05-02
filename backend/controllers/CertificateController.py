@@ -13,7 +13,6 @@ certificates_blueprint = Blueprint('certificates', __name__, url_prefix='/certif
 
 def register_certificate_routes(app):
     
-    
     @certificates_blueprint.route('/', methods=['GET'])
     @require_bearer_token
     def get_certificates():        

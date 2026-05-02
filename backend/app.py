@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 from controllers.CertificateController import register_certificate_routes
+from controllers.EngineController import register_engine_routes
 from utils import Config
 import logging
 
@@ -23,6 +24,7 @@ app.config["core"] = config
 
 # Register routes
 register_certificate_routes(app)
+register_engine_routes(app)
 
 @app.route('/health', methods=['GET'])
 def health_check():
