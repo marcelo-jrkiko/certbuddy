@@ -95,10 +95,12 @@ class CertificateRequester:
         
         self.logger.debug(f"Retrieving challenge and CA config for user {request.issue_to}")        
         # Get the Challenge Config for the request challenge
-        challenge_config = userRepo.get_challenge_config(request.issue_to)
+        challenge_config = userRepo.get_challenge_config(request.issue_to, request.challenge_type)
+        challenge_config = userRepo.merge_shared_config(request.issue_to, challenge_config)
         
         # Get the Certificate Authority Config for the request
-        ca_config = userRepo.get_certificate_authority_config(request.issue_to)
+        ca_config = userRepo.get_certificate_authority_config(request.issue_to, request.certificate_authority)
+        ca_config = userRepo.merge_shared_config(request.issue_to, ca_config)
         
         if not challenge_config:
             self.logger.error(f"No challenge config found for user {request.issue_to}")

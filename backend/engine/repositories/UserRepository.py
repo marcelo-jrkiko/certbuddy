@@ -1,4 +1,5 @@
 
+from engine.models.shared_config import SharedConfig
 from engine.models.certificateauthority_config import CertificateAuthorityConfig
 from engine.models.challenge_config import ChallengeConfig
 from helpers.DataBackend import BackendClient
@@ -12,12 +13,31 @@ class UserRepository:
         user = self.backend_client._make_request("GET", f"/users/{user_id}")
         return user
     
-    def get_challenge_config(self, user_id: str) -> ChallengeConfig:
+    def merge_shared_config(self, user_id: str, obj: dict):
+        """Merge shared configuration into the given object based on user ID and domain"""
+        
+        if obj.get("merged_config") > 0:
+            shared_config = self.get_shared_config(obj["merged_config"])
+            
+            # merge the shared config into the object config
+            if shared_config and shared_config.config:
+                obj_config = obj.get("config", {})
+                merged_config = {**shared_config.config, **obj_config}
+                obj["config"] = merged_config
+      
+        return obj
+    
+    def get_shared_config(self, id: str) -> SharedConfig:
+        config = self.backend_client._make_request("GET", f"/shared_config/{id}")
+        return config
+    
+    def get_challenge_config(self, user_id: str, challenge_key: str) -> ChallengeConfig:
         config = self.backend_client.search("challenge_config", 
             {
-                "user_created": user_id
+                "user_created": user_id,
+                "challenge_key": challenge_key
             },
-            fields=["challenge_key", "config", "domain"]
+            fields=["challenge_key", "config", "domain", "merged_config"]
         )
         
         if config:
@@ -25,12 +45,13 @@ class UserRepository:
         
         return None
     
-    def get_certificate_authority_config(self, user_id: str) -> CertificateAuthorityConfig:
+    def get_certificate_authority_config(self, user_id: str, ca_key: str) -> CertificateAuthorityConfig:
         config = self.backend_client.search("certificateauthority_config", 
             {
-                "user_created": user_id
+                "user_created": user_id,
+                "ca_key": ca_key
             },
-            fields=["ca_key", "config", "domain"]
+            fields=["ca_key", "config", "domain", "merged_config"]
         )
         
         if config:
