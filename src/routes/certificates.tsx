@@ -68,6 +68,7 @@ function CertificatesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Certificate | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
