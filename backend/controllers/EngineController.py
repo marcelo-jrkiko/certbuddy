@@ -106,7 +106,7 @@ def register_engine_routes(app):
         existing_requests = backendClient.search("certificate_request", {
             "domain": request.json.get("domain"),
             "status": {"_in": [CertificateRequestStatus.PENDING, CertificateRequestStatus.PROCESSING]},
-            "issue_to": request.authdata.get("user_id"),
+            "issue_to": request.authdata.get("user_data").get("id"),
         })
         if existing_requests:
             return {
@@ -114,19 +114,19 @@ def register_engine_routes(app):
             }, 400
         
         # -
-        newRequest = CertificateRequest()  
+        newRequest = CertificateRequest(**{          
+          "domain": request.json.get("domain"),   
+          "issue_to": request.authdata.get("user_data").get("id"),
+          "challenge_type": request.json.get("challenge_type"),
+          "certificate_authority": request.json.get("certificate_authority"),
+          "config": request.json.get("config", {}),
+          "status": CertificateRequestStatus.PENDING,
+          "date_created": datetime.datetime.now().isoformat(),
+          "type": CertificateRequestType.ISSUER,
+        })
         
-        newRequest.domain = request.json.get("domain")   
-        newRequest.issue_to = request.authdata.get("user_id")  
-        newRequest.challenge_type = request.json.get("challenge_type")
-        newRequest.certificate_authority = request.json.get("certificate_authority")
-        newRequest.config = request.json.get("config", {})
-        newRequest.status = CertificateRequestStatus.PENDING
-        newRequest.date_created = datetime.datetime.now().isoformat()
-        newRequest.type = CertificateRequestType.ISSUER
-        
-        backendCreated = backendClient.create("certificate_request", newRequest)
-        newRequest.id = backendCreated.id
+        backendCreated = backendClient.create("certificate_request", newRequest.model_dump(mode='json'))
+        newRequest.id = backendCreated.get("id")
         
         thread_id = requester.start_request_async(newRequest)
         return {

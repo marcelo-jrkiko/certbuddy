@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 class SharedConfig(BaseModel):
     """Model for shared configuration."""
-    id: str = Field(..., description="UUID identifier")
+    id: Optional[str] = Field(None, description="UUID identifier")
     user_created: Optional[str] = Field(None, description="UUID of the user who created this")
     date_created: Optional[datetime] = Field(None, description="Creation timestamp")
     key: Optional[str] = Field(None, description="Configuration key")

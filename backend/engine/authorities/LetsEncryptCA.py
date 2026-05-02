@@ -6,6 +6,7 @@ from engine.repositories.CA_AccountRepository import CA_AccountRepository
 from engine.authorities.BaseCertificateAuthority import BaseCertificateAuthority
 from engine.challenges.DnsChallenge import DnsChallenge
 from acme import client, messages
+from acme.client import ClientNetwork
 from acme import crypto_util
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
@@ -20,21 +21,25 @@ class LetsEncryptCA(BaseCertificateAuthority):
     
         self.carepository = CA_AccountRepository()
         
-    def __issue(self, request: CertificateRequest, challenge: any) -> CA_Response:        
+    def issue_certificate(self, request: CertificateRequest, challenge: any) -> CA_Response:        
         if challenge.type not in self.compatibleChallengesTypes:
             raise Exception(f"Challenge type {challenge.type} is not compatible with Let's Encrypt CA")
         
         if challenge.type == "DNS-01":
             return self._issue_dns_challenge(request, challenge)
     
-    def get_directory(self):
-        return messages.Directory.from_json(client.ClientV2.get(self.directory_url).json())
+    def get_directory(self, account_key=None) -> messages.Directory:
+        import requests
+        response = requests.get(self.directory_url)
+        response.raise_for_status()
+        return messages.Directory.from_json(response.json())
     
-    def get_acme_client(self, account_key: str) -> client.ClientV2:
+    def get_acme_client(self, account_key):
         directory = self.get_directory()
-        return client.ClientV2(directory, account_key)
+        net = ClientNetwork(account_key)
+        return client.ClientV2(directory, net)
     
-    def get_account_key(self, user_id: str) -> client.ClientV2:
+    def get_account_key(self, user_id: str):
         account = self.carepository.get_account("letsencrypt", user_id)
         
         userRepo = UserRepository()
@@ -44,14 +49,40 @@ class LetsEncryptCA(BaseCertificateAuthority):
             # Create new account with LE
             account_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
             acme_client = self.get_acme_client(account_key)
-            acme_client.new_account(messages.NewRegistration.from_data(email=user_details["email"], terms_of_service_agreed=True))
+            
+            # Register the account
+            try:
+                # Try to create account - new_account may handle both existing and new accounts
+                acme_client.new_account(
+                    messages.NewRegistration(
+                        contact=[f"mailto:{user_details.get('email')}"],
+                        terms_of_service_agreed=True
+                    )
+                )
+            except AssertionError as e:
+                # Log for debugging - the library may fail silently with assertions
+                self.logger.warning(f"Account creation assertion error (may already exist): {e}")
+                # Continue anyway - account might already be registered
+            except Exception as e:
+                self.logger.error(f"Error during account creation: {type(e).__name__}: {e}")
+                raise
+            
+            # Serialize the key for storage
+            key_pem = account_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption()
+            ).decode()
+            
             self.carepository.create_account("letsencrypt", user_id, {
-                "account_key": account_key,
+                "account_key": key_pem,
             })
             
             return account_key
         else:
-            return account.account_data["account_key"]
+            # Load the key from storage
+            key_pem = account.account_data["account_key"]
+            return serialization.load_pem_private_key(key_pem.encode(), password=None)
             
         
     def _issue_dns_challenge(self, request: CertificateRequest, challenge: DnsChallenge) -> CA_Response:

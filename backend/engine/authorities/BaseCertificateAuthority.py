@@ -5,15 +5,19 @@ import logging
 
 from engine.models.ca_response import CA_Response
 from engine.models.certificate_request import CertificateRequest
-
+import json
 
 class BaseCertificateAuthority(ABC):
     def __init__(self):
         self.compatibleChallengesTypes = [ "DNS-01" , "HTTP-01" ]
         self.logger = logging.getLogger(self.__class__.__name__)
     
-    def configure(self, config: dict):
-        self.config = config
+    def configure(self, config: dict | str | None):
+        if config:
+            if isinstance(config, str):
+                config = json.loads(config)
+            else:
+                self.config = config
         
     
     def issue(self, request: CertificateRequest, challenge: any) -> CA_Response:
@@ -21,10 +25,10 @@ class BaseCertificateAuthority(ABC):
         if challenge.type not in self.compatibleChallengesTypes:
             raise Exception(f"Challenge type {challenge.type} is not compatible with this CA")
         
-        return self.__issue(request, challenge)
+        return self.issue_certificate(request, challenge)
     
     @abstractmethod
-    def __issue(self, request: CertificateRequest, challenge: any) -> CA_Response:
+    def issue_certificate(self, request: CertificateRequest, challenge: any) -> CA_Response:
         """
         Internal method to be implemented by subclasses to handle the actual certificate issuance logic.
         """

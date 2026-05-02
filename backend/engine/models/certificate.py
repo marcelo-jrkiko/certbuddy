@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 class Certificate(BaseModel):
     """Model for certificate."""
-    id: str = Field(..., description="UUID identifier")
+    id: Optional[str] = Field(None, description="UUID identifier")
     common_name: Optional[str] = Field(None, description="Common name / domain")
     issued_to: Optional[str] = Field(None, description="UUID of the user this certificate is issued to")
     is_active: bool = Field(default=False, description="Whether the certificate is active")

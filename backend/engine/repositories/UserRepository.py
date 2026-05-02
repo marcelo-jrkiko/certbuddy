@@ -1,22 +1,23 @@
 
+from utils import get_main_domain
 from engine.models.shared_config import SharedConfig
 from engine.models.certificateauthority_config import CertificateAuthorityConfig
 from engine.models.challenge_config import ChallengeConfig
-from helpers.DataBackend import BackendClient
+from helpers.DataBackend import BackendClient, getMasterBackendClient
 import fnmatch
 
 class UserRepository:
     def __init__(self):
-        self.backend_client = BackendClient()
+        self.backend_client = getMasterBackendClient()
     
     def get_user(self, user_id: str) -> dict:
         user = self.backend_client._make_request("GET", f"/users/{user_id}")
-        return user
+        return user.get('data') if user else None
     
     def merge_shared_config(self, user_id: str, obj: dict):
         """Merge shared configuration into the given object based on user ID and domain"""
         
-        if obj.get("merged_config") > 0:
+        if obj.get("merged_config"):
             shared_config = self.get_shared_config(obj["merged_config"])
             
             # merge the shared config into the object config
@@ -32,13 +33,12 @@ class UserRepository:
         return config
     
     def get_challenge_config(self, user_id: str, challenge_key: str, domain: str) -> ChallengeConfig:
+        
+        
         config = self.backend_client.search("challenge_config", 
             {
                 "user_created": user_id,
-                "challenge_key": challenge_key,
-                "domain": {
-                    "_icontains": domain
-                }
+                "challenge_key": challenge_key,        
             },
             fields=["challenge_key", "config", "domain", "merged_config"]
         )
@@ -56,9 +56,6 @@ class UserRepository:
             {
                 "user_created": user_id,
                 "ca_key": ca_key,
-                "domain": {
-                    "_icontains": domain
-                }
             },
             fields=["ca_key", "config", "domain", "merged_config"]
         )

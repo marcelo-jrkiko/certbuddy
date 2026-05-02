@@ -9,7 +9,10 @@ from utils import Config
 
 def getMasterBackendClient() -> "BackendClient":
     """Get a backend client instance using the master token"""
-    return BackendClient(Config(), os.getenv("ENGINE_MASTER_TOKEN"))
+    token = os.getenv("ENGINE_MASTER_TOKEN", "").strip('"').strip("'")
+    if not token:
+        raise ValueError("ENGINE_MASTER_TOKEN environment variable is not set")
+    return BackendClient(Config(), token)
 
 class BackendClient:
     def __init__(self, config, token: str):
@@ -37,8 +40,7 @@ class BackendClient:
             else:
                 raise ValueError(f"Unsupported HTTP method: {method}")
             
-            if(response.status_code >= 400):
-                logging.error(f"Backend request failed: {response.status_code} \r\n\t - {response.text}")
+            if(response.status_code >= 400):           
                 response.raise_for_status()                
             
             return response.json() if response.text else {}

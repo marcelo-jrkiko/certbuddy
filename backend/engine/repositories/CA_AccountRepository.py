@@ -3,12 +3,12 @@
 import json
 
 from engine.models.certificateauthority_account import CertificateAuthorityAccount
-from helpers.DataBackend import BackendClient
+from helpers.DataBackend import BackendClient, getMasterBackendClient
 
 
 class CA_AccountRepository:
     def __init__(self):
-        self.backend_client = BackendClient()
+        self.backend_client = getMasterBackendClient()
         
         
     def get_account(self, account_key: str, user_id: str) -> CertificateAuthorityAccount:

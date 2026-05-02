@@ -146,7 +146,7 @@ function CertificatesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 space-y-2">
               <Dialog open={requestOpen} onOpenChange={setRequestOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline">

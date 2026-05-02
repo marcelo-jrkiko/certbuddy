@@ -1,8 +1,8 @@
 
-from engine.challenges.DnsChallenge import DnsChallenge, DnsChallengeConfig
+from engine.challenges.DnsChallenge import DnsChallenge
 from cloudflare import Cloudflare
 
-class CloudflareChallengeConfig(DnsChallengeConfig):
+class CloudflareChallengeConfig:
     def __init__(self):
         self.api_token = None
         self.zone_id = None

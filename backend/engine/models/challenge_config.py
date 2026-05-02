@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 class ChallengeConfig(BaseModel):
     """Model for challenge configuration."""
-    id: str = Field(..., description="UUID identifier")
+    id: Optional[str] = Field(None, description="UUID identifier")
     user_created: Optional[str] = Field(None, description="UUID of the user who created this")
     challenge_key: Optional[str] = Field(None, description="Challenge key")
     config: Optional[dict[str, Any]] = Field(None, description="Configuration data")

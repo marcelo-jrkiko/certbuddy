@@ -2,10 +2,12 @@
 import logging
 import tempfile
 
+from flask import config
+
 from helpers.CertificateViewer import CertificateViewer
 from helpers.DataBackend import BackendClient, getMasterBackendClient
 from engine.models.ca_response import CA_Response
-from engine.authorities import LetsEncryptCA
+from engine.authorities.LetsEncryptCA import LetsEncryptCA
 from engine.challenges.CloudflareChallenge import CloudflareDnsChallenge
 from engine.repositories.UserRepository import UserRepository
 from engine.models.certificate_request import CertificateRequest, CertificateRequestStatus, CertificateRequestType
@@ -104,119 +106,126 @@ class CertificateRequester:
     
     
         
-    def process_request(self, request: CertificateRequest):    
-        self.logger.debug(f"Processing certificate request {request.id} for domain {request.domain} and user {request.issue_to}")
-        
-        userRepo = UserRepository()
-        
-        self.logger.debug(f"Retrieving challenge and CA config for user {request.issue_to}")        
-        # Get the Challenge Config for the request challenge
-        challenge_config = userRepo.get_challenge_config(request.issue_to, request.challenge_type, request.domain)
-        challenge_config = userRepo.merge_shared_config(request.issue_to, challenge_config)
-        
-        # Get the Certificate Authority Config for the request
-        ca_config = userRepo.get_certificate_authority_config(request.issue_to, request.certificate_authority, request.domain)
-        ca_config = userRepo.merge_shared_config(request.issue_to, ca_config)
-        
-        if not challenge_config:
-            self.logger.error(f"No challenge config found for user {request.issue_to}")
-            raise Exception("No challenge config found for user")
-        
-        if not ca_config:
-            self.logger.error(f"No certificate authority config found for user {request.issue_to}")
-            raise Exception("No certificate authority config found for user")
-        
-        # Instantiate the Challenge and CA classes based on the request
-        self.logger.debug(f"Instantiating challenge and CA for request {request.id} - Challenge: {request.challenge_type}, CA: {request.certificate_authority}")
-        
-        challenge_class = self.get_avaliable_challenges().get(request.challenge_type)
-        ca_class = self.get_avaliable_certificate_authorities().get(request.certificate_authority)
-        
-        challenge_obj = challenge_class["class"]()       
-        ca_obj = ca_class["class"]()        
-        
-        # Loads the challenge and CA configuration
-        self.logger.debug(f"Configuring challenge and CA for request {request.id}")
-        challenge_obj.configure(challenge_config.config)
-        ca_obj.configure(ca_config.config)
-        
-        # Call the CA to issue the certificate based on the request and challenge
-        self.logger.debug(f"Issuing certificate for request {request.id}")
-        ca_response : CA_Response = ca_obj.issue(request, challenge_obj)
-        
-        if not ca_response.okay:
-            self.logger.error(f"Certificate issuance failed for request {request.id} with error: {ca_response.error_message}")
-            raise Exception(f"Certificate issuance failed: {ca_response.error_message}")
-        
-        # Store the issued certificate and key in the storage 
-        self.logger.debug(f"Storing issued certificate for request {request.id} in storage")
+    def process_request(self, request: CertificateRequest):         
         backendClient = getMasterBackendClient()  
-        
-        cert_filename = f"{request.domain}_{request.issue_to[0:8]}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-        
-        # create temporary files for the certificate and key
-        temp_cert_file = f"{tempfile.gettempdir()}/{cert_filename}.crt"
-        with open(temp_cert_file, 'wb') as f:
-            f.write(ca_response.certificate_file.encode())
-        
-        temp_key_file = f"{tempfile.gettempdir()}/{cert_filename}.key"
-        with open(temp_key_file, 'wb') as f:
-            f.write(ca_response.certificate_key.encode())
-           
-        # Upload certificate and key files to Directus
-        self.logger.debug(f"Uploading certificate and key files for request {request.id} to Directus")
-        with open(temp_cert_file, 'rb') as cert_f:
-            cert_data = backendClient.upload_file(cert_f, f"{cert_filename}.crt")
-        
-        with open(temp_key_file, 'rb') as key_f:
-            key_data = backendClient.upload_file(key_f, f"{cert_filename}.key")
-        
-        cert_file_id = cert_data.get('id')
-        key_file_id = key_data.get('id')
-        
-        # 
-        if not cert_file_id or not key_file_id:
-            self.logger.error(f"Failed to upload certificate or key for request {request.id}")
-            raise Exception("Failed to upload certificate or key")
-        
-        self.logger.debug(f"Certificate and key files uploaded for request {request.id} with cert_file_id: {cert_file_id} and key_file_id: {key_file_id}")
-        
-        # tags
-        tags = request.config.get("tags", []) if request.config else []
-        
-        cert_details = CertificateViewer.get_details(temp_cert_file)                    
-        new_certificate = backendClient.create("certificates", {
-            "issued_to": request.issue_to,
-            "common_name": request.domain,
-            "certificate_file": cert_file_id,
-            "certificate_key": key_file_id,
-            "tags": tags,
-            "is_active": True,
-            "expires_at": cert_details.get("not_valid_after") if cert_details else None,
-            "type" : "issued"
-        })
-        
-        self.logger.debug(f"New certificate record created for request {request.id} with certificate ID: {new_certificate.get('id')}")
-
-        # Update the request with the certificate details and mark it as completed
-        backendClient.update("certificate_request", request.id, {
-            "status": CertificateRequestStatus.ISSUED,
-            "certificate": new_certificate.get('id'),
-            "type": ca_response.type
-        })
-        
-        # Mark all other ceritificate of the same domain and user as inactive except the newly issued one
-        existing_certs = backendClient.search("certificates", {
-            "issued_to": request.issue_to,
-            "common_name": request.domain,
-            "is_active": True,
-            "id": {"_ne": new_certificate.get('id')
-            }
-        })
-        for cert in existing_certs:
-            backendClient.update("certificates", cert['id'], {
-                "is_active": False
+             
+        try:  
+            self.logger.debug(f"Processing certificate request {request.id} for domain {request.domain} and user {request.issue_to}")
+            
+            userRepo = UserRepository()
+            
+            self.logger.debug(f"Retrieving challenge and CA config for user {request.issue_to}")        
+            # Get the Challenge Config for the request challenge
+            challenge_config = userRepo.get_challenge_config(request.issue_to, request.challenge_type, request.domain)
+                        
+            # Get the Certificate Authority Config for the request
+            ca_config = userRepo.get_certificate_authority_config(request.issue_to, request.certificate_authority, request.domain)
+                        
+            if not challenge_config:
+                self.logger.error(f"No challenge config found for user {request.issue_to}")
+                raise Exception("No challenge config found for user")
+            
+            if not ca_config:
+                self.logger.error(f"No certificate authority config found for user {request.issue_to}")
+                raise Exception("No certificate authority config found for user")
+            
+            challenge_config = userRepo.merge_shared_config(request.issue_to, challenge_config)
+            ca_config = userRepo.merge_shared_config(request.issue_to, ca_config)
+            
+            # Instantiate the Challenge and CA classes based on the request
+            self.logger.debug(f"Instantiating challenge and CA for request {request.id} - Challenge: {request.challenge_type}, CA: {request.certificate_authority}")
+            
+            challenge_class = self.get_avaliable_challenges().get(request.challenge_type)
+            ca_class = self.get_avaliable_certificate_authorities().get(request.certificate_authority)
+            
+            challenge_obj = challenge_class["class"]()       
+            ca_obj = ca_class["class"]()        
+            
+            # Loads the challenge and CA configuration
+            self.logger.debug(f"Configuring challenge and CA for request {request.id}")
+            challenge_obj.configure(challenge_config.get('config'))
+            ca_obj.configure(ca_config.get('config'))
+            
+            # Call the CA to issue the certificate based on the request and challenge
+            self.logger.debug(f"Issuing certificate for request {request.id}")
+            ca_response : CA_Response = ca_obj.issue(request, challenge_obj)
+            
+            if not ca_response.okay:
+                self.logger.error(f"Certificate issuance failed for request {request.id} with error: {ca_response.error_message}")
+                raise Exception(f"Certificate issuance failed: {ca_response.error_message}")
+            
+            # Store the issued certificate and key in the storage 
+            self.logger.debug(f"Storing issued certificate for request {request.id} in storage")
+            
+            cert_filename = f"{request.domain}_{request.issue_to[0:8]}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+            
+            # create temporary files for the certificate and key
+            temp_cert_file = f"{tempfile.gettempdir()}/{cert_filename}.crt"
+            with open(temp_cert_file, 'wb') as f:
+                f.write(ca_response.certificate_file.encode())
+            
+            temp_key_file = f"{tempfile.gettempdir()}/{cert_filename}.key"
+            with open(temp_key_file, 'wb') as f:
+                f.write(ca_response.certificate_key.encode())
+            
+            # Upload certificate and key files to Directus
+            self.logger.debug(f"Uploading certificate and key files for request {request.id} to Directus")
+            with open(temp_cert_file, 'rb') as cert_f:
+                cert_data = backendClient.upload_file(cert_f, f"{cert_filename}.crt")
+            
+            with open(temp_key_file, 'rb') as key_f:
+                key_data = backendClient.upload_file(key_f, f"{cert_filename}.key")
+            
+            cert_file_id = cert_data.get('id')
+            key_file_id = key_data.get('id')
+            
+            # 
+            if not cert_file_id or not key_file_id:
+                self.logger.error(f"Failed to upload certificate or key for request {request.id}")
+                raise Exception("Failed to upload certificate or key")
+            
+            self.logger.debug(f"Certificate and key files uploaded for request {request.id} with cert_file_id: {cert_file_id} and key_file_id: {key_file_id}")
+            
+            # tags
+            tags = request.config.get("tags", []) if request.config else []
+            
+            cert_details = CertificateViewer.get_details(temp_cert_file)                    
+            new_certificate = backendClient.create("certificates", {
+                "issued_to": request.issue_to,
+                "common_name": request.domain,
+                "certificate_file": cert_file_id,
+                "certificate_key": key_file_id,
+                "tags": tags,
+                "is_active": True,
+                "expires_at": cert_details.get("not_valid_after") if cert_details else None,
+                "type" : "issued"
             })
-        
-        self.logger.debug(f"Certificate request {request.id} marked as ISSUED with certificate ID: {new_certificate.get('id')}")
-                
+            
+            self.logger.debug(f"New certificate record created for request {request.id} with certificate ID: {new_certificate.get('id')}")
+
+            # Update the request with the certificate details and mark it as completed
+            backendClient.update("certificate_request", request.id, {
+                "status": CertificateRequestStatus.ISSUED,
+                "certificate": new_certificate.get('id'),
+                "type": ca_response.type
+            })
+            
+            # Mark all other ceritificate of the same domain and user as inactive except the newly issued one
+            existing_certs = backendClient.search("certificates", {
+                "issued_to": request.issue_to,
+                "common_name": request.domain,
+                "is_active": True,
+                "id": {"_ne": new_certificate.get('id')
+                }
+            })
+            for cert in existing_certs:
+                backendClient.update("certificates", cert['id'], {
+                    "is_active": False
+                })
+            
+            self.logger.debug(f"Certificate request {request.id} marked as ISSUED with certificate ID: {new_certificate.get('id')}")
+        except Exception as e:
+            self.logger.error(f"Error processing certificate request {request.id}: {str(e)}")            
+            backendClient.update("certificate_request", request.id, {
+                "status": CertificateRequestStatus.FAILED,
+            })

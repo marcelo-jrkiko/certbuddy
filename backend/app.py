@@ -2,7 +2,7 @@ import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
-from startup import load_config
+from startup import startup
 from controllers.CertificateController import register_certificate_routes
 from controllers.EngineController import register_engine_routes
 from utils import Config
@@ -10,7 +10,7 @@ import logging
 from flasgger import Swagger
 
 logger = logging.getLogger(__name__)
-config = load_config()
+config = startup()
 
 # Initialize Flask app
 app = Flask("certbuddy-backend")

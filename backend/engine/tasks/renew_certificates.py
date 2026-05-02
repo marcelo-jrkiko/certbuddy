@@ -1,10 +1,10 @@
 from engine.CertificateRequester import CertificateRequester
 from helpers.DataBackend import getMasterBackendClient
-from startup import load_config
+from startup import startup
 import datetime
 import logging
 
-config = load_config()
+config = startup()
 logger = logging.getLogger(__name__) 
 requester = CertificateRequester()
 

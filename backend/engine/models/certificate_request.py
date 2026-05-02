@@ -21,7 +21,7 @@ class CertificateRequestType(str, Enum):
 
 class CertificateRequest(BaseModel):
     """Model for certificate request."""
-    id: str = Field(..., description="UUID identifier")
+    id: Optional[str] = Field(None, description="UUID identifier")
     date_created: Optional[datetime] = Field(None, description="Creation timestamp")
     domain: Optional[str] = Field(None, description="Domain name")
     issue_to: Optional[str] = Field(None, description="UUID of the user to issue to")
