@@ -23,6 +23,10 @@ class CertificateRequester:
             "CLOUDFLARE_DNS" : {
                 "name": "Cloudflare DNS Challenge",
                 "class" : CloudflareDnsChallenge,
+                "config_preset" : {
+                  "zone_id": "",
+                  "api_token": "", 
+                },
                 "type": "dns"
             }
         }
@@ -31,7 +35,10 @@ class CertificateRequester:
         return {
             "LETSENCRYPT" : {
                 "name": "Let's Encrypt",
-                "class" : LetsEncryptCA
+                "class" : LetsEncryptCA,
+                "config_preset" : {
+                  "environment": "production", # or "staging"
+                },
             }
         }
         
@@ -104,11 +111,11 @@ class CertificateRequester:
         
         self.logger.debug(f"Retrieving challenge and CA config for user {request.issue_to}")        
         # Get the Challenge Config for the request challenge
-        challenge_config = userRepo.get_challenge_config(request.issue_to, request.challenge_type)
+        challenge_config = userRepo.get_challenge_config(request.issue_to, request.challenge_type, request.domain)
         challenge_config = userRepo.merge_shared_config(request.issue_to, challenge_config)
         
         # Get the Certificate Authority Config for the request
-        ca_config = userRepo.get_certificate_authority_config(request.issue_to, request.certificate_authority)
+        ca_config = userRepo.get_certificate_authority_config(request.issue_to, request.certificate_authority, request.domain)
         ca_config = userRepo.merge_shared_config(request.issue_to, ca_config)
         
         if not challenge_config:

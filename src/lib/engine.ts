@@ -1,24 +1,17 @@
 import { directusService } from "./directus";
 import { BackendClient } from "./backend_client";
 
-export type EngineOption = { key: string; name: string; type?: string };
+export type EngineActuatorOption = { key: string; name: string; type?: string; config_preset: Record<string, any> };
 
 class EngineService extends BackendClient {
-  private async fetchOptions(path: string): Promise<EngineOption[]> {
+  private async fetchOptions(path: string): Promise<EngineActuatorOption[]> {
     const res = await directusService.fetchWithAuth(
       `${this.getApiUrl()}${path}`,
       { method: "GET" },
     );
     if (!res.ok) throw new Error(await this.parseError(res));
-    const data = (await res.json()) as Record<
-      string,
-      { name: string; type?: string }
-    >;
-    return Object.entries(data).map(([key, v]) => ({
-      key,
-      name: v.name,
-      type: v.type,
-    }));
+    const data = (await res.json()) as EngineActuatorOption[];   
+    return data;
   }
 
   public listAvailableChallenges() {

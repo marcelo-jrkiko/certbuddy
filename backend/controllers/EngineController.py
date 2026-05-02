@@ -4,7 +4,7 @@ import tempfile
 
 from flask import Blueprint, request
 
-from engine.models.certificate_request import CertificateRequest, CertificateRequestType
+from engine.models.certificate_request import CertificateRequest, CertificateRequestStatus, CertificateRequestType
 from engine.CertificateRequester import CertificateRequester
 from helpers.Auth import require_bearer_token
 from helpers.DataBackend import BackendClient
@@ -102,6 +102,17 @@ def register_engine_routes(app):
         # -
         backendClient = BackendClient(app.config["core"], request.authdata['token'])
         
+        # - Check already has a pending or in progress request for the same domain
+        existing_requests = backendClient.search("certificate_request", {
+            "domain": request.json.get("domain"),
+            "status": {"_in": [CertificateRequestStatus.PENDING, CertificateRequestStatus.PROCESSING]},
+            "issue_to": request.authdata.get("user_id"),
+        })
+        if existing_requests:
+            return {
+                "error": "There is already a pending or in progress certificate request for this domain"
+            }, 400
+        
         # -
         newRequest = CertificateRequest()  
         
@@ -110,7 +121,7 @@ def register_engine_routes(app):
         newRequest.challenge_type = request.json.get("challenge_type")
         newRequest.certificate_authority = request.json.get("certificate_authority")
         newRequest.config = request.json.get("config", {})
-        newRequest.status = "pending"
+        newRequest.status = CertificateRequestStatus.PENDING
         newRequest.date_created = datetime.datetime.now().isoformat()
         newRequest.type = CertificateRequestType.ISSUER
         
@@ -147,6 +158,7 @@ def register_engine_routes(app):
             items.append({
                 "key": key,
                 "name": requester.get_avaliable_challenges()[key]["name"],
+                "config_preset": requester.get_avaliable_challenges()[key].get("config_preset", {}),
             })
         
         return items
@@ -174,6 +186,7 @@ def register_engine_routes(app):
             items.append({
                 "key": key,
                 "name": requester.get_avaliable_certificate_authorities()[key]["name"],
+                "config_preset": requester.get_avaliable_certificate_authorities()[key].get("config_preset", {}),
             })
         return items
     

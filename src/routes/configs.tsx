@@ -69,7 +69,7 @@ function ConfigsPage() {
         ...challenges.map((i) => ({
           id: i.id,
           kind: "challenge" as const,
-          key: "",
+          key: i.challenge_key ?? "",
           domain: i.domain,
           merged_config: resolveSharedKey(i.merged_config),
           raw: i,
@@ -77,7 +77,7 @@ function ConfigsPage() {
         ...cas.map((i) => ({
           id: i.id,
           kind: "ca" as const,
-          key: "",
+          key: i.ca_key ?? "",
           domain: i.domain,
           merged_config: resolveSharedKey(i.merged_config),
           raw: i,

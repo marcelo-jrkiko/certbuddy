@@ -52,6 +52,15 @@ export function ConfigEditorDialog({
   const [saving, setSaving] = useState(false);
   const configsService = new ConfigsService();
 
+  const setKeyOption = (value: string, config_preset: Record<string, any> | null) => {
+    setKeyField(value);
+  
+    if (config_preset && Object.keys(config).length == 0) {
+      setConfig(config_preset); 
+      // Loads the preset config when an option is selected, but only if the config is not empty
+    }
+  };
+
   useEffect(() => {
     if (!open) return;
     setDomain(item?.domain ?? "");
@@ -123,7 +132,7 @@ export function ConfigEditorDialog({
             <EngineActuatorSelect
               kind={kind}
               value={keyField}
-              onValueChange={setKeyField}
+              onValueChange={setKeyOption}
               open={open}
             />
           ) : (
@@ -148,7 +157,7 @@ export function ConfigEditorDialog({
 
           {(kind === "challenge" || kind === "ca") && (
             <div className="space-y-2">
-              <Label>Shared config (merged_config)</Label>
+              <Label>Merge the configuration from</Label>
               <Select
                 value={mergedConfig || NONE_VALUE}
                 onValueChange={(v) => setMergedConfig(v === NONE_VALUE ? "" : v)}

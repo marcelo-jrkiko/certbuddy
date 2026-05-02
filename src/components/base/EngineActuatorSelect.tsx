@@ -7,14 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { engineService, type EngineOption } from "@/lib/engine";
+import { engineService, type EngineActuatorOption } from "@/lib/engine";
 import { toast } from "sonner";
-import type { ConfigKind } from "@/lib/configs";
 
 interface EngineOptionsSelectProps {
   kind: "challenge" | "ca";
   value: string;
-  onValueChange: (value: string) => void;
+  onValueChange: (value: string, config_preset: Record<string, any> | null) => void;
   open: boolean;
 }
 
@@ -24,7 +23,7 @@ export function EngineActuatorSelect({
   onValueChange,
   open,
 }: EngineOptionsSelectProps) {
-  const [options, setOptions] = useState<EngineOption[]>([]);
+  const [options, setOptions] = useState<EngineActuatorOption[]>([]);
 
   useEffect(() => {
     if (!open) return;
@@ -46,7 +45,10 @@ export function EngineActuatorSelect({
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
-      <Select value={value} onValueChange={onValueChange}>
+      <Select value={value} onValueChange={(val) => {
+        const selectedOption = options.find((o) => o.key === val);
+        onValueChange(val, selectedOption ? selectedOption.config_preset : null);
+      }}>
         <SelectTrigger>
           <SelectValue placeholder="Select..." />
         </SelectTrigger>

@@ -40,8 +40,7 @@ export function DictionaryEditor({ value, onChange }: DictionaryEditorProps) {
 
   useEffect(() => {
     setEntries(objectToDict(value));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [value]);
 
   const update = (next: DictEntry[]) => {
     setEntries(next);
