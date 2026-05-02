@@ -1,13 +1,7 @@
 import { getSession, refresh } from "./directus";
+import { components } from "../../shared/Schema"
 
-export type Certificate = {
-  id: string;
-  common_name: string;
-  tags: string[] | null;
-  is_active: boolean;
-  date_created: string;
-  date_updated: string | null;
-};
+export type Certificate = components["schemas"]["ItemsCertificates"];
 
 function getApiUrl(): string {
   const url = import.meta.env.VITE_BACKEND_API_URL as string | undefined;

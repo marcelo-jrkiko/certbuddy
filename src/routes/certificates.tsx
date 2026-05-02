@@ -135,21 +135,6 @@ function CertificatesPage() {
               </Link>
             </nav>
           </div>
-          <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                New certificate
-              </Button>
-            </DialogTrigger>
-            <UploadDialog
-              onClose={() => setUploadOpen(false)}
-              onUploaded={async () => {
-                setUploadOpen(false);
-                await load();
-              }}
-            />
-          </Dialog>
         </div>
       </header>
 
@@ -162,6 +147,24 @@ function CertificatesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="flex justify-end">
+              <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Upload certificate
+                  </Button>
+                </DialogTrigger>
+                <UploadDialog
+                  onClose={() => setUploadOpen(false)}
+                  onUploaded={async () => {
+                    setUploadOpen(false);
+                    await load();
+                  }}
+                />
+              </Dialog>
+            </div>
+
             {loading ? (
               <div className="space-y-2">
                 <Skeleton className="h-10 w-full" />
@@ -185,6 +188,7 @@ function CertificatesPage() {
                       <TableHead>Status</TableHead>
                       <TableHead>Tags</TableHead>
                       <TableHead>Created</TableHead>
+                      <TableHead>Expires At</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -215,6 +219,11 @@ function CertificatesPage() {
                         <TableCell className="text-muted-foreground text-xs">
                           {c.date_created
                             ? new Date(c.date_created).toLocaleString()
+                            : "—"}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground text-xs">
+                          {c.expires_at
+                            ? new Date(c.expires_at).toLocaleString()
                             : "—"}
                         </TableCell>
                         <TableCell className="text-right">

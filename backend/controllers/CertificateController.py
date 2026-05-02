@@ -1,7 +1,10 @@
 import datetime
+import json
+import tempfile
 
 from flask import Blueprint, request
 
+from helpers.CertificateViewer import CertificateViewer
 from helpers.Auth import require_bearer_token
 from helpers.DataBackend import BackendClient
 
@@ -25,7 +28,7 @@ def register_certificate_routes(app):
                 {
                     "issued_to": user_id
                 }, 
-                fields=["id", "common_name", "tags", "is_active", "date_updated", "date_created"]
+                fields=["id", "common_name", "tags", "is_active", "date_updated", "date_created", "expires_at"]
             )
             
             return certificates, 200            
@@ -70,9 +73,21 @@ def register_certificate_routes(app):
             # Generete a unique id for the certificate file name
             cert_filename = f"{common_name}_{user_id[0:8]}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
             
+            # Copy the certificate to temporary files to be uploaded to directus and reutilized
+            temp_cert_file = f"{tempfile.gettempdir()}/{cert_filename}.crt"
+            with open(temp_cert_file, 'wb') as f:
+                f.write(cert_file.read())
+                
+            temp_key_file = f"{tempfile.gettempdir()}/{cert_filename}.key"
+            with open(temp_key_file, 'wb') as f:
+                f.write(key_file.read())
+            
             # Upload certificate and key files to Directus
-            cert_data = client.upload_file(cert_file, f"{cert_filename}.crt")
-            key_data = client.upload_file(key_file, f"{cert_filename}.key")
+            with open(temp_cert_file, 'rb') as cert_f:
+                cert_data = client.upload_file(cert_f, f"{cert_filename}.crt")
+            
+            with open(temp_key_file, 'rb') as key_f:
+                key_data = client.upload_file(key_f, f"{cert_filename}.key")
             
             cert_file_id = cert_data.get('id')
             key_file_id = key_data.get('id')
@@ -84,23 +99,23 @@ def register_certificate_routes(app):
             
             # Get tags from form data or JSON body if provided
             tags = []
-            if request.is_json:
-                tags = request.get_json().get('tags', [])
-            elif 'tags' in request.form:
-                import json
+            if 'tags' in request.form:
                 try:
                     tags = json.loads(request.form.get('tags', '[]'))
                 except json.JSONDecodeError:
                     tags = []
             
             # Create a new certificate record in Directus with file references
+            cert_details = CertificateViewer.get_details(temp_cert_file)
+                        
             new_certificate = client.create("certificates", {
                 "issued_to": user_id,
                 "common_name": common_name,
                 "certificate_file": cert_file_id,
                 "certificate_key": key_file_id,
                 "tags": tags,
-                "is_active": True
+                "is_active": True,
+                "expires_at": cert_details.get("not_valid_after") if cert_details else None
             })
             
             return new_certificate, 201

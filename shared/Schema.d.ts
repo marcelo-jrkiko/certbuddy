@@ -1800,6 +1800,8 @@ export interface components {
       tags?: unknown;
       certificate_file?: string | components["schemas"]["Files"] | null;
       certificate_key?: string | components["schemas"]["Files"] | null;
+      /** Format: date-time */
+      expires_at?: string | null;
     };
   };
   responses: {

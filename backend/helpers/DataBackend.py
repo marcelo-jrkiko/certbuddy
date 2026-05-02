@@ -86,7 +86,7 @@ class BackendClient:
         }
         
         try:
-            files = {'file': (filename or file_obj.filename, file_obj.stream, file_obj.content_type)}
+            files = {'file': (filename or file_obj.name, file_obj, 'application/octet-stream')}
             response = requests.post(url, headers=headers, files=files)
             
             if response.status_code >= 400:
