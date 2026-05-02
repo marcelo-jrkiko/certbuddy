@@ -146,7 +146,23 @@ function CertificatesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+              <Dialog open={requestOpen} onOpenChange={setRequestOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <FilePlus className="mr-2 h-4 w-4" />
+                    New certificate
+                  </Button>
+                </DialogTrigger>
+                <RequestCertificateDialog
+                  open={requestOpen}
+                  onClose={() => setRequestOpen(false)}
+                  onCreated={async () => {
+                    setRequestOpen(false);
+                    await load();
+                  }}
+                />
+              </Dialog>
               <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
                 <DialogTrigger asChild>
                   <Button>
