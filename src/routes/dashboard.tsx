@@ -1,12 +1,22 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   directusService,
   type DirectusUser,
 } from "@/lib/directus";
+import { certificatesService, type Certificate } from "@/lib/certificates";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -23,13 +33,16 @@ function DashboardPage() {
   const [user, setUser] = useState<DirectusUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [certs, setCerts] = useState<Certificate[]>([]);
+  const [certsLoading, setCertsLoading] = useState(true);
+  const [certsError, setCertsError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!directusService.isAuthenticated()) {
       navigate({ to: "/login" });
       return;
     }
-        
+
     directusService.getCurrentUser()
       .then(setUser)
       .catch((e) => {
@@ -37,6 +50,16 @@ function DashboardPage() {
         navigate({ to: "/login" });
       })
       .finally(() => setLoading(false));
+
+    certificatesService
+      .listCertificates()
+      .then(setCerts)
+      .catch((e) =>
+        setCertsError(
+          e instanceof Error ? e.message : "Failed to load certificates",
+        ),
+      )
+      .finally(() => setCertsLoading(false));
   }, [navigate]);
 
   async function handleLogout() {
@@ -63,7 +86,7 @@ function DashboardPage() {
           </div>
         </div>
       </header>
-      <section className="mx-auto max-w-5xl px-6 py-10">
+      <section className="mx-auto max-w-5xl px-6 py-10 space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Welcome{user ? `, ${fullName}` : ""}</CardTitle>
@@ -88,6 +111,79 @@ function DashboardPage() {
                 </div>
               </dl>
             ) : null}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex-row items-start justify-between space-y-0">
+            <div>
+              <CardTitle>Certificates</CardTitle>
+              <CardDescription>Overview of your certificates.</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/certificates">View all</Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {certsLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+              </div>
+            ) : certsError ? (
+              <p className="text-sm text-destructive">{certsError}</p>
+            ) : certs.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No certificates yet.{" "}
+                <Link to="/certificates" className="underline">
+                  Add one
+                </Link>
+                .
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Common name</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Expired</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {certs.map((c) => {
+                    const expired =
+                      !!c.expires_at &&
+                      new Date(c.expires_at).getTime() < Date.now();
+                    return (
+                      <TableRow key={c.id}>
+                        <TableCell className="font-medium">
+                          {c.common_name}
+                        </TableCell>
+                        <TableCell>
+                          {c.is_active ? (
+                            <Badge className="bg-primary text-primary-foreground">
+                              Active
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary">Inactive</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {expired ? (
+                            <Badge variant="destructive">Expired</Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">
+                              No
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       </section>
