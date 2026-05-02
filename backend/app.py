@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 config = load_config()
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask("certbuddy-backend")
 CORS(app, resources={r"/*": {
     "origins": "*",
     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
