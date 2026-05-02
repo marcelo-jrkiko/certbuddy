@@ -59,6 +59,15 @@ class CertificateRequester:
         thread.start()
         self.logger.debug(f"Started certificate request processing in thread {thread_id}")
         
+        request.config = request.config or {}
+        request.config["thread_id"] = thread_id
+        
+        backendClient = getMasterBackendClient()
+        backendClient.update("certificate_request", request.id, {
+            "config": request.config,
+            "status": CertificateRequestStatus.PROCESSING
+        })
+        
         return thread_id
     
     def get_request_status(self, thread_id: str):

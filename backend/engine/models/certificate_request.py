@@ -12,6 +12,7 @@ class CertificateRequestStatus(str, Enum):
     REJECTED = "rejected"
     ISSUED = "issued"
     FAILED = "failed"
+    PROCESSING = "processing"
 
 class CertificateRequestType(str, Enum):
     """Type enum for certificate requests."""
