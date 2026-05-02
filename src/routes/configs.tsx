@@ -59,21 +59,27 @@ function ConfigsPage() {
         configsService.listItems<any>("ca"),
         configsService.listItems<any>("shared"),
       ]);
+      const sharedKeyById = new Map<string, string>(
+        shared.map((s: any) => [s.id, s.key ?? ""]),
+      );
+      const resolveSharedKey = (id: string | null | undefined) =>
+        id ? sharedKeyById.get(id) ?? null : null;
+
       const next: ConfigRow[] = [
         ...challenges.map((i) => ({
           id: i.id,
           kind: "challenge" as const,
-          key: i.challenge_key ?? "",
+          key: "",
           domain: i.domain,
-          merged_config: i.merged_config,
+          merged_config: resolveSharedKey(i.merged_config),
           raw: i,
         })),
         ...cas.map((i) => ({
           id: i.id,
           kind: "ca" as const,
-          key: i.ca_key ?? "",
+          key: "",
           domain: i.domain,
-          merged_config: i.merged_config,
+          merged_config: resolveSharedKey(i.merged_config),
           raw: i,
         })),
         ...shared.map((i) => ({
