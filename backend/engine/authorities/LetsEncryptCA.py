@@ -55,7 +55,7 @@ class LetsEncryptCA(BaseCertificateAuthority):
             
         
     def _issue_dns_challenge(self, request: CertificateRequest, challenge: DnsChallenge) -> CA_Response:
-        account_key = self.get_account_key(request.user_id)
+        account_key = self.get_account_key(request.issue_to)
         acme_client = self.get_acme_client(account_key)
         
         # Generate the CSR

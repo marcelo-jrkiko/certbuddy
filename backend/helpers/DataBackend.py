@@ -1,8 +1,15 @@
 import logging
 import json
+import os
 from typing import Any, Dict
 import requests
 
+from utils import Config
+
+
+def getMasterBackendClient() -> "BackendClient":
+    """Get a backend client instance using the master token"""
+    return BackendClient(Config(), os.getenv("ENGINE_MASTER_TOKEN"))
 
 class BackendClient:
     def __init__(self, config, token: str):

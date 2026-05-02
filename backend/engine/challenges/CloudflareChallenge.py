@@ -8,7 +8,7 @@ class CloudflareChallengeConfig(DnsChallengeConfig):
         self.zone_id = None
         
         
-class CloudflareChallenge(DnsChallenge):
+class CloudflareDnsChallenge(DnsChallenge):
     def apply(self, domain: str, key: str, token: str) -> None:
         cf = CloudFlare.CloudFlare(token=self.config.api_token)        
         zone_id = self.config.zone_id

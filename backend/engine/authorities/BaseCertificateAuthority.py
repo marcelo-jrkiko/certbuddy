@@ -12,6 +12,10 @@ class BaseCertificateAuthority(ABC):
         self.compatibleChallengesTypes = [ "DNS-01" , "HTTP-01" ]
         self.logger = logging.getLogger(self.__class__.__name__)
     
+    def configure(self, config: dict):
+        self.config = config
+        
+    
     def issue(self, request: CertificateRequest, challenge: any) -> CA_Response:
         # Check if the challenge type is compatible with this CA
         if challenge.type not in self.compatibleChallengesTypes:

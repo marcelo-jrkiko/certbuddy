@@ -7,13 +7,21 @@ from .certificate_request import (
 from .certificateauthority_account import (
     CertificateAuthorityAccount,
 )
+from .certificateauthority_config import (
+    CertificateAuthorityConfig,
+)
 from .certificate import (
     Certificate,
+)
+from .challenge_config import (
+    ChallengeConfig,
 )
 
 __all__ = [
     "CertificateRequest",
     "CertificateRequestStatus",
     "CertificateAuthorityAccount",
+    "CertificateAuthorityConfig",
     "Certificate",
+    "ChallengeConfig",
 ]
