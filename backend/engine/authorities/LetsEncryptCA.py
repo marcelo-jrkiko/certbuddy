@@ -3,8 +3,8 @@
 from engine.models.certificate_request import CertificateRequest
 from engine.repositories.UserRepository import UserRepository
 from engine.repositories.CA_AccountRepository import CA_AccountRepository
-from engine.authorities import BaseCertificateAuthority
-from engine.challenges import DnsChallenge
+from engine.authorities.BaseCertificateAuthority import BaseCertificateAuthority
+from engine.challenges.DnsChallenge import DnsChallenge
 from acme import client, messages
 from acme import crypto_util
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -83,5 +83,5 @@ class LetsEncryptCA(BaseCertificateAuthority):
             okay=True,
             message="Certificate issued successfully",
             certificate_key=csr_pem.decode(),
-            certificate_file=finalized_order.fullchain_pem
+            certificate_file=finalized_order.fullchain_pem,
         )

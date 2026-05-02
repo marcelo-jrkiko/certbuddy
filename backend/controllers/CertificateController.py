@@ -16,6 +16,21 @@ def register_certificate_routes(app):
     @certificates_blueprint.route('/', methods=['GET'])
     @require_bearer_token
     def get_certificates():        
+        """
+        Get the list of certificates for the authenticated user
+        ---
+        tags:
+          - certificates
+        security:
+          - bearerAuth: []
+        responses:
+          200:
+            description: List of certificates for the user
+          401:
+            description: Unauthorized
+          500:
+            description: Internal server error
+        """
         try:
             user_id = request.authdata['user_data'].get('id')
 
@@ -40,6 +55,44 @@ def register_certificate_routes(app):
     @certificates_blueprint.route('/<common_name>', methods=['POST'])
     @require_bearer_token
     def add_certificate(common_name: str):
+        """
+        Add a new certificate for the authenticated user
+        ---
+        tags:
+          - certificates
+        parameters:
+          - name: common_name
+            in: path
+            type: string
+            required: true
+            description: Common name for the certificate
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  certificate_file:
+                    type: string
+                    format: binary
+                  certificate_key:
+                    type: string
+                    format: binary
+                  tags:
+                    type: string
+        responses:
+          200:
+            description: Certificate added successfully
+          400:
+            description: Bad request - missing or empty files
+          401:
+            description: Unauthorized
+          500:
+            description: Internal server error
+        """
         try:
             user_id = request.authdata['user_data'].get('id')
             
@@ -114,7 +167,8 @@ def register_certificate_routes(app):
                 "certificate_key": key_file_id,
                 "tags": tags,
                 "is_active": True,
-                "expires_at": cert_details.get("not_valid_after") if cert_details else None
+                "expires_at": cert_details.get("not_valid_after") if cert_details else None,
+                "type" : "imported"
             })
             
             return new_certificate, 201
@@ -128,6 +182,27 @@ def register_certificate_routes(app):
     @certificates_blueprint.route('/<certificate_id>', methods=['DELETE'])
     @require_bearer_token
     def delete_certificate(certificate_id: str):
+        """
+        Delete a certificate by ID for the authenticated user
+        ---
+        tags:
+          - certificates
+        parameters:
+          - name: certificate_id
+            in: path
+            type: string
+            required: true
+            description: ID of the certificate to delete
+        security:
+          - bearerAuth: []
+        responses:
+          200:
+            description: Certificate deleted successfully
+          401:
+            description: Unauthorized
+          500:
+            description: Internal server error
+        """
         try:
             client = BackendClient(app.config["core"], request.authdata['token'])
             
@@ -148,6 +223,29 @@ def register_certificate_routes(app):
     @certificates_blueprint.route('/<certificate_id>/activate', methods=['PATCH'])
     @require_bearer_token
     def activate_certificate(certificate_id: str):
+        """
+        Activate a certificate by ID for the authenticated user
+        ---
+        tags:
+          - certificates
+        parameters:
+          - name: certificate_id
+            in: path
+            type: string
+            required: true
+            description: ID of the certificate to activate
+        security:
+          - bearerAuth: []
+        responses:
+          200:
+            description: Certificate activated successfully
+          401:
+            description: Unauthorized
+          404:
+            description: Certificate not found
+          500:
+            description: Internal server error
+        """
         try:
             user_id = request.authdata['user_data'].get('id')
             client = BackendClient(app.config["core"], request.authdata['token'])

@@ -6,6 +6,7 @@ from controllers.CertificateController import register_certificate_routes
 from controllers.EngineController import register_engine_routes
 from utils import Config
 import logging
+from flasgger import Swagger
 
 # Load environment variables
 load_dotenv()
@@ -18,13 +19,18 @@ config = Config()
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)
-
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization"]
+}})
 app.config["core"] = config
 
 # Register routes
 register_certificate_routes(app)
 register_engine_routes(app)
+
+swagger = Swagger(app)
 
 @app.route('/health', methods=['GET'])
 def health_check():

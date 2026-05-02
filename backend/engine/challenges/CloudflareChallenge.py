@@ -1,6 +1,6 @@
 
 from engine.challenges.DnsChallenge import DnsChallenge, DnsChallengeConfig
-import CloudFlare
+from cloudflare import Cloudflare
 
 class CloudflareChallengeConfig(DnsChallengeConfig):
     def __init__(self):
@@ -10,7 +10,7 @@ class CloudflareChallengeConfig(DnsChallengeConfig):
         
 class CloudflareDnsChallenge(DnsChallenge):
     def apply(self, domain: str, key: str, token: str) -> None:
-        cf = CloudFlare.CloudFlare(token=self.config.api_token)        
+        cf = Cloudflare(token=self.config.api_token)        
         zone_id = self.config.zone_id
         
         self.logger.debug(f"Applying Cloudflare DNS challenge for domain {domain} with key {key}")

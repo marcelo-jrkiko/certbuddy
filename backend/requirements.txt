@@ -5,3 +5,4 @@ requests==2.31.0
 cryptography
 cloudflare
 acme
+flasgger==0.9.7b2

@@ -20,9 +20,7 @@ import {
 import { DictionaryEditor } from "./DictionaryEditor";
 import {
   ConfigKind,
-  createItem,
-  updateItem,
-  listItems,
+  ConfigsService,
   type SharedConfig,
 } from "@/lib/configs";
 import { engineService, type EngineOption } from "@/lib/engine";
@@ -53,6 +51,7 @@ export function ConfigEditorDialog({
   const [keyOptions, setKeyOptions] = useState<EngineOption[]>([]);
   const [shared, setShared] = useState<SharedConfig[]>([]);
   const [saving, setSaving] = useState(false);
+  const configsService = new ConfigsService();
 
   useEffect(() => {
     if (!open) return;
@@ -82,7 +81,7 @@ export function ConfigEditorDialog({
         .catch((e) => toast.error(e.message));
     }
     if (kind !== "shared") {
-      listItems<SharedConfig>("shared").then(setShared).catch(() => {});
+      configsService.listItems<SharedConfig>("shared").then(setShared).catch(() => {});
     }
   }, [open, kind]);
 
@@ -100,8 +99,8 @@ export function ConfigEditorDialog({
         payload.key = keyField || null;
       }
 
-      if (isEdit) await updateItem(kind, item.id, payload);
-      else await createItem(kind, payload);
+      if (isEdit) await configsService.updateItem(kind, item.id, payload);
+      else await configsService.createItem(kind, payload);
 
       toast.success(isEdit ? "Updated" : "Created");
       onSaved();

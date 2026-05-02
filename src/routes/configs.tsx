@@ -20,8 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { directusService } from "@/lib/directus";
 import {
-  deleteItem,
-  listItems,
+  ConfigsService,
   type ConfigKind,
 } from "@/lib/configs";
 import { ConfigsTable, type ConfigRow } from "@/components/configs/ConfigsTable";
@@ -50,13 +49,15 @@ function ConfigsPage() {
   const [editorItem, setEditorItem] = useState<any | null>(null);
   const [deleteRow, setDeleteRow] = useState<ConfigRow | null>(null);
 
+  const configsService = new ConfigsService();
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const [challenges, cas, shared] = await Promise.all([
-        listItems<any>("challenge"),
-        listItems<any>("ca"),
-        listItems<any>("shared"),
+        configsService.listItems<any>("challenge"),
+        configsService.listItems<any>("ca"),
+        configsService.listItems<any>("shared"),
       ]);
       const next: ConfigRow[] = [
         ...challenges.map((i) => ({
@@ -115,7 +116,7 @@ function ConfigsPage() {
   const confirmDelete = async () => {
     if (!deleteRow) return;
     try {
-      await deleteItem(deleteRow.kind, deleteRow.id);
+      await configsService.deleteItem(deleteRow.kind, deleteRow.id);
       toast.success("Deleted");
       setDeleteRow(null);
       load();

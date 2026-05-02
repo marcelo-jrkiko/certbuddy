@@ -119,7 +119,8 @@ class CertificateRequester:
             "certificate_key": key_file_id,
             "tags": tags,
             "is_active": True,
-            "expires_at": cert_details.get("not_valid_after") if cert_details else None
+            "expires_at": cert_details.get("not_valid_after") if cert_details else None,
+            "type" : "issued"
         })
         
         self.logger.debug(f"New certificate record created for request {request.id} with certificate ID: {new_certificate.get('id')}")
