@@ -18,12 +18,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DictionaryEditor } from "./DictionaryEditor";
+import { EngineActuatorSelect } from "../base/EngineActuatorSelect";
 import {
   ConfigKind,
   ConfigsService,
   type SharedConfig,
 } from "@/lib/configs";
-import { engineService, type EngineOption } from "@/lib/engine";
 import { toast } from "sonner";
 
 interface ConfigEditorDialogProps {
@@ -48,7 +48,6 @@ export function ConfigEditorDialog({
   const [keyField, setKeyField] = useState("");
   const [mergedConfig, setMergedConfig] = useState<string>("");
   const [config, setConfig] = useState<Record<string, unknown>>({});
-  const [keyOptions, setKeyOptions] = useState<EngineOption[]>([]);
   const [shared, setShared] = useState<SharedConfig[]>([]);
   const [saving, setSaving] = useState(false);
   const configsService = new ConfigsService();
@@ -69,17 +68,6 @@ export function ConfigEditorDialog({
 
   useEffect(() => {
     if (!open) return;
-    if (kind === "challenge") {
-      engineService
-        .listAvailableChallenges()
-        .then(setKeyOptions)
-        .catch((e) => toast.error(e.message));
-    } else if (kind === "ca") {
-      engineService
-        .listAvailableCAs()
-        .then(setKeyOptions)
-        .catch((e) => toast.error(e.message));
-    }
     if (kind !== "shared") {
       configsService.listItems<SharedConfig>("shared").then(setShared).catch(() => {});
     }
@@ -132,21 +120,12 @@ export function ConfigEditorDialog({
 
         <div className="space-y-4">
           {kind === "challenge" || kind === "ca" ? (
-            <div className="space-y-2">
-              <Label>{kind === "challenge" ? "Challenge" : "CA"}</Label>
-              <Select value={keyField} onValueChange={setKeyField}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {keyOptions.map((o) => (
-                    <SelectItem key={o.key} value={o.key}>
-                      {o.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <EngineActuatorSelect
+              kind={kind}
+              value={keyField}
+              onValueChange={setKeyField}
+              open={open}
+            />
           ) : (
             <div className="space-y-2">
               <Label>Key</Label>
