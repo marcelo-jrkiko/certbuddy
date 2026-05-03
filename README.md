@@ -12,7 +12,8 @@ The system is built with:
 - **Frontend**: React + TypeScript with Vite
 - **Backend**: Python Flask API
 - **Data Backend**: Directus (headless CMS)
-
+- **Database**: Full high-end database with PostgresSQL 
+- **Integration**: Allow Third-party integration with the Engine API
 ---
 
 ## Architecture
