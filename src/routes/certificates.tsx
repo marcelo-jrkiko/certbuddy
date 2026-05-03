@@ -266,6 +266,18 @@ function CertificatesPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
+                            {(!c.expires_at ||
+                              new Date(c.expires_at).getTime() >= Date.now()) && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={busyId === c.id}
+                                onClick={() => handleDownload(c)}
+                              >
+                                <Download className="mr-1 h-4 w-4" />
+                                Download
+                              </Button>
+                            )}
                             {!c.is_active && (
                               <Button
                                 size="sm"
