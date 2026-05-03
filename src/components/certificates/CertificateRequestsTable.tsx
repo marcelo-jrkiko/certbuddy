@@ -60,6 +60,7 @@ export function CertificateRequestsTable() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorTarget, setErrorTarget] = useState<CertificateRequest | null>(null);
 
   const load = useCallback(async (showSpinner = false) => {
     if (showSpinner) setRefreshing(true);
