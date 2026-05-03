@@ -3,6 +3,7 @@ set -a
 source .env
 set +a
 
+docker compose exec data_backend rm -f /directus/schemav1.yaml
 docker compose exec data_backend npx directus schema snapshot schemav1.yaml
 docker compose cp data_backend:/directus/schemav1.yaml ./shared/Schema.yaml
 

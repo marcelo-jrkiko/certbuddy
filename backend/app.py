@@ -25,7 +25,7 @@ app.config["core"] = config
 
 # Initialize Scheduler
 scheduler = Scheduler()
-scheduler.init_tasks()
+scheduler.init_tasks(config)
 
 app.scheduler = scheduler
 

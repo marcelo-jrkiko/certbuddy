@@ -340,6 +340,8 @@ fields:
           - color: '#C01C28'
             text: Failed
             value: failed
+          - text: Processing
+            value: processing
       readonly: false
       required: false
       searchable: true
@@ -626,7 +628,7 @@ fields:
       display_options: null
       field: user_created
       group: null
-      hidden: true
+      hidden: false
       interface: select-dropdown-m2o
       note: null
       options:
@@ -790,7 +792,7 @@ fields:
       display_options: null
       field: user_created
       group: null
-      hidden: true
+      hidden: false
       interface: select-dropdown-m2o
       note: null
       options:
@@ -1026,48 +1028,6 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
-  - collection: certificates
-    field: user_created
-    type: uuid
-    meta:
-      collection: certificates
-      conditions: null
-      display: user
-      display_options: null
-      field: user_created
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      searchable: true
-      sort: 2
-      special:
-        - user-created
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_created
-      table: certificates
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_indexed: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
   - collection: certificates
     field: date_created
     type: timestamp
@@ -1498,7 +1458,7 @@ fields:
       display_options: null
       field: user_created
       group: null
-      hidden: true
+      hidden: false
       interface: select-dropdown-m2o
       note: null
       options:
@@ -1744,7 +1704,7 @@ fields:
       display_options: null
       field: user_created
       group: null
-      hidden: true
+      hidden: false
       interface: select-dropdown-m2o
       note: null
       options:
@@ -2018,27 +1978,6 @@ relations:
       constraint_name: certificateauthority_config_merged_config_foreign
       on_update: NO ACTION
       on_delete: SET NULL
-  - collection: certificates
-    field: user_created
-    related_collection: directus_users
-    meta:
-      junction_field: null
-      many_collection: certificates
-      many_field: user_created
-      one_allowed_collections: null
-      one_collection: directus_users
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: null
-      sort_field: null
-    schema:
-      table: certificates
-      column: user_created
-      foreign_key_table: directus_users
-      foreign_key_column: id
-      constraint_name: certificates_user_created_foreign
-      on_update: NO ACTION
-      on_delete: NO ACTION
   - collection: certificates
     field: issued_to
     related_collection: directus_users

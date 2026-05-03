@@ -1992,7 +1992,6 @@ export interface components {
     ItemsCertificates: {
       /** Format: uuid */
       id: string;
-      user_created?: string | components["schemas"]["Users"] | null;
       /** Format: timestamp */
       date_created?: string | null;
       /** Format: timestamp */

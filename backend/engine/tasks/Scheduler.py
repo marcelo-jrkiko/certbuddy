@@ -2,8 +2,9 @@
 
 import logging
 import threading
-from time import time
+import time
 
+from flask import current_app
 import schedule
 
 from engine.tasks.RenewalTask import RenewalTask
@@ -13,12 +14,12 @@ class Scheduler:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def init_tasks(self):
+    def init_tasks(self, config):
         self.tasks = [
             {
                 "name": "Certificate_Renewal_Task",
                 "function": self._run_renewal_task,
-                "schedule": f"every({self.logger.config.RENEWAL_CHECK_INTERVAL}).hours"
+                "schedule": f"every({config.RENEWAL_CHECK_INTERVAL}).hours"
             }
         ]
     
@@ -44,10 +45,11 @@ class Scheduler:
 
     def run_continuously(self, interval=1):
         self.cease_continuous_run = threading.Event()
+        parent = self
 
         class ScheduleThread(threading.Thread):
             def run(self):
-                while not self.cease_continuous_run.is_set():
+                while not parent.cease_continuous_run.is_set():
                     schedule.run_pending()
                     time.sleep(interval)
 

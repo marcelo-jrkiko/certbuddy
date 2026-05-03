@@ -3,9 +3,9 @@
 
 from cloudflare import Cloudflare
 
-from backend.helpers import CSR
+from helpers import CSR
 from helpers.CloudFlare import get_zone_id
-from engine.authorities import BaseCertificateAuthority
+from engine.authorities.BaseCertificateAuthority import BaseCertificateAuthority
 from engine.models.ca_response import CA_Response
 from engine.models.certificate_request import CertificateRequest, CertificateRequestType
 import fnmatch
