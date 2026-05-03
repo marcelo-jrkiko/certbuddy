@@ -70,25 +70,32 @@ def register_certificate_routes(app):
         temp_cert_file.close()
         temp_key_file.close()
         
-        backend_client.download_file(certificate[0].get("certificate_file"), cert_path)
-        backend_client.download_file(certificate[0].get("certificate_key"), key_path)
-        
-        # Zips
-        zip_filename = f"{certificate[0].get('common_name')}_{certificate_id}.zip"
-        temp_zip_file = f"{tempfile.gettempdir()}/{zip_filename}"
-        
-        with zipfile.ZipFile(temp_zip_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            zipf.write(cert_path, f"{certificate[0].get('common_name')}.crt")
-            zipf.write(key_path, f"{certificate[0].get('common_name')}.key")
-        
         try:
-            return send_file(temp_zip_file, as_attachment=True, download_name=zip_filename)
+            backend_client.download_file(certificate[0].get("certificate_file"), cert_path)
+            backend_client.download_file(certificate[0].get("certificate_key"), key_path)
+            
+            # Create zip in memory
+            zip_buffer = io.BytesIO()
+            zip_filename = f"{certificate[0].get('common_name')}_{certificate_id}.zip"
+            
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                zipf.write(cert_path, f"{certificate[0].get('common_name')}.crt")
+                zipf.write(key_path, f"{certificate[0].get('common_name')}.key")
+            
+            # Prepare zip buffer for sending
+            zip_buffer.seek(0)
+            
+            return send_file(
+                zip_buffer,
+                mimetype='application/zip',
+                as_attachment=True,
+                download_name=zip_filename
+            )
         finally:
             # Clean up temporary files
             try:
                 os.remove(cert_path)
                 os.remove(key_path)
-                os.remove(temp_zip_file)
             except OSError:
                 pass
         

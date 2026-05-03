@@ -39,3 +39,5 @@ __pycache__
 
 *pycache*
 *.pyc
+src/routeTree.gen.ts
+package-lock.json
