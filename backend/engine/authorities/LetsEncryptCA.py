@@ -2,6 +2,7 @@
 
 import josepy
 
+from backend.engine.challenges.HttpChallenge import HttpChallenge
 from engine.models.certificate_request import CertificateRequest, CertificateRequestType
 from engine.repositories.UserRepository import UserRepository
 from engine.repositories.CA_AccountRepository import CA_AccountRepository
@@ -22,17 +23,26 @@ import json
 class LetsEncryptCA(BaseCertificateAuthority):
     def __init__(self):
         super().__init__()
-        self.compatibleChallengesTypes = [ "DNS-01" ]
+        self.compatibleChallengesTypes = [ "DNS-01", "HTTP-01" ]
         self.directory_url = "https://acme-staging-v02.api.letsencrypt.org/directory"  # Use staging for testing, switch to production for real issuance
     
         self.carepository = CA_AccountRepository()
+    
+    def configure(self, config):
+        super().configure(config)    
         
+        if(self.config.get("environment") == "production"):
+            self.directory_url = "https://acme-v02.api.letsencrypt.org/directory"
+    
     def issue_certificate(self, request: CertificateRequest, challenge: any) -> CA_Response:        
         if challenge.type not in self.compatibleChallengesTypes:
             raise Exception(f"Challenge type {challenge.type} is not compatible with Let's Encrypt CA")
         
         if challenge.type == "DNS-01":
             return self._issue_dns_challenge(request, challenge)
+        
+        if challenge.type == "HTTP-01":
+            return self._issue_http_challenge(request, challenge)
     
     def get_directory(self, account_key) -> messages.Directory:
        net = ClientNetwork(account_key, user_agent="CertBuddy/1.0")
@@ -97,8 +107,7 @@ class LetsEncryptCA(BaseCertificateAuthority):
             else:
                 raise ValueError(f"No account key or URI found for user {user_id}")
             
-        
-    def _issue_dns_challenge(self, request: CertificateRequest, challenge: DnsChallenge) -> CA_Response:
+    def place_order(self, request: CertificateRequest, challenge_type: str):
         account_key, account_uri = self.get_account_key(request.issue_to)
         acme_client = self.get_acme_client(account_key, existing=True, account_uri=account_uri)
         
@@ -115,31 +124,25 @@ class LetsEncryptCA(BaseCertificateAuthority):
         except Exception as e:
             self.logger.error(f"Error creating order: {e}")
             raise
-    
-        
+            
         # Get the DNS challenge from the order
         authz = order.authorizations[0]
         avaliable_challenges = authz.body.challenges
-        dns_challenge = None
+        challenge_details = None
         for c in avaliable_challenges:
-            if c.chall.typ == "dns-01":
-                dns_challenge = c
+            if c.chall.typ == challenge_type:
+                challenge_details = c
                 break
                 
-        if not dns_challenge:
-            self.logger.error(f"No DNS-01 challenge found for order {order.uri}")
-            raise Exception("No DNS-01 challenge found for order")
+        if not challenge_details:
+            self.logger.error(f"No {challenge_type} challenge found for order {order.uri}")
+            raise Exception(f"No {challenge_type} challenge found for order")
         
-        self.logger.debug(f"DNS-01 challenge found for domain {request.domain}, challenge URI: {dns_challenge.uri}")
+        self.logger.debug(f"{challenge_type} challenge found for domain {request.domain}, challenge URI: {challenge_details.uri}")
         
-        # Call the challenge handler to set up the DNS record
-        challenge.apply(request.domain, dns_challenge.chall.LABEL, dns_challenge.validation(account_key))
-        
-        # Wait some time for the DNS record to propagate, then notify ACME server
-        time.sleep(45)  # TODO: implement a more robust wait strategy
-        
-        acme_client.answer_challenge(dns_challenge, dns_challenge.response(account_key))
-        
+        return challenge_details, account_key, acme_client, order, private_key
+      
+    def finalize_order(self, acme_client, order, private_key):
         # Finalize the order and get the certificate
         finalized_order = acme_client.poll_and_finalize(order)
         
@@ -156,3 +159,29 @@ class LetsEncryptCA(BaseCertificateAuthority):
         }
         
         return response
+        
+    def _issue_http_challenge(self, request: CertificateRequest, challenge: HttpChallenge) -> CA_Response:        
+        http_challenge, account_key, acme_client, order, private_key = self.place_order(request, "http-01")
+        
+        # Call the challenge handler to set up the HTTP challenge
+        challenge.apply(request.domain, http_challenge.chall.path, http_challenge.validation(account_key))
+        
+        # Wait some time for the HTTP challenge to propagate, then notify ACME server
+        time.sleep(45)  # TODO: implement a more robust wait strategy
+        
+        acme_client.answer_challenge(http_challenge, http_challenge.response(account_key))
+        
+        return self.finalize_order(acme_client, order, private_key)
+    
+    def _issue_dns_challenge(self, request: CertificateRequest, challenge: DnsChallenge) -> CA_Response:        
+        dns_challenge, account_key, acme_client, order, private_key = self.place_order(request, "dns-01")
+        
+        # Call the challenge handler to set up the DNS record
+        challenge.apply(request.domain, dns_challenge.chall.LABEL, dns_challenge.validation(account_key))
+        
+        # Wait some time for the DNS record to propagate, then notify ACME server
+        time.sleep(45)  # TODO: implement a more robust wait strategy
+        
+        acme_client.answer_challenge(dns_challenge, dns_challenge.response(account_key))
+        
+        return self.finalize_order(acme_client, order, private_key)

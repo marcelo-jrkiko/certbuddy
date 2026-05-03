@@ -5,12 +5,18 @@ import tempfile
 from flask import config
 
 from engine.authorities.CloudflareOriginCA import CloudflareOriginCA
+from engine.authorities.LetsEncryptCA import LetsEncryptCA
+
 from engine.challenges.NoChallenge import NoChallenge
+from engine.challenges.CloudflareChallenge import CloudflareDnsChallenge
+from engine.challenges.LocalFileHttpChallenge import LocalFileHttpChallenge
+
 from helpers.CertificateViewer import CertificateViewer
+
 from helpers.DataBackend import BackendClient, getMasterBackendClient
 from engine.models.ca_response import CA_Response
-from engine.authorities.LetsEncryptCA import LetsEncryptCA
-from engine.challenges.CloudflareChallenge import CloudflareDnsChallenge
+
+
 from engine.repositories.UserRepository import UserRepository
 from engine.models.certificate_request import CertificateRequest, CertificateRequestStatus, CertificateRequestType
 import datetime
@@ -38,6 +44,14 @@ class CertificateRequester:
                 "class" : NoChallenge,
                 "config_preset" : {},
                 "type": "none"
+            },
+            "LOCAL_FILE_HTTP" : {
+                "name": "Local File HTTP Challenge",
+                "class" : LocalFileHttpChallenge,
+                "config_preset" : {
+                  "base_path": "/path/to/challenges/{$domain}/{$key}"
+                },
+                "type": "http"
             }
         }
         
