@@ -127,7 +127,6 @@ For Certificate Authorities that don't require validation:
 For detailed configuration and deployment information, refer to the following documentation files:
 
 - **[ENVIRONMENT.md](ENVIRONMENT.md)**: Complete environment variables reference and configuration guide
-- **[BACKEND_CONFIG.md](BACKEND_CONFIG.md)**: Detailed Python backend architecture, components, and configurations
 
 ---
 
