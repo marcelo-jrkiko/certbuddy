@@ -16,14 +16,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RefreshCw } from "lucide-react";
+import { AlertCircle, RefreshCw } from "lucide-react";
 import { directusService } from "@/lib/directus";
 import { components } from "../../../shared/Schema";
 
 type CertificateRequest = components["schemas"]["ItemsCertificateRequest"];
 
 const REFRESH_MS = 60_000;
+
+function getRequestError(r: CertificateRequest): string | null {
+  const cfg = r.config as Record<string, unknown> | null | undefined;
+  if (cfg && typeof cfg === "object" && "error" in cfg) {
+    const e = (cfg as Record<string, unknown>).error;
+    if (e == null) return null;
+    return typeof e === "string" ? e : JSON.stringify(e, null, 2);
+  }
+  return null;
+}
 
 function statusVariant(status?: string | null) {
   switch (status) {
