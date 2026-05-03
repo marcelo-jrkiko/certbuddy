@@ -32,7 +32,7 @@ class Scheduler:
         # Schedule tasks
         for task in self.tasks:
             self.logger.info(f"Scheduling task: {task['name']} with schedule: {task['schedule']}")
-            eval(f"schedule.{task['schedule']}(task['function'])")
+            eval(f"schedule.{task['schedule']}.do(task['function'])")
             
         self.run_continuously()
         

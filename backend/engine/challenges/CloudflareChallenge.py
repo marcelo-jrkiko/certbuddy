@@ -1,6 +1,7 @@
 
 from engine.challenges.DnsChallenge import DnsChallenge
 from cloudflare import Cloudflare
+from helpers.CloudFlare import get_zone_id
 
 class CloudflareChallengeConfig:
     def __init__(self):
@@ -22,18 +23,8 @@ class CloudflareDnsChallenge(DnsChallenge):
         self.logger.debug(f"Applying Cloudflare DNS challenge for domain {domain} with key {key}")
         
         if zone_id is None:
-            # If zone_id is not provided, we need to find it based on the domain
-            try:
-                zones = cf.zones.list()
-            except Exception as e:
-                self.logger.error(f"Failed to list zones from Cloudflare: {e}")
-                raise
+            zone_id = get_zone_id(cf, domain)
             
-            for zone in zones:
-                if domain.endswith(zone.name):
-                    zone_id = zone.id
-                    break
-        
         if zone_id is None:
             self.logger.error(f"Could not find Cloudflare zone for domain {domain}")
             raise Exception(f"Could not find Cloudflare zone for domain {domain}")  

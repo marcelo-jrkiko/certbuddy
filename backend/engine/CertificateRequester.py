@@ -4,6 +4,8 @@ import tempfile
 
 from flask import config
 
+from engine.authorities.CloudflareOriginCA import CloudflareOriginCA
+from engine.challenges.NoChallenge import NoChallenge
 from helpers.CertificateViewer import CertificateViewer
 from helpers.DataBackend import BackendClient, getMasterBackendClient
 from engine.models.ca_response import CA_Response
@@ -30,6 +32,12 @@ class CertificateRequester:
                   "api_token": "", 
                 },
                 "type": "dns"
+            },
+            "EMPTY" : {
+                "name": "No Challenge",
+                "class" : NoChallenge,
+                "config_preset" : {},
+                "type": "none"
             }
         }
         
@@ -40,6 +48,14 @@ class CertificateRequester:
                 "class" : LetsEncryptCA,
                 "config_preset" : {
                   "environment": "production", # or "staging"
+                },
+            },
+            "CLOUDFLARE_ORIGIN_CA" : {
+                "name": "Cloudflare Origin CA",
+                "class" : CloudflareOriginCA,
+                "config_preset" : {
+                  "api_token": "",
+                  "zone_id": "",
                 },
             }
         }
