@@ -127,6 +127,17 @@ function CertificatesPage() {
     }
   }
 
+  async function handleDownload(c: Certificate) {
+    setBusyId(c.id);
+    try {
+      await certificatesService.downloadCertificate(c.id, c.common_name ?? c.id);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to download");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-background">
       <Toaster richColors position="top-right" />
