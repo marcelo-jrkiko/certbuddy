@@ -39,6 +39,17 @@ export class CertificatesService extends BackendClient {
     if (!res.ok) throw new Error(await this.parseError(res));
   }
 
+  public async downloadCertificate(id: string, commonName: string): Promise<void> {
+    const res = await directusService.fetchWithAuth(
+      `${this.getApiUrl()}/certificates/${encodeURIComponent(id)}/download`,
+      { method: "GET" },
+    );
+    if (!res.ok) throw new Error(await this.parseError(res));
+    const blob = await res.blob();
+    const { saveAs } = await import("file-saver");
+    saveAs(blob, `${commonName}_${id}.zip`);
+  }
+
   public async deleteCertificate(id: string): Promise<void> {
     const res = await directusService.fetchWithAuth(
       `${this.getApiUrl()}/certificates/${encodeURIComponent(id)}`,

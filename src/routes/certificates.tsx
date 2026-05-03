@@ -46,7 +46,7 @@ import {
   certificatesService,
   type Certificate,
 } from "@/lib/certificates";
-import { CheckCircle2, Trash2, Upload, Plus, FilePlus } from "lucide-react";
+import { CheckCircle2, Trash2, Upload, Plus, FilePlus, Download } from "lucide-react";
 import { RequestCertificateDialog } from "@/components/certificates/RequestCertificateDialog";
 import { CertificateRequestsTable } from "@/components/certificates/CertificateRequestsTable";
 
@@ -122,6 +122,17 @@ function CertificatesPage() {
       await load();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to delete");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleDownload(c: Certificate) {
+    setBusyId(c.id);
+    try {
+      await certificatesService.downloadCertificate(c.id, c.common_name ?? c.id);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to download");
     } finally {
       setBusyId(null);
     }
@@ -255,6 +266,18 @@ function CertificatesPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
+                            {(!c.expires_at ||
+                              new Date(c.expires_at).getTime() >= Date.now()) && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={busyId === c.id}
+                                onClick={() => handleDownload(c)}
+                              >
+                                <Download className="mr-1 h-4 w-4" />
+                                Download
+                              </Button>
+                            )}
                             {!c.is_active && (
                               <Button
                                 size="sm"
