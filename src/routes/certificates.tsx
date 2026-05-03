@@ -46,7 +46,7 @@ import {
   certificatesService,
   type Certificate,
 } from "@/lib/certificates";
-import { CheckCircle2, Trash2, Upload, Plus, FilePlus } from "lucide-react";
+import { CheckCircle2, Trash2, Upload, Plus, FilePlus, Download } from "lucide-react";
 import { RequestCertificateDialog } from "@/components/certificates/RequestCertificateDialog";
 import { CertificateRequestsTable } from "@/components/certificates/CertificateRequestsTable";
 
