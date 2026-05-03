@@ -14,6 +14,12 @@ class Config:
     # Certificate Renewal Configuration
     RENEWAL_CHECK_INTERVAL = int(os.getenv('ENGINE_RENEWAL_CHECK_INTERVAL', 24))  # in hours
     RENEWAL_BEFORE_EXPIRE_HOURS = int(os.getenv('ENGINE_RENEWAL_BEFORE_EXPIRE_HOURS', 24))  # in hours
+    
+    # Certificate Auto Cleanup Configuration
+    AUTO_CLEANUP_ENABLED = os.getenv('ENGINE_AUTO_CLEANUP_ENABLED') == 'True'
+    AUTO_CLEANUP_INTERVAL = int(os.getenv('ENGINE_AUTO_CLEANUP_INTERVAL', 4))  # in hours
+    AUTO_CLEANUP_BEFORE_EXPIRE_DAYS = int(os.getenv('ENGINE_AUTO_CLEANUP_BEFORE_EXPIRE_DAYS', 120))  # in days
+    
 
 
 def get_main_domain(domain: str) -> str:

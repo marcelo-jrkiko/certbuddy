@@ -8,7 +8,8 @@ from flask import current_app
 import schedule
 
 from engine.tasks.RenewalTask import RenewalTask
-
+from engine.tasks.CleanupExpiredCertificatesTask import CleanupExpiredCertificatesTask
+from engine.tasks.CleanupOlderRequestTask import CleanupOlderRequestsTask
 
 class Scheduler:
     def __init__(self):
@@ -20,6 +21,16 @@ class Scheduler:
                 "name": "Certificate_Renewal_Task",
                 "function": self._run_renewal_task,
                 "schedule": f"every({config.RENEWAL_CHECK_INTERVAL}).hours"
+            },
+            {
+                "name": "Cleanup_Expired_Certificates_Task",
+                "function": self._run_cleanup_expired_certificates_task,
+                "schedule": f"every({config.AUTO_CLEANUP_INTERVAL}).hours"
+            },
+            {
+                "name": "Cleanup_Older_Requests_Task",
+                "function": self._run_cleanup_older_requests_task,
+                "schedule": f"every(24).hours"
             }
         ]
     
@@ -64,3 +75,19 @@ class Scheduler:
             task.run()
         except Exception as e:
             self.logger.error(f"Error running renewal task: {e}")
+            
+    def _run_cleanup_expired_certificates_task(self):
+        try:
+            self.logger.info("Running cleanup expired certificates task...")
+            task = CleanupExpiredCertificatesTask()
+            task.run()
+        except Exception as e:
+            self.logger.error(f"Error running cleanup expired certificates task: {e}")
+            
+    def _run_cleanup_older_requests_task(self):
+        try:
+            self.logger.info("Running cleanup older requests task...")
+            task = CleanupOlderRequestsTask()
+            task.run()
+        except Exception as e:
+            self.logger.error(f"Error running cleanup older requests task: {e}")
