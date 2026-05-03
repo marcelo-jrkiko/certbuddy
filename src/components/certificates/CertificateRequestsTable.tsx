@@ -16,14 +16,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RefreshCw } from "lucide-react";
+import { AlertCircle, RefreshCw } from "lucide-react";
 import { directusService } from "@/lib/directus";
 import { components } from "../../../shared/Schema";
 
 type CertificateRequest = components["schemas"]["ItemsCertificateRequest"];
 
 const REFRESH_MS = 60_000;
+
+function getRequestError(r: CertificateRequest): string | null {
+  const cfg = r.config as Record<string, unknown> | null | undefined;
+  if (cfg && typeof cfg === "object" && "error" in cfg) {
+    const e = (cfg as Record<string, unknown>).error;
+    if (e == null) return null;
+    return typeof e === "string" ? e : JSON.stringify(e, null, 2);
+  }
+  return null;
+}
 
 function statusVariant(status?: string | null) {
   switch (status) {
@@ -43,6 +60,7 @@ export function CertificateRequestsTable() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorTarget, setErrorTarget] = useState<CertificateRequest | null>(null);
 
   const load = useCallback(async (showSpinner = false) => {
     if (showSpinner) setRefreshing(true);
@@ -112,32 +130,66 @@ export function CertificateRequestsTable() {
                   <TableHead>CA</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Created</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell className="font-medium">{r.domain ?? "—"}</TableCell>
-                    <TableCell>
-                      <Badge variant={statusVariant(r.status)}>
-                        {r.status ?? "unknown"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{r.challenge_type ?? "—"}</TableCell>
-                    <TableCell>{r.certificate_authority ?? "—"}</TableCell>
-                    <TableCell>{r.type ?? "—"}</TableCell>
-                    <TableCell className="text-muted-foreground text-xs">
-                      {r.date_created
-                        ? new Date(r.date_created).toLocaleString()
-                        : "—"}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {items.map((r) => {
+                  const failed = r.status === "failed" || r.status === "rejected";
+                  const errMsg = failed ? getRequestError(r) : null;
+                  return (
+                    <TableRow key={r.id}>
+                      <TableCell className="font-medium">{r.domain ?? "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant={statusVariant(r.status)}>
+                          {r.status ?? "unknown"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{r.challenge_type ?? "—"}</TableCell>
+                      <TableCell>{r.certificate_authority ?? "—"}</TableCell>
+                      <TableCell>{r.type ?? "—"}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {r.date_created
+                          ? new Date(r.date_created).toLocaleString()
+                          : "—"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {errMsg ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setErrorTarget(r)}
+                          >
+                            <AlertCircle className="mr-1 h-4 w-4" />
+                            View error
+                          </Button>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
         )}
       </CardContent>
+
+      <Dialog
+        open={!!errorTarget}
+        onOpenChange={(open) => !open && setErrorTarget(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Request error</DialogTitle>
+            <DialogDescription>
+              {errorTarget?.domain ?? ""} — {errorTarget?.status ?? ""}
+            </DialogDescription>
+          </DialogHeader>
+          <pre className="max-h-[60vh] overflow-auto rounded-md bg-muted p-3 text-xs whitespace-pre-wrap break-words">
+            {errorTarget ? getRequestError(errorTarget) ?? "No error details." : ""}
+          </pre>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
