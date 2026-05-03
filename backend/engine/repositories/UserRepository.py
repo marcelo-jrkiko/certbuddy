@@ -21,16 +21,16 @@ class UserRepository:
             shared_config = self.get_shared_config(obj["merged_config"])
             
             # merge the shared config into the object config
-            if shared_config and shared_config.config:
+            if shared_config and shared_config.get("config"):
                 obj_config = obj.get("config", {})
-                merged_config = {**shared_config.config, **obj_config}
+                merged_config = {**shared_config["config"], **obj_config}
                 obj["config"] = merged_config
       
         return obj
     
     def get_shared_config(self, id: str) -> SharedConfig:
-        config = self.backend_client._make_request("GET", f"/shared_config/{id}")
-        return config
+        config = self.backend_client._make_request("GET", f"/items/shared_config/{id}")
+        return config.get("data")
     
     def get_challenge_config(self, user_id: str, challenge_key: str, domain: str) -> ChallengeConfig:
         

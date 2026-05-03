@@ -12,8 +12,8 @@ import fnmatch
 from cryptography.hazmat.primitives import serialization
 
 class CloudflareOriginCA(BaseCertificateAuthority):
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self):
+        super().__init__()
         self.compatibleChallengesTypes = [ "EMPTY" ]  # Cloudflare Origin CA does not require challenges, so we use a placeholder type
         
     def issue_certificate(self, request: CertificateRequest, challenge: any) -> CA_Response:
@@ -54,7 +54,7 @@ class CloudflareOriginCA(BaseCertificateAuthority):
                 format=serialization.PrivateFormat.TraditionalOpenSSL,
                 encryption_algorithm=serialization.NoEncryption()
             ).decode(),
-            "certificate_file": new_cert["certificate"],
+            "certificate_file": new_cert.certificate,
             "type": CertificateRequestType.ISSUER
         }
         

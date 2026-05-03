@@ -136,10 +136,15 @@ class CertificateRequester:
                         
             # Get the Certificate Authority Config for the request
             ca_config = userRepo.get_certificate_authority_config(request.issue_to, request.certificate_authority, request.domain)
-                        
-            if not challenge_config:
+            
+            if not challenge_config and request.challenge_type != "EMPTY":
                 self.logger.error(f"No challenge config found for user {request.issue_to}")
                 raise Exception("No challenge config found for user")
+            elif not challenge_config and request.challenge_type == "EMPTY":
+                self.logger.info(f"Request {request.id} has challenge type EMPTY, using default no-challenge config")
+                challenge_config = {
+                    "config": {}
+                }
             
             if not ca_config:
                 self.logger.error(f"No certificate authority config found for user {request.issue_to}")
