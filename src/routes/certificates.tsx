@@ -48,6 +48,7 @@ import {
 } from "@/lib/certificates";
 import { CheckCircle2, Trash2, Upload, Plus, FilePlus } from "lucide-react";
 import { RequestCertificateDialog } from "@/components/certificates/RequestCertificateDialog";
+import { CertificateRequestsTable } from "@/components/certificates/CertificateRequestsTable";
 
 export const Route = createFileRoute("/certificates")({
   head: () => ({
@@ -279,6 +280,10 @@ function CertificatesPage() {
             )}
           </CardContent>
         </Card>
+
+        <div className="mt-6">
+          <CertificateRequestsTable />
+        </div>
       </section>
 
       <AlertDialog
