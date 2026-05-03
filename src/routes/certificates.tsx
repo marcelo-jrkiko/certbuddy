@@ -280,6 +280,10 @@ function CertificatesPage() {
             )}
           </CardContent>
         </Card>
+
+        <div className="mt-6">
+          <CertificateRequestsTable />
+        </div>
       </section>
 
       <AlertDialog
