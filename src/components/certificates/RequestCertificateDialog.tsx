@@ -26,7 +26,9 @@ export function RequestCertificateDialog({
   const [domain, setDomain] = useState("");
   const [challengeType, setChallengeType] = useState("");
   const [certificateAuthority, setCertificateAuthority] = useState("");
-  const [config, setConfig] = useState<Record<string, unknown>>({});
+  const [config, setConfig] = useState<Record<string, unknown>>({
+    "tags" : "",
+  });
   const [submitting, setSubmitting] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {

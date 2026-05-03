@@ -150,9 +150,9 @@ class CertificateRequester:
             self.logger.debug(f"Issuing certificate for request {request.id}")
             ca_response : CA_Response = ca_obj.issue(request, challenge_obj)
             
-            if not ca_response.okay:
-                self.logger.error(f"Certificate issuance failed for request {request.id} with error: {ca_response.error_message}")
-                raise Exception(f"Certificate issuance failed: {ca_response.error_message}")
+            if not ca_response.get("okay"):
+                self.logger.error(f"Certificate issuance failed for request {request.id} with error: {ca_response.get('error_message')}")
+                raise Exception(f"Certificate issuance failed: {ca_response.get('error_message')}")
             
             # Store the issued certificate and key in the storage 
             self.logger.debug(f"Storing issued certificate for request {request.id} in storage")
@@ -162,11 +162,11 @@ class CertificateRequester:
             # create temporary files for the certificate and key
             temp_cert_file = f"{tempfile.gettempdir()}/{cert_filename}.crt"
             with open(temp_cert_file, 'wb') as f:
-                f.write(ca_response.certificate_file.encode())
+                f.write(ca_response.get("certificate_file").encode())
             
             temp_key_file = f"{tempfile.gettempdir()}/{cert_filename}.key"
             with open(temp_key_file, 'wb') as f:
-                f.write(ca_response.certificate_key.encode())
+                f.write(ca_response.get("certificate_key").encode())
             
             # Upload certificate and key files to Directus
             self.logger.debug(f"Uploading certificate and key files for request {request.id} to Directus")
@@ -207,7 +207,7 @@ class CertificateRequester:
             backendClient.update("certificate_request", request.id, {
                 "status": CertificateRequestStatus.ISSUED,
                 "certificate": new_certificate.get('id'),
-                "type": ca_response.type
+                "type": ca_response.get("type")
             })
             
             # Mark all other ceritificate of the same domain and user as inactive except the newly issued one
@@ -215,8 +215,7 @@ class CertificateRequester:
                 "issued_to": request.issue_to,
                 "common_name": request.domain,
                 "is_active": True,
-                "id": {"_ne": new_certificate.get('id')
-                }
+                "id": { "_neq": new_certificate.get('id') }
             })
             for cert in existing_certs:
                 backendClient.update("certificates", cert['id'], {

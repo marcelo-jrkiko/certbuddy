@@ -36,3 +36,6 @@ __pycache__
 *.pyc
 *.pyo   
 .env
+
+*pycache*
+*.pyc

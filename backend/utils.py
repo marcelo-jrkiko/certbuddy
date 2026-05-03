@@ -9,7 +9,7 @@ class Config:
     
     # API Configuration
     API_PORT = int(os.getenv('ENGINE_API_PORT', 3000))
-    DEBUG = os.getenv('FLASK_ENV') == 'development'
+    DEBUG = os.getenv('DEBUG') == 'True'
 
 
 def get_main_domain(domain: str) -> str:

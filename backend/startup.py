@@ -6,14 +6,17 @@ from helpers.DataBackend import getMasterBackendClient
 
 load_dotenv()
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = None
+config = None
 
 def startup():
     """Load configuration from environment variables."""
-    global config
+    global config, logger
     config = Config()
+    
+    # Configure logging
+    logging.basicConfig(level=logging.DEBUG if config.DEBUG else logging.INFO)
+    logger = logging.getLogger(__name__)
     
     test_backend_connection()
     

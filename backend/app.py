@@ -9,8 +9,8 @@ from utils import Config
 import logging
 from flasgger import Swagger
 
-logger = logging.getLogger(__name__)
 config = startup()
+logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask("certbuddy-backend")
@@ -56,6 +56,5 @@ def internal_error(error):
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0',
-        port=config.API_PORT,
-        debug=config.DEBUG
+        port=config.API_PORT
     )

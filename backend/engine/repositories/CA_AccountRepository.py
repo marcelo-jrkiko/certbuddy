@@ -20,7 +20,7 @@ class CA_AccountRepository:
         )
         
         if account_item:
-            return CertificateAuthorityAccount(**account_item)
+            return account_item[0]
         
         return None
     
