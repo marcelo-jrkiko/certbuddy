@@ -130,32 +130,66 @@ export function CertificateRequestsTable() {
                   <TableHead>CA</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Created</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell className="font-medium">{r.domain ?? "—"}</TableCell>
-                    <TableCell>
-                      <Badge variant={statusVariant(r.status)}>
-                        {r.status ?? "unknown"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{r.challenge_type ?? "—"}</TableCell>
-                    <TableCell>{r.certificate_authority ?? "—"}</TableCell>
-                    <TableCell>{r.type ?? "—"}</TableCell>
-                    <TableCell className="text-muted-foreground text-xs">
-                      {r.date_created
-                        ? new Date(r.date_created).toLocaleString()
-                        : "—"}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {items.map((r) => {
+                  const failed = r.status === "failed" || r.status === "rejected";
+                  const errMsg = failed ? getRequestError(r) : null;
+                  return (
+                    <TableRow key={r.id}>
+                      <TableCell className="font-medium">{r.domain ?? "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant={statusVariant(r.status)}>
+                          {r.status ?? "unknown"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{r.challenge_type ?? "—"}</TableCell>
+                      <TableCell>{r.certificate_authority ?? "—"}</TableCell>
+                      <TableCell>{r.type ?? "—"}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {r.date_created
+                          ? new Date(r.date_created).toLocaleString()
+                          : "—"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {errMsg ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setErrorTarget(r)}
+                          >
+                            <AlertCircle className="mr-1 h-4 w-4" />
+                            View error
+                          </Button>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
         )}
       </CardContent>
+
+      <Dialog
+        open={!!errorTarget}
+        onOpenChange={(open) => !open && setErrorTarget(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Request error</DialogTitle>
+            <DialogDescription>
+              {errorTarget?.domain ?? ""} — {errorTarget?.status ?? ""}
+            </DialogDescription>
+          </DialogHeader>
+          <pre className="max-h-[60vh] overflow-auto rounded-md bg-muted p-3 text-xs whitespace-pre-wrap break-words">
+            {errorTarget ? getRequestError(errorTarget) ?? "No error details." : ""}
+          </pre>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
