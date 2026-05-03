@@ -1,6 +1,8 @@
 import datetime
+import io
 import json
 import logging
+import os
 import tempfile
 
 from flask import Blueprint, request, send_file
@@ -62,18 +64,33 @@ def register_certificate_routes(app):
         temp_cert_file = tempfile.NamedTemporaryFile(delete=False, suffix=".crt")
         temp_key_file = tempfile.NamedTemporaryFile(delete=False, suffix=".key")
         
-        backend_client.download_file(certificate[0].get("certificate_file"), temp_cert_file.name)
-        backend_client.download_file(certificate[0].get("certificate_key"), temp_key_file.name)
+        # Store paths and close file objects to prevent file handle conflicts
+        cert_path = temp_cert_file.name
+        key_path = temp_key_file.name
+        temp_cert_file.close()
+        temp_key_file.close()
+        
+        backend_client.download_file(certificate[0].get("certificate_file"), cert_path)
+        backend_client.download_file(certificate[0].get("certificate_key"), key_path)
         
         # Zips
         zip_filename = f"{certificate[0].get('common_name')}_{certificate_id}.zip"
-        temp_zip_file = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
-        with zipfile.ZipFile(temp_zip_file.name, 'w') as zipf:
-            zipf.write(temp_cert_file.name, f"{certificate[0].get('common_name')}.crt")
-            zipf.write(temp_key_file.name, f"{certificate[0].get('common_name')}.key")
-            temp_zip_file.seek(0)
-            
-        return send_file(temp_zip_file.name, as_attachment=True, download_name=zip_filename)
+        temp_zip_file = f"{tempfile.gettempdir()}/{zip_filename}"
+        
+        with zipfile.ZipFile(temp_zip_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(cert_path, f"{certificate[0].get('common_name')}.crt")
+            zipf.write(key_path, f"{certificate[0].get('common_name')}.key")
+        
+        try:
+            return send_file(temp_zip_file, as_attachment=True, download_name=zip_filename)
+        finally:
+            # Clean up temporary files
+            try:
+                os.remove(cert_path)
+                os.remove(key_path)
+                os.remove(temp_zip_file)
+            except OSError:
+                pass
         
       except Exception as e:
         logging.getLogger(__name__).error(f"Error downloading certificate {certificate_id}: {e}")
