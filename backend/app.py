@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from startup import startup
 from controllers.CertificateController import register_certificate_routes
 from controllers.EngineController import register_engine_routes
+from controllers.TasksController import register_tasks_routes
+from engine.tasks.Scheduler import Scheduler
 from utils import Config
 import logging
 from flasgger import Swagger
@@ -21,11 +23,18 @@ CORS(app, resources={r"/*": {
 }})
 app.config["core"] = config
 
+# Initialize Scheduler
+scheduler = Scheduler()
+scheduler.init_tasks()
+
+app.scheduler = scheduler
+
 # Register routes
 register_certificate_routes(app)
 register_engine_routes(app)
+register_tasks_routes(app)
 
-swagger = Swagger(app)
+app.swagger = Swagger(app)
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -54,6 +63,7 @@ def internal_error(error):
 
 
 if __name__ == '__main__':
+    scheduler.start()
     app.run(
         host='0.0.0.0',
         port=config.API_PORT

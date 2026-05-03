@@ -225,6 +225,11 @@ class CertificateRequester:
             self.logger.debug(f"Certificate request {request.id} marked as ISSUED with certificate ID: {new_certificate.get('id')}")
         except Exception as e:
             self.logger.error(f"Error processing certificate request {request.id}: {str(e)}")            
+            
+            request.config = request.config or {}
+            request.config["error"] = str(e)
+            
             backendClient.update("certificate_request", request.id, {
                 "status": CertificateRequestStatus.FAILED,
+                "config": request.config
             })
