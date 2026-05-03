@@ -89,6 +89,20 @@ class BackendClient:
     def delete(self, collection_name: str, item_id: str) -> None:
         """Delete an item from a collection"""
         self._make_request("DELETE", f"/items/{collection_name}/{item_id}")
+        
+    def download_file(self, file_id: str, save_path: str) -> None:
+        """Download a file from Directus and save it locally"""
+        url = f"{self.base_url}/assets/{file_id}"
+        try:
+            response = requests.get(url, headers=self.headers, stream=True)
+            response.raise_for_status()
+            
+            with open(save_path, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+        except requests.exceptions.RequestException as e:
+            logging.error(f"File download failed: {e} -> {response.text if response else 'No response'}")
+            raise Exception(f"Failed to download file: {str(e)}")
     
     def upload_file(self, file_obj, filename: str = None) -> Dict[str, Any]:
         """Upload a file to Directus files library"""

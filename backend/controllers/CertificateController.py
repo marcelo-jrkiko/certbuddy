@@ -1,9 +1,10 @@
 import datetime
 import json
+import logging
 import tempfile
 
-from flask import Blueprint, request
-
+from flask import Blueprint, request, send_file
+import zipfile
 from helpers.CertificateViewer import CertificateViewer
 from helpers.Auth import require_bearer_token
 from helpers.DataBackend import BackendClient
@@ -12,6 +13,74 @@ from helpers.DataBackend import BackendClient
 certificates_blueprint = Blueprint('certificates', __name__, url_prefix='/certificates')
 
 def register_certificate_routes(app):
+    
+    @certificates_blueprint.route('/<certificate_id>/download', methods=['GET'])
+    @require_bearer_token
+    def download_certificate(certificate_id: str):      
+      """ 
+      Download a certificate and its key as a zip file for the authenticated user.
+      ---
+      tags:
+        - certificates
+      parameters:
+        - name: certificate_id  
+          in: path
+          type: string
+          required: true
+          description: ID of the certificate to download
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Certificate downloaded successfully
+          content:
+            application/zip:  
+              schema:
+                type: string
+                format: binary
+        401:
+          description: Unauthorized
+        404:  
+          description: Certificate not found
+        500:
+          description: Internal server error  
+      """
+      try:
+        # Get the certificate details from Directus to retrieve file references
+        backend_client = BackendClient(app.config["core"], request.authdata['token'])
+        certificate = backend_client.search("certificates", {
+            "id": {"_eq": certificate_id},
+            "issued_to": {"_eq": request.authdata['user_data'].get('id')}
+        }, fields=["common_name", "certificate_file", "certificate_key"])
+        
+        if not certificate:
+            return {
+                "error": f"Certificate {certificate_id} not found"
+            }, 404
+        
+        # Download the certificate and key files from Directus and return them as a zip file or similar for the user to download
+        temp_cert_file = tempfile.NamedTemporaryFile(delete=False, suffix=".crt")
+        temp_key_file = tempfile.NamedTemporaryFile(delete=False, suffix=".key")
+        
+        backend_client.download_file(certificate[0].get("certificate_file"), temp_cert_file.name)
+        backend_client.download_file(certificate[0].get("certificate_key"), temp_key_file.name)
+        
+        # Zips
+        zip_filename = f"{certificate[0].get('common_name')}_{certificate_id}.zip"
+        temp_zip_file = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+        with zipfile.ZipFile(temp_zip_file.name, 'w') as zipf:
+            zipf.write(temp_cert_file.name, f"{certificate[0].get('common_name')}.crt")
+            zipf.write(temp_key_file.name, f"{certificate[0].get('common_name')}.key")
+            temp_zip_file.seek(0)
+            
+        return send_file(temp_zip_file.name, as_attachment=True, download_name=zip_filename)
+        
+      except Exception as e:
+        logging.getLogger(__name__).error(f"Error downloading certificate {certificate_id}: {e}")
+        return {
+            "error": "Failed to download certificate",
+        }, 500
+      
     
     @certificates_blueprint.route('/', methods=['GET'])
     @require_bearer_token
