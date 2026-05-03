@@ -22,7 +22,8 @@ class CleanupExpiredCertificatesTask:
         expired_certs = self.backend.search("certificates", {
             "expires_at": {
                 "_lte": date_limit.isoformat()
-            }
+            },
+            "is_active": False
         })
         
         for cert in expired_certs:

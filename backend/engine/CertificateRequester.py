@@ -10,6 +10,7 @@ from engine.authorities.LetsEncryptCA import LetsEncryptCA
 from engine.challenges.NoChallenge import NoChallenge
 from engine.challenges.CloudflareChallenge import CloudflareDnsChallenge
 from engine.challenges.LocalFileHttpChallenge import LocalFileHttpChallenge
+from engine.challenges.SFTPFileHttpChallenge import SFTPFileHttpChallenge
 
 from helpers.CertificateViewer import CertificateViewer
 
@@ -50,6 +51,18 @@ class CertificateRequester:
                 "class" : LocalFileHttpChallenge,
                 "config_preset" : {
                   "base_path": "/path/to/challenges/{$domain}/{$key}"
+                },
+                "type": "http"
+            },
+            "SFTP_FILE_HTTP" : {
+                "name": "SFTP File HTTP Challenge",
+                "class" : SFTPFileHttpChallenge,
+                "config_preset" : {
+                  "base_path": "/path/to/challenges/{$domain}/{$key}",
+                  "remote_host": "example.com",
+                  "remote_user": "username",
+                  "remote_port": 22,
+                  "private_key_path": "/path/to/private/key"
                 },
                 "type": "http"
             }

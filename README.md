@@ -77,28 +77,57 @@ Cloudflare's private CA for issuing certificates to be used specifically with th
 
 ## Challenge Methods
 
-CertBuddy supports various challenge types for domain validation:
+CertBuddy supports various challenge types for domain validation. Select the appropriate challenge method based on your infrastructure and certificate authority requirements.
 
 ### DNS-01 Challenge
 
 A DNS-based validation method where a TXT record is placed in the domain's DNS configuration.
 
-- **Cloudflare DNS Provider**: Automatically manages DNS records for Cloudflare-hosted zones
-  - Requires Cloudflare API token
+#### Cloudflare DNS Challenge
+Automatically manages DNS records for Cloudflare-hosted zones:
+- **Requires**: Cloudflare API token
+- **Features**:
   - Dynamically discovers zone IDs
   - Automatic TXT record creation and cleanup
   - Multi-domain support via DNS wildcards
+  - Fast validation without HTTP server access
+
+### HTTP-01 Challenge
+
+HTTP-based validation where a specific file is served via HTTP from the domain being validated.
+
+#### Local File HTTP Challenge
+Creates challenge files on the local filesystem:
+- **Use Case**: Single-server setups with direct filesystem access
+- **Configuration**: Base path for challenge files with domain/key placeholders
+- **Example**: `/var/www/certbuddy-challenges/{$domain}/{$key}`
+
+#### SFTP File HTTP Challenge
+Creates challenge files via SFTP on a remote server:
+- **Use Case**: Multi-server or cloud deployments
+- **Requirements**: SFTP credentials, private key with secure permissions
+- **Features**:
+  - Remote server file creation
+  - SSH key-based authentication
+  - Automatic path variable substitution
+  - Secure private key permission validation
 
 ### No Challenge
 
 For Certificate Authorities that don't require validation:
 
-- Used by Cloudflare Origin CA
-- Direct certificate issuance
-- Suitable for internal or private zone certificates
+- **Used By**: Cloudflare Origin CA
+- **Characteristics**: Direct certificate issuance without domain validation
+- **Suitable For**: Internal or private zone certificates
 
-### HTTP-01 Challenge (WIP)
-Work in Progress, but will support accepting challenge by HTTP without need to acts as a reverse proxy..
+---
+
+## Documentation
+
+For detailed configuration and deployment information, refer to the following documentation files:
+
+- **[ENVIRONMENT.md](ENVIRONMENT.md)**: Complete environment variables reference and configuration guide
+- **[BACKEND_CONFIG.md](BACKEND_CONFIG.md)**: Detailed Python backend architecture, components, and configurations
 
 ---
 
@@ -194,11 +223,27 @@ docker-compose up
 
 ## Configuration
 
-CertBuddy uses environment variables for configuration:
+CertBuddy uses environment variables for configuration. For a comprehensive list of all environment variables and their detailed explanations, see **[ENVIRONMENT.md](ENVIRONMENT.md)**.
 
-- `DIRECTUS_URL`: URL to the Directus instance
-- `ENGINE_MASTER_TOKEN`: Authentication token for backend to Directus API
-- `FLASK_ENV`: Environment mode (development/production)
+### Essential Environment Variables
+
+- **`DIRECTUS_URL`**: URL to the Directus instance (default: `http://localhost:8055`)
+- **`ENGINE_MASTER_TOKEN`**: (Required) Authentication token for backend to Directus API
+- **`ENGINE_API_PORT`**: Port for the Engine API (default: `3000`)
+- **`DEBUG`**: Enable debug mode (default: `False`)
+
+### Renewal Configuration
+
+- **`ENGINE_RENEWAL_CHECK_INTERVAL`**: How often to check for certificates needing renewal in hours (default: `24`)
+- **`ENGINE_RENEWAL_BEFORE_EXPIRE_HOURS`**: Hours before expiration to trigger renewal (default: `24`)
+
+### Cleanup Configuration
+
+- **`ENGINE_AUTO_CLEANUP_ENABLED`**: Enable automatic cleanup of old certificate requests (default: `False`)
+- **`ENGINE_AUTO_CLEANUP_INTERVAL`**: How often cleanup task runs in hours (default: `4`)
+- **`ENGINE_AUTO_CLEANUP_BEFORE_EXPIRE_DAYS`**: Days after expiration before deletion (default: `120`)
+
+### Configuration Management
 
 Certificate Authority and challenge provider configurations are stored in Directus and can be managed through the application UI.
 

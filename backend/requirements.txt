@@ -7,3 +7,4 @@ cloudflare
 acme
 flasgger==0.9.7b2
 schedule
+paramiko
