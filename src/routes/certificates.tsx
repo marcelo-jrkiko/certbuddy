@@ -86,7 +86,12 @@ function CertificatesPage() {
     setError(null);
     try {
       const data = await certificatesService.listCertificates();
-      setCerts(data);
+      const sorted = [...data].sort((a, b) => {
+        const ta = a.date_created ? new Date(a.date_created).getTime() : 0;
+        const tb = b.date_created ? new Date(b.date_created).getTime() : 0;
+        return tb - ta;
+      });
+      setCerts(sorted);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load certificates");
     } finally {
