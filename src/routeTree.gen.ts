@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as EventListenersRouteImport } from './routes/event-listeners'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ConfigsRouteImport } from './routes/configs'
 import { Route as CertificatesRouteImport } from './routes/certificates'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventListenersRoute = EventListenersRouteImport.update({
+  id: '/event-listeners',
+  path: '/event-listeners',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/certificates': typeof CertificatesRoute
   '/configs': typeof ConfigsRoute
   '/dashboard': typeof DashboardRoute
+  '/event-listeners': typeof EventListenersRoute
   '/login': typeof LoginRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/certificates': typeof CertificatesRoute
   '/configs': typeof ConfigsRoute
   '/dashboard': typeof DashboardRoute
+  '/event-listeners': typeof EventListenersRoute
   '/login': typeof LoginRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,34 @@ export interface FileRoutesById {
   '/certificates': typeof CertificatesRoute
   '/configs': typeof ConfigsRoute
   '/dashboard': typeof DashboardRoute
+  '/event-listeners': typeof EventListenersRoute
   '/login': typeof LoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/certificates' | '/configs' | '/dashboard' | '/login'
+  fullPaths:
+    | '/'
+    | '/certificates'
+    | '/configs'
+    | '/dashboard'
+    | '/event-listeners'
+    | '/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/certificates' | '/configs' | '/dashboard' | '/login'
-  id: '__root__' | '/' | '/certificates' | '/configs' | '/dashboard' | '/login'
+  to:
+    | '/'
+    | '/certificates'
+    | '/configs'
+    | '/dashboard'
+    | '/event-listeners'
+    | '/login'
+  id:
+    | '__root__'
+    | '/'
+    | '/certificates'
+    | '/configs'
+    | '/dashboard'
+    | '/event-listeners'
+    | '/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +104,7 @@ export interface RootRouteChildren {
   CertificatesRoute: typeof CertificatesRoute
   ConfigsRoute: typeof ConfigsRoute
   DashboardRoute: typeof DashboardRoute
+  EventListenersRoute: typeof EventListenersRoute
   LoginRoute: typeof LoginRoute
 }
 
@@ -86,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/event-listeners': {
+      id: '/event-listeners'
+      path: '/event-listeners'
+      fullPath: '/event-listeners'
+      preLoaderRoute: typeof EventListenersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -124,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   CertificatesRoute: CertificatesRoute,
   ConfigsRoute: ConfigsRoute,
   DashboardRoute: DashboardRoute,
+  EventListenersRoute: EventListenersRoute,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport

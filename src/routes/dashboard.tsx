@@ -99,6 +99,9 @@ function DashboardPage() {
             <Button variant="ghost" asChild>
               <Link to="/configs">Configurations</Link>
             </Button>
+            <Button variant="ghost" asChild>
+              <Link to="/event-listeners">Event Listeners</Link>
+            </Button>
             <Button variant="outline" onClick={handleLogout}>
               Log out
             </Button>
