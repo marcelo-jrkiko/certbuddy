@@ -20,14 +20,41 @@ class Config:
     AUTO_CLEANUP_INTERVAL = int(os.getenv('ENGINE_AUTO_CLEANUP_INTERVAL', 4))  # in hours
     AUTO_CLEANUP_BEFORE_EXPIRE_DAYS = int(os.getenv('ENGINE_AUTO_CLEANUP_BEFORE_EXPIRE_DAYS', 120))  # in days
     
+    ALLOW_GLOBAL_CERTIFICATE_MATCHING = os.getenv('ENGINE_ALLOW_GLOBAL_CERTIFICATE_MATCHING') == 'True'
+    
 
 
 def get_main_domain(domain: str) -> str:
-    """Extract the main domain from a given domain string"""
+    """Extract the main domain from a given domain string.
+    
+    Handles both single-part (.com) and two-part (.com.br) public suffixes.
+    
+    Examples:
+        sub1.sub2.main.com -> main.com
+        sub1.sub2.main2.com.br -> main.com.br
+        sub1.main.com -> main.com
+        sub2.main2.com.br -> main.com.br
+        main.com -> main.com
+    """
     if not domain:
         return ""
     
-    parts = domain.split('.')
-    if len(parts) >= 2:
-        return '.'.join(parts[-2:])
-    return domain   
+    parts = domain.lower().split('.')
+    if len(parts) < 2:
+        return domain
+    
+    # Common two-part public suffixes (add more as needed)
+    two_part_suffixes = {
+        'com.br', 'co.uk', 'com.au', 'co.nz', 'co.jp', 'co.in', 'co.kr', 'co.th',
+        'gov.uk', 'org.uk', 'ac.uk', 'gov.br', 'org.br', 'co.za', 'co.id', 'com.mx',
+        'co.il', 'ac.nz', 'co.tz', 'co.ug', 'co.ve', 'com.vn',
+    }
+    
+    # Check if the last two parts form a known two-part suffix
+    if len(parts) >= 3:
+        last_two = '.'.join(parts[-2:])
+        if last_two in two_part_suffixes:
+            return '.'.join(parts[-3:])
+    
+    # Default: return last two parts (for .com, .org, .net, etc.)
+    return '.'.join(parts[-2:])   

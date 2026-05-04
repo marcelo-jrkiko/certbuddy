@@ -9,13 +9,37 @@ from flask import Blueprint, request, send_file
 import zipfile
 from engine.events.EventDispatcher import EventDispatcher
 from helpers.CertificateViewer import CertificateViewer
-from helpers.Auth import require_bearer_token
-from helpers.DataBackend import BackendClient
+from helpers.Auth import canhave_bearer_token, require_bearer_token
+from helpers.DataBackend import BackendClient, getMasterBackendClient
 
 
 certificates_blueprint = Blueprint('certificates', __name__, url_prefix='/certificates')
 
 def register_certificate_routes(app):
+    
+    @certificates_blueprint.route('/match/<domain>', methods=['GET'])
+    @require_bearer_token
+    def match_certificate(domain: str):      
+      backend = None
+      isGlobalMatch = False
+      
+      if app.config["core"].ALLOW_GLOBAL_CERTIFICATE_MATCHING:
+          backend = getMasterBackendClient()
+          isGlobalMatch = True
+      else:
+          backend = BackendClient(app.config["core"], request.authdata['token'])
+
+      # Search for active certificates matching the domain for any user
+      filter = {
+          "common_name": {"_icontains": domain},
+          "is_active": True
+      }
+      
+      if not isGlobalMatch:
+          filter["issued_to"] = {"_eq": request.authdata['user_data'].get('id')}
+      
+      certificates = backend.search("certificates", filter, fields=["id", "common_name", "issued_to", "expires_at"])           
+      return certificates, 200
     
     @certificates_blueprint.route('/<certificate_id>/download', methods=['GET'])
     @require_bearer_token
