@@ -133,6 +133,8 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
+        <CertificateStatsCards certs={certs} />
+
         <Card>
           <CardHeader className="flex-row items-start justify-between space-y-0">
             <div>
