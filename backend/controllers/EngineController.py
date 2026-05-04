@@ -14,6 +14,18 @@ requester = CertificateRequester()
 engine_blueprint = Blueprint('engine', __name__, url_prefix='/engine')
 
 def register_engine_routes(app):
+  
+    @engine_blueprint.route('/events/ids', methods=['GET'])
+    @require_bearer_token
+    def get_events_ids():
+      return {
+          "cert.uploaded" : "When a certificate is uploaded to the system, either by a user or through an API request",
+          "cert.expired": "When a certificate is marked as expired in the system",
+          "cert.failed": "When a certificate request fails",
+          "cert.issued": "When a certificate is successfully issued",
+          "cert.requested": "When a certificate request is created",
+      }
+  
     
     @engine_blueprint.route('/request_status/<thread_id>', methods=['GET'])
     @require_bearer_token
