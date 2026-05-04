@@ -1,3 +1,4 @@
+import { BackendClient } from "./backend_client";
 import { DirectusService, directusService } from "./directus";
 
 export type EventListener = {
@@ -63,7 +64,9 @@ export class EventListenersService extends DirectusService {
     const { data } = await res.json();
     return data as DirectusFlow[];
   }
+}
 
+export class EventsService extends BackendClient {
   async listEventIds(): Promise<EventIdOption[]> {
     const res = await this.fetchWithAuth(`${this.getApiUrl()}/engine/events/ids`);
     if (!res.ok) throw new Error(await this.parseError(res));
@@ -72,4 +75,5 @@ export class EventListenersService extends DirectusService {
   }
 }
 
+export const eventsService = new EventsService();
 export const eventListenersService = new EventListenersService();

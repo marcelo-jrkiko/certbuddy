@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import {
   eventListenersService,
+  eventsService,
   type EventListener,
   type DirectusFlow,
   type EventIdOption,
@@ -44,7 +45,7 @@ export function EventListenerDialog({ open, onOpenChange, item, onSaved }: Props
     setEventId(item?.event_id ?? "");
     Promise.all([
       eventListenersService.listFlows(),
-      eventListenersService.listEventIds(),
+      eventsService.listEventIds(),
     ])
       .then(([f, e]) => {
         setFlows(f);

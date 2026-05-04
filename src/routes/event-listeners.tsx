@@ -29,6 +29,7 @@ import {
 import { directusService } from "@/lib/directus";
 import {
   eventListenersService,
+  eventsService,
   type EventListener,
   type DirectusFlow,
   type EventIdOption,
@@ -62,7 +63,7 @@ function EventListenersPage() {
       const [list, fls, eids] = await Promise.all([
         eventListenersService.list(),
         eventListenersService.listFlows(),
-        eventListenersService.listEventIds(),
+        eventsService.listEventIds(),
       ]);
       setItems(list);
       setFlows(fls);

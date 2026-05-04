@@ -804,45 +804,6 @@ export interface paths {
      */
     patch: operations["updateSingleItemsCertificateauthorityAccount"];
   };
-  "/items/event_listener": {
-    /**
-     * List Items
-     * @description List the event_listener items.
-     */
-    get: operations["readItemsEventListener"];
-    /**
-     * Create an Item
-     * @description Create a new event_listener item.
-     */
-    post: operations["createItemsEventListener"];
-    /**
-     * Delete Multiple Items
-     * @description Delete multiple existing event_listener items.
-     */
-    delete: operations["deleteItemsEventListener"];
-    /**
-     * Update Multiple Items
-     * @description Update multiple event_listener items at the same time.
-     */
-    patch: operations["updateItemsEventListener"];
-  };
-  "/items/event_listener/{id}": {
-    /**
-     * Retrieve an Item
-     * @description Retrieve a single event_listener item by unique identifier.
-     */
-    get: operations["readSingleItemsEventListener"];
-    /**
-     * Delete an Item
-     * @description Delete an existing event_listener item.
-     */
-    delete: operations["deleteSingleItemsEventListener"];
-    /**
-     * Update an Item
-     * @description Update an existing event_listener item.
-     */
-    patch: operations["updateSingleItemsEventListener"];
-  };
   "/items/certificates": {
     /**
      * List Items
@@ -881,6 +842,45 @@ export interface paths {
      * @description Update an existing certificates item.
      */
     patch: operations["updateSingleItemsCertificates"];
+  };
+  "/items/event_listener": {
+    /**
+     * List Items
+     * @description List the event_listener items.
+     */
+    get: operations["readItemsEventListener"];
+    /**
+     * Create an Item
+     * @description Create a new event_listener item.
+     */
+    post: operations["createItemsEventListener"];
+    /**
+     * Delete Multiple Items
+     * @description Delete multiple existing event_listener items.
+     */
+    delete: operations["deleteItemsEventListener"];
+    /**
+     * Update Multiple Items
+     * @description Update multiple event_listener items at the same time.
+     */
+    patch: operations["updateItemsEventListener"];
+  };
+  "/items/event_listener/{id}": {
+    /**
+     * Retrieve an Item
+     * @description Retrieve a single event_listener item by unique identifier.
+     */
+    get: operations["readSingleItemsEventListener"];
+    /**
+     * Delete an Item
+     * @description Delete an existing event_listener item.
+     */
+    delete: operations["deleteSingleItemsEventListener"];
+    /**
+     * Update an Item
+     * @description Update an existing event_listener item.
+     */
+    patch: operations["updateSingleItemsEventListener"];
   };
   "/items/shared_config": {
     /**
@@ -2028,12 +2028,6 @@ export interface components {
       account_key?: string | null;
       account_data?: unknown;
     };
-    ItemsEventListener: {
-      /** Format: uuid */
-      id: string;
-      event_user?: string | components["schemas"]["Users"] | null;
-      event_flow?: string | components["schemas"]["Flows"] | null;
-    };
     ItemsCertificates: {
       /** Format: uuid */
       id: string;
@@ -2049,6 +2043,13 @@ export interface components {
       certificate_key?: string | components["schemas"]["Files"] | null;
       /** Format: date-time */
       expires_at?: string | null;
+    };
+    ItemsEventListener: {
+      /** Format: uuid */
+      id: string;
+      event_user?: string | components["schemas"]["Users"] | null;
+      event_flow?: string | components["schemas"]["Flows"] | null;
+      event_id?: string | null;
     };
     ItemsSharedConfig: {
       /** Format: uuid */
@@ -6520,189 +6521,6 @@ export interface operations {
   };
   /**
    * List Items
-   * @description List the event_listener items.
-   */
-  readItemsEventListener: {
-    parameters: {
-      query?: {
-        fields?: components["parameters"]["Fields"];
-        limit?: components["parameters"]["Limit"];
-        meta?: components["parameters"]["Meta"];
-        offset?: components["parameters"]["Offset"];
-        sort?: components["parameters"]["Sort"];
-        filter?: components["parameters"]["Filter"];
-        search?: components["parameters"]["Search"];
-      };
-    };
-    responses: {
-      /** @description Successful request */
-      200: {
-        content: {
-          "application/json": {
-            data?: components["schemas"]["ItemsEventListener"][];
-            meta?: components["schemas"]["x-metadata"];
-          };
-        };
-      };
-      401: components["responses"]["UnauthorizedError"];
-    };
-  };
-  /**
-   * Create an Item
-   * @description Create a new event_listener item.
-   */
-  createItemsEventListener: {
-    parameters: {
-      query?: {
-        meta?: components["parameters"]["Meta"];
-      };
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["ItemsEventListener"][] | components["schemas"]["ItemsEventListener"];
-      };
-    };
-    responses: {
-      /** @description Successful request */
-      200: {
-        content: {
-          "application/json": {
-            data?: components["schemas"]["ItemsEventListener"][];
-          };
-        };
-      };
-      401: components["responses"]["UnauthorizedError"];
-    };
-  };
-  /**
-   * Delete Multiple Items
-   * @description Delete multiple existing event_listener items.
-   */
-  deleteItemsEventListener: {
-    responses: {
-      /** @description Successful request */
-      200: {
-        content: never;
-      };
-      401: components["responses"]["UnauthorizedError"];
-    };
-  };
-  /**
-   * Update Multiple Items
-   * @description Update multiple event_listener items at the same time.
-   */
-  updateItemsEventListener: {
-    parameters: {
-      query?: {
-        fields?: components["parameters"]["Fields"];
-        limit?: components["parameters"]["Limit"];
-        meta?: components["parameters"]["Meta"];
-        offset?: components["parameters"]["Offset"];
-        sort?: components["parameters"]["Sort"];
-        filter?: components["parameters"]["Filter"];
-        search?: components["parameters"]["Search"];
-      };
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["ItemsEventListener"][] | components["schemas"]["ItemsEventListener"];
-      };
-    };
-    responses: {
-      /** @description Successful request */
-      200: {
-        content: {
-          "application/json": {
-            data?: components["schemas"]["ItemsEventListener"][];
-          };
-        };
-      };
-    };
-  };
-  /**
-   * Retrieve an Item
-   * @description Retrieve a single event_listener item by unique identifier.
-   */
-  readSingleItemsEventListener: {
-    parameters: {
-      query?: {
-        fields?: components["parameters"]["Fields"];
-        meta?: components["parameters"]["Meta"];
-        version?: components["parameters"]["Version"];
-      };
-      path: {
-        /** @description Index of the item. */
-        id: number | string;
-      };
-    };
-    responses: {
-      /** @description Successful request */
-      200: {
-        content: {
-          "application/json": {
-            data?: components["schemas"]["ItemsEventListener"];
-          };
-        };
-      };
-      401: components["responses"]["UnauthorizedError"];
-      404: components["responses"]["NotFoundError"];
-    };
-  };
-  /**
-   * Delete an Item
-   * @description Delete an existing event_listener item.
-   */
-  deleteSingleItemsEventListener: {
-    parameters: {
-      path: {
-        /** @description Index of the item. */
-        id: number | string;
-      };
-    };
-    responses: {
-      /** @description Successful request */
-      200: {
-        content: never;
-      };
-      401: components["responses"]["UnauthorizedError"];
-      404: components["responses"]["NotFoundError"];
-    };
-  };
-  /**
-   * Update an Item
-   * @description Update an existing event_listener item.
-   */
-  updateSingleItemsEventListener: {
-    parameters: {
-      query?: {
-        fields?: components["parameters"]["Fields"];
-        meta?: components["parameters"]["Meta"];
-      };
-      path: {
-        /** @description Index of the item. */
-        id: number | string;
-      };
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["ItemsEventListener"];
-      };
-    };
-    responses: {
-      /** @description Successful request */
-      200: {
-        content: {
-          "application/json": {
-            data?: components["schemas"]["ItemsEventListener"];
-          };
-        };
-      };
-      401: components["responses"]["UnauthorizedError"];
-      404: components["responses"]["NotFoundError"];
-    };
-  };
-  /**
-   * List Items
    * @description List the certificates items.
    */
   readItemsCertificates: {
@@ -6877,6 +6695,189 @@ export interface operations {
         content: {
           "application/json": {
             data?: components["schemas"]["ItemsCertificates"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * List Items
+   * @description List the event_listener items.
+   */
+  readItemsEventListener: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsEventListener"][];
+            meta?: components["schemas"]["x-metadata"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Create an Item
+   * @description Create a new event_listener item.
+   */
+  createItemsEventListener: {
+    parameters: {
+      query?: {
+        meta?: components["parameters"]["Meta"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsEventListener"][] | components["schemas"]["ItemsEventListener"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsEventListener"][];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Delete Multiple Items
+   * @description Delete multiple existing event_listener items.
+   */
+  deleteItemsEventListener: {
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Update Multiple Items
+   * @description Update multiple event_listener items at the same time.
+   */
+  updateItemsEventListener: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsEventListener"][] | components["schemas"]["ItemsEventListener"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsEventListener"][];
+          };
+        };
+      };
+    };
+  };
+  /**
+   * Retrieve an Item
+   * @description Retrieve a single event_listener item by unique identifier.
+   */
+  readSingleItemsEventListener: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+        version?: components["parameters"]["Version"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsEventListener"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Delete an Item
+   * @description Delete an existing event_listener item.
+   */
+  deleteSingleItemsEventListener: {
+    parameters: {
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Update an Item
+   * @description Update an existing event_listener item.
+   */
+  updateSingleItemsEventListener: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsEventListener"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsEventListener"];
           };
         };
       };
@@ -7621,8 +7622,8 @@ export interface operations {
 
 export type Schema = {
   certificateauthority_account: components["schemas"]["ItemsCertificateauthorityAccount"][];
-  event_listener: components["schemas"]["ItemsEventListener"][];
   certificates: components["schemas"]["ItemsCertificates"][];
+  event_listener: components["schemas"]["ItemsEventListener"][];
   shared_config: components["schemas"]["ItemsSharedConfig"][];
   challenge_config: components["schemas"]["ItemsChallengeConfig"][];
   certificateauthority_config: components["schemas"]["ItemsCertificateauthorityConfig"][];
