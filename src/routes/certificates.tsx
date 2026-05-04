@@ -256,10 +256,8 @@ function CertificatesPage() {
                             ? new Date(c.date_created).toLocaleString()
                             : "—"}
                         </TableCell>
-                        <TableCell className="text-muted-foreground text-xs">
-                          {c.expires_at
-                            ? new Date(c.expires_at).toLocaleString()
-                            : "—"}
+                        <TableCell>
+                          <ExpiryBadge expiresAt={c.expires_at} />
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
