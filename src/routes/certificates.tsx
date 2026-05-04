@@ -156,7 +156,8 @@ function CertificatesPage() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-5xl px-6 py-10">
+      <section className="mx-auto max-w-5xl px-6 py-10 space-y-6">
+        <CertificateStatsCards certs={certs} />
         <Card>
           <CardHeader>
             <CardTitle>Your certificates</CardTitle>
