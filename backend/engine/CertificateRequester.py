@@ -4,6 +4,7 @@ import tempfile
 
 from flask import config
 
+from engine.events.EventDispatcher import EventDispatcher
 from engine.authorities.CloudflareOriginCA import CloudflareOriginCA
 from engine.authorities.LetsEncryptCA import LetsEncryptCA
 
@@ -28,7 +29,10 @@ from collections import defaultdict
 class CertificateRequester:
     def __init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)
-    
+        
+        self.event_dispatcher = EventDispatcher()        
+        self.event_dispatcher.load()
+        
     def get_avaliable_challenges(self):
         return {
             "CLOUDFLARE_DNS" : {
@@ -155,6 +159,12 @@ class CertificateRequester:
         try:  
             self.logger.debug(f"Processing certificate request {request.id} for domain {request.domain} and user {request.issue_to}")
             
+            self.event_dispatcher.dispatch("cert.requested", request.issue_to, {
+                "request_id": request.id,
+                "domain": request.domain,
+                'user_id': request.issue_to
+            })
+            
             userRepo = UserRepository()
             
             self.logger.debug(f"Retrieving challenge and CA config for user {request.issue_to}")        
@@ -269,6 +279,13 @@ class CertificateRequester:
                 backendClient.update("certificates", cert['id'], {
                     "is_active": False
                 })
+            
+            self.event_dispatcher.dispatch("cert.issued", request.issue_to, {
+                "request_id": request.id,
+                "domain": request.domain,
+                'user_id': request.issue_to,
+                "certificate_id": new_certificate.get('id')
+            })
             
             self.logger.debug(f"Certificate request {request.id} marked as ISSUED with certificate ID: {new_certificate.get('id')}")
         except Exception as e:

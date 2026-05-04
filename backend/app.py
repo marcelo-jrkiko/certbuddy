@@ -2,6 +2,7 @@ import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
+from engine.events.EventDispatcher import EventDispatcher
 from startup import startup
 from controllers.CertificateController import register_certificate_routes
 from controllers.EngineController import register_engine_routes

@@ -16,8 +16,8 @@ class CertificateRequestStatus(str, Enum):
 
 class CertificateRequestType(str, Enum):
     """Type enum for certificate requests."""
-    ISSUER = "issuer"
-    PULLER = "puller"
+    ISSUER = "Issuer"
+    PULLER = "Puller"
 
 class CertificateRequest(BaseModel):
     """Model for certificate request."""

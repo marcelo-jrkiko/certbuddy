@@ -122,6 +122,30 @@ collections:
       versioning: false
     schema:
       name: challenge_config
+  - collection: event_listener
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: event_listener
+      color: null
+      display_template: null
+      group: null
+      hidden: false
+      icon: null
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: null
+      sort_field: null
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: event_listener
   - collection: shared_config
     meta:
       accountability: all
@@ -1653,6 +1677,132 @@ fields:
       has_auto_increment: false
       foreign_key_table: shared_config
       foreign_key_column: id
+  - collection: event_listener
+    field: id
+    type: uuid
+    meta:
+      collection: event_listener
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      searchable: true
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: event_listener
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_indexed: false
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: event_listener
+    field: event_user
+    type: uuid
+    meta:
+      collection: event_listener
+      conditions: null
+      display: null
+      display_options: null
+      field: event_user
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{first_name}}'
+      readonly: false
+      required: false
+      searchable: true
+      sort: 2
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: event_user
+      table: event_listener
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: event_listener
+    field: event_flow
+    type: uuid
+    meta:
+      collection: event_listener
+      conditions: null
+      display: null
+      display_options: null
+      field: event_flow
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        enableCreate: false
+        template: '{{name}}'
+      readonly: false
+      required: false
+      searchable: true
+      sort: 3
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: event_flow
+      table: event_listener
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_flows
+      foreign_key_column: id
   - collection: shared_config
     field: id
     type: uuid
@@ -2081,6 +2231,48 @@ relations:
       foreign_key_table: shared_config
       foreign_key_column: id
       constraint_name: challenge_config_merged_config_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: event_listener
+    field: event_user
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: event_listener
+      many_field: event_user
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: event_listener
+      column: event_user
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: event_listener_event_user_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: event_listener
+    field: event_flow
+    related_collection: directus_flows
+    meta:
+      junction_field: null
+      many_collection: event_listener
+      many_field: event_flow
+      one_allowed_collections: null
+      one_collection: directus_flows
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: event_listener
+      column: event_flow
+      foreign_key_table: directus_flows
+      foreign_key_column: id
+      constraint_name: event_listener_event_flow_foreign
       on_update: NO ACTION
       on_delete: SET NULL
   - collection: shared_config

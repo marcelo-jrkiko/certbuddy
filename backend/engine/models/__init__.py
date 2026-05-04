@@ -16,6 +16,9 @@ from .certificate import (
 from .challenge_config import (
     ChallengeConfig,
 )
+from .event_listener import (
+    EventListener,
+)
 from .shared_config import (
     SharedConfig,
 )
@@ -27,5 +30,6 @@ __all__ = [
     "CertificateAuthorityConfig",
     "Certificate",
     "ChallengeConfig",
+    "EventListener",
     "SharedConfig",
 ]

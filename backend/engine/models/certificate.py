@@ -8,8 +8,8 @@ from pydantic import BaseModel, Field
 class Certificate(BaseModel):
     """Model for certificate."""
     id: Optional[str] = Field(None, description="UUID identifier")
-    common_name: Optional[str] = Field(None, description="Common name / domain")
-    issued_to: Optional[str] = Field(None, description="UUID of the user this certificate is issued to")
+    common_name: str = Field(..., description="Common name / domain")
+    issued_to: str = Field(..., description="UUID of the user this certificate is issued to")
     is_active: bool = Field(default=False, description="Whether the certificate is active")
     tags: Optional[list[str]] = Field(None, description="Tags for categorizing certificates")
     certificate_file: Optional[str] = Field(None, description="UUID of the certificate file")

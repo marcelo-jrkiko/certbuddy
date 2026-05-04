@@ -7,6 +7,7 @@ import tempfile
 
 from flask import Blueprint, request, send_file
 import zipfile
+from backend.engine.events.EventDispatcher import EventDispatcher
 from helpers.CertificateViewer import CertificateViewer
 from helpers.Auth import require_bearer_token
 from helpers.DataBackend import BackendClient
@@ -262,6 +263,13 @@ def register_certificate_routes(app):
                 "is_active": True,
                 "expires_at": cert_details.get("not_valid_after") if cert_details else None,
                 "type" : "imported"
+            })
+            
+            eventDispatcher = EventDispatcher()
+            eventDispatcher.dispatch("cert.uploaded", user_id, {
+                "domain": common_name,
+                'user_id': user_id,
+                "certificate_id": new_certificate.get('id')
             })
             
             return new_certificate, 201

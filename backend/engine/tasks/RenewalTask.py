@@ -1,6 +1,9 @@
 import logging
+
+from engine.events.EventDispatcher import EventDispatcher
 from engine.CertificateRequester import CertificateRequester
 from helpers.DataBackend import getMasterBackendClient
+
 import datetime
 
 class RenewalTask:
@@ -8,6 +11,7 @@ class RenewalTask:
         self.requester = CertificateRequester()
         self.started_threads = set()
         self.logger = logging.getLogger(__name__)
+        self.event_dispatcher = EventDispatcher()
     
     def run(self):
         backend = getMasterBackendClient()
@@ -25,6 +29,12 @@ class RenewalTask:
             
         for cert in expiring_certs:
             self.logger.info(f"Certificate {cert['id']} is expiring at {cert['expires_at']}. Requesting renewal...")
+            
+            self.event_dispatcher.dispatch("cert.expired", cert['issue_to'], {
+                "request_id": cert['id'],
+                "domain": cert['domain'],
+                'user_id': cert['issue_to']
+            })
             
             # Find the last certificate request for this certificate
             cert_requests = backend.search("certificate_request", {

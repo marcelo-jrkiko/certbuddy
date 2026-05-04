@@ -10,7 +10,7 @@ class SharedConfig(BaseModel):
     id: Optional[str] = Field(None, description="UUID identifier")
     user_created: Optional[str] = Field(None, description="UUID of the user who created this")
     date_created: Optional[datetime] = Field(None, description="Creation timestamp")
-    key: Optional[str] = Field(None, description="Configuration key")
+    key: str = Field(..., description="Configuration key (unique)")
     config: Optional[dict[str, Any]] = Field(None, description="Configuration data")
 
     class Config:

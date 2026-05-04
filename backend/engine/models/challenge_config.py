@@ -10,7 +10,7 @@ class ChallengeConfig(BaseModel):
     user_created: Optional[str] = Field(None, description="UUID of the user who created this")
     challenge_key: Optional[str] = Field(None, description="Challenge key")
     config: Optional[dict[str, Any]] = Field(None, description="Configuration data")
-    domain: Optional[str] = Field(None, description="Domain")
+    domain: str = Field(default='*', description="Domain")
     merged_config: Optional[str] = Field(None, description="UUID of merged shared configuration")
 
     class Config:
