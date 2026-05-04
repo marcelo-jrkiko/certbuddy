@@ -56,5 +56,5 @@ class SFTPFileHttpChallenge(HttpChallenge):
             f.write(content)
         sftp.close()
         ssh.close() 
-        self.logger.debug(f"Applied SFTPFileHttpChallenge for domain {domain} with key {key} at path {self.challenge_path} on remote host {remote_host}")
+        self.logger.info(f"Applied SFTPFileHttpChallenge for domain {domain} with key {key} at path {self.challenge_path} on remote host {remote_host}")
         

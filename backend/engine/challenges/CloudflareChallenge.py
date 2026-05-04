@@ -20,7 +20,7 @@ class CloudflareDnsChallenge(DnsChallenge):
             raise ValueError("Cloudflare API token is required but not configured")
         
         cf = Cloudflare(api_token=api_token)            
-        self.logger.debug(f"Applying Cloudflare DNS challenge for domain {domain} with key {key}")
+        self.logger.info(f"Applying Cloudflare DNS challenge for domain {domain} with key {key}")
         
         if zone_id is None:
             zone_id = get_zone_id(cf, domain)
@@ -30,7 +30,7 @@ class CloudflareDnsChallenge(DnsChallenge):
             raise Exception(f"Could not find Cloudflare zone for domain {domain}")  
         
         
-        self.logger.debug(f"Using Cloudflare zone ID {zone_id} for domain {domain}")                
+        self.logger.info(f"Using Cloudflare zone ID {zone_id} for domain {domain}")                
         record_name = f"{key}.{domain}"
         
         try:
@@ -52,7 +52,7 @@ class CloudflareDnsChallenge(DnsChallenge):
                     content=token,
                     ttl=120
                 )
-                self.logger.debug(f"Updated existing Cloudflare DNS record for {record_name} with token")
+                self.logger.info(f"Updated existing Cloudflare DNS record for {record_name} with token")
             except Exception as e:
                 self.logger.error(f"Failed to update DNS record {record_id}: {e}")
                 raise
@@ -65,7 +65,7 @@ class CloudflareDnsChallenge(DnsChallenge):
                     content=token,
                     ttl=120
                 )
-                self.logger.debug(f"Created new Cloudflare DNS record for {record_name} with token")
+                self.logger.info(f"Created new Cloudflare DNS record for {record_name} with token")
             except Exception as e:
                 self.logger.error(f"Failed to create DNS record for {record_name}: {e}")
                 raise

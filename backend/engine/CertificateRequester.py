@@ -113,7 +113,7 @@ class CertificateRequester:
             }
         
         thread.start()
-        self.logger.debug(f"Started certificate request processing in thread {thread_id}")
+        self.logger.info(f"Started certificate request processing in thread {thread_id}")
         
         request.config = request.config or {}
         request.config["thread_id"] = thread_id
@@ -192,7 +192,7 @@ class CertificateRequester:
         backendClient = getMasterBackendClient()  
              
         try:  
-            self.logger.debug(f"Processing certificate request {request.id} for domain {request.domain} and user {request.issue_to}")
+            self.logger.info(f"Processing certificate request {request.id} for domain {request.domain} and user {request.issue_to}")
             
             self.event_dispatcher.dispatch("cert.requested", request.issue_to, {
                 "request_id": request.id,
@@ -202,7 +202,7 @@ class CertificateRequester:
             
             userRepo = UserRepository()
             
-            self.logger.debug(f"Retrieving challenge and CA config for user {request.issue_to}")        
+            self.logger.info(f"Retrieving challenge and CA config for user {request.issue_to}")        
             # Get the Challenge Config for the request challenge
             challenge_config = userRepo.get_challenge_config(request.issue_to, request.challenge_type, request.domain)
                         
@@ -226,7 +226,7 @@ class CertificateRequester:
             ca_config = userRepo.merge_shared_config(request.issue_to, ca_config)
             
             # Instantiate the Challenge and CA classes based on the request
-            self.logger.debug(f"Instantiating challenge and CA for request {request.id} - Challenge: {request.challenge_type}, CA: {request.certificate_authority}")
+            self.logger.info(f"Instantiating challenge and CA for request {request.id} - Challenge: {request.challenge_type}, CA: {request.certificate_authority}")
             
             challenge_class = self.get_avaliable_challenges().get(request.challenge_type)
             ca_class = self.get_avaliable_certificate_authorities().get(request.certificate_authority)
@@ -235,12 +235,12 @@ class CertificateRequester:
             ca_obj = ca_class["class"]()        
             
             # Loads the challenge and CA configuration
-            self.logger.debug(f"Configuring challenge and CA for request {request.id}")
+            self.logger.info(f"Configuring challenge and CA for request {request.id}")
             challenge_obj.configure(challenge_config.get('config'))
             ca_obj.configure(ca_config.get('config'))
             
             # Call the CA to issue the certificate based on the request and challenge
-            self.logger.debug(f"Issuing certificate for request {request.id}")
+            self.logger.info(f"Issuing certificate for request {request.id}")
             ca_response : CA_Response = ca_obj.issue(request, challenge_obj)
             
             if not ca_response.get("okay"):
@@ -248,7 +248,7 @@ class CertificateRequester:
                 raise Exception(f"Certificate issuance failed: {ca_response.get('error_message')}")
             
             # Store the issued certificate and key in the storage 
-            self.logger.debug(f"Storing issued certificate for request {request.id} in storage")
+            self.logger.info(f"Storing issued certificate for request {request.id} in storage")
             
             cert_filename = f"{request.domain}_{request.issue_to[0:8]}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
             
@@ -262,7 +262,7 @@ class CertificateRequester:
                 f.write(ca_response.get("certificate_key").encode())
             
             # Upload certificate and key files to Directus
-            self.logger.debug(f"Uploading certificate and key files for request {request.id} to Directus")
+            self.logger.info(f"Uploading certificate and key files for request {request.id} to Directus")
             with open(temp_cert_file, 'rb') as cert_f:
                 cert_data = backendClient.upload_file(cert_f, f"{cert_filename}.crt")
             
@@ -277,7 +277,7 @@ class CertificateRequester:
                 self.logger.error(f"Failed to upload certificate or key for request {request.id}")
                 raise Exception("Failed to upload certificate or key")
             
-            self.logger.debug(f"Certificate and key files uploaded for request {request.id} with cert_file_id: {cert_file_id} and key_file_id: {key_file_id}")
+            self.logger.info(f"Certificate and key files uploaded for request {request.id} with cert_file_id: {cert_file_id} and key_file_id: {key_file_id}")
             
             # tags
             tags = request.config.get("tags", []) if request.config else []
@@ -294,7 +294,7 @@ class CertificateRequester:
                 "type" : "issued"
             })
             
-            self.logger.debug(f"New certificate record created for request {request.id} with certificate ID: {new_certificate.get('id')}")
+            self.logger.info(f"New certificate record created for request {request.id} with certificate ID: {new_certificate.get('id')}")
 
             # Update the request with the certificate details and mark it as completed
             backendClient.update("certificate_request", request.id, {
@@ -322,7 +322,7 @@ class CertificateRequester:
                 "certificate_id": new_certificate.get('id')
             })
             
-            self.logger.debug(f"Certificate request {request.id} marked as ISSUED with certificate ID: {new_certificate.get('id')}")
+            self.logger.info(f"Certificate request {request.id} marked as ISSUED with certificate ID: {new_certificate.get('id')}")
         except Exception as e:
             self.logger.error(f"Error processing certificate request {request.id}: {str(e)}")            
             

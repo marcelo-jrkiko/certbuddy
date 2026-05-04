@@ -26,6 +26,6 @@ class LocalFileHttpChallenge(HttpChallenge):
         with open(self.challenge_path, "w") as f:
             f.write(content)            
             
-        self.logger.debug(f"Applied LocalFileHttpChallenge for domain {domain} with key {key} at path {self.challenge_path}")
+        self.logger.info(f"Applied LocalFileHttpChallenge for domain {domain} with key {key} at path {self.challenge_path}")
         
         

@@ -115,12 +115,12 @@ class LetsEncryptCA(BaseCertificateAuthority):
         csr_pem, private_key = CSR.generate_csr(request.domain)
     
         # TODO: Check the last order time in the account, see if we need to wait before placing a new order
-        self.logger.debug(f"Placing new order for domain {request.domain} with account URI {account_uri}")
+        self.logger.info(f"Placing new order for domain {request.domain} with account URI {account_uri}")
         order = None
         try:
             # Create the order
             order = acme_client.new_order(csr_pem)
-            self.logger.debug(f"Order created successfully for domain {request.domain}, order URI: {order.uri}")
+            self.logger.info(f"Order created successfully for domain {request.domain}, order URI: {order.uri}")
         except Exception as e:
             self.logger.error(f"Error creating order: {e}")
             raise
@@ -138,7 +138,7 @@ class LetsEncryptCA(BaseCertificateAuthority):
             self.logger.error(f"No {challenge_type} challenge found for order {order.uri}")
             raise Exception(f"No {challenge_type} challenge found for order")
         
-        self.logger.debug(f"{challenge_type} challenge found for domain {request.domain}, challenge URI: {challenge_details.uri}")
+        self.logger.info(f"{challenge_type} challenge found for domain {request.domain}, challenge URI: {challenge_details.uri}")
         
         return challenge_details, account_key, acme_client, order, private_key
       
