@@ -168,14 +168,15 @@ function DashboardPage() {
                   <TableRow>
                     <TableHead>Common name</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Expired</TableHead>
+                    <TableHead>Expires</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {certs.map((c) => {
-                    const expired =
-                      !!c.expires_at &&
-                      new Date(c.expires_at).getTime() < Date.now();
+                    const notExpired =
+                      !c.expires_at ||
+                      new Date(c.expires_at).getTime() >= Date.now();
                     return (
                       <TableRow key={c.id}>
                         <TableCell className="font-medium">
@@ -191,12 +192,19 @@ function DashboardPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          {expired ? (
-                            <Badge variant="destructive">Expired</Badge>
-                          ) : (
-                            <span className="text-muted-foreground text-xs">
-                              No
-                            </span>
+                          <ExpiryBadge expiresAt={c.expires_at} />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {notExpired && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={busyId === c.id}
+                              onClick={() => handleDownload(c)}
+                            >
+                              <Download className="mr-1 h-4 w-4" />
+                              Download
+                            </Button>
                           )}
                         </TableCell>
                       </TableRow>
