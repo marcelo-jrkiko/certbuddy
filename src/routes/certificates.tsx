@@ -231,13 +231,7 @@ function CertificatesPage() {
                     {certs.map((c) => (
                       <TableRow key={c.id}>
                         <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            {c.expires_at &&
-                              new Date(c.expires_at).getTime() < Date.now() && (
-                                <Badge variant="destructive">Expired</Badge>
-                              )}
-                            <span>{c.common_name}</span>
-                          </div>
+                          {c.common_name}
                         </TableCell>
                         <TableCell>
                           {c.is_active ? (
