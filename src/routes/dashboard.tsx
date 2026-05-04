@@ -17,6 +17,10 @@ import {
   type DirectusUser,
 } from "@/lib/directus";
 import { certificatesService, type Certificate } from "@/lib/certificates";
+import { ExpiryBadge } from "@/components/certificates/ExpiryBadge";
+import { CertificateStatsCards } from "@/components/certificates/CertificateStatsCards";
+import { toast } from "sonner";
+import { Download } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -36,6 +40,18 @@ function DashboardPage() {
   const [certs, setCerts] = useState<Certificate[]>([]);
   const [certsLoading, setCertsLoading] = useState(true);
   const [certsError, setCertsError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function handleDownload(c: Certificate) {
+    setBusyId(c.id);
+    try {
+      await certificatesService.downloadCertificate(c.id, c.common_name ?? c.id);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to download");
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   useEffect(() => {
     if (!directusService.isAuthenticated()) {
@@ -117,6 +133,8 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
+        <CertificateStatsCards certs={certs} />
+
         <Card>
           <CardHeader className="flex-row items-start justify-between space-y-0">
             <div>
@@ -150,14 +168,15 @@ function DashboardPage() {
                   <TableRow>
                     <TableHead>Common name</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Expired</TableHead>
+                    <TableHead>Expires</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {certs.map((c) => {
-                    const expired =
-                      !!c.expires_at &&
-                      new Date(c.expires_at).getTime() < Date.now();
+                    const notExpired =
+                      !c.expires_at ||
+                      new Date(c.expires_at).getTime() >= Date.now();
                     return (
                       <TableRow key={c.id}>
                         <TableCell className="font-medium">
@@ -173,12 +192,19 @@ function DashboardPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          {expired ? (
-                            <Badge variant="destructive">Expired</Badge>
-                          ) : (
-                            <span className="text-muted-foreground text-xs">
-                              No
-                            </span>
+                          <ExpiryBadge expiresAt={c.expires_at} />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {notExpired && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={busyId === c.id}
+                              onClick={() => handleDownload(c)}
+                            >
+                              <Download className="mr-1 h-4 w-4" />
+                              Download
+                            </Button>
                           )}
                         </TableCell>
                       </TableRow>

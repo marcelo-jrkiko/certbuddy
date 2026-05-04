@@ -49,6 +49,8 @@ import {
 import { CheckCircle2, Trash2, Upload, Plus, FilePlus, Download } from "lucide-react";
 import { RequestCertificateDialog } from "@/components/certificates/RequestCertificateDialog";
 import { CertificateRequestsTable } from "@/components/certificates/CertificateRequestsTable";
+import { ExpiryBadge } from "@/components/certificates/ExpiryBadge";
+import { CertificateStatsCards } from "@/components/certificates/CertificateStatsCards";
 
 export const Route = createFileRoute("/certificates")({
   head: () => ({
@@ -154,7 +156,8 @@ function CertificatesPage() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-5xl px-6 py-10">
+      <section className="mx-auto max-w-5xl px-6 py-10 space-y-6">
+        <CertificateStatsCards certs={certs} />
         <Card>
           <CardHeader>
             <CardTitle>Your certificates</CardTitle>
@@ -228,13 +231,7 @@ function CertificatesPage() {
                     {certs.map((c) => (
                       <TableRow key={c.id}>
                         <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            {c.expires_at &&
-                              new Date(c.expires_at).getTime() < Date.now() && (
-                                <Badge variant="destructive">Expired</Badge>
-                              )}
-                            <span>{c.common_name}</span>
-                          </div>
+                          {c.common_name}
                         </TableCell>
                         <TableCell>
                           {c.is_active ? (
@@ -259,10 +256,8 @@ function CertificatesPage() {
                             ? new Date(c.date_created).toLocaleString()
                             : "—"}
                         </TableCell>
-                        <TableCell className="text-muted-foreground text-xs">
-                          {c.expires_at
-                            ? new Date(c.expires_at).toLocaleString()
-                            : "—"}
+                        <TableCell>
+                          <ExpiryBadge expiresAt={c.expires_at} />
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
