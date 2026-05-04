@@ -9,6 +9,7 @@ class EventListener(BaseModel):
     id: Optional[str] = Field(None, description="UUID identifier")
     event_user: Optional[str] = Field(None, description="UUID of the user associated with this event")
     event_flow: Optional[str] = Field(None, description="UUID of the flow associated with this event")
+    event_id: Optional[str] = Field(None, description="Event identifier (e.g. cert.uploaded)")
 
     class Config:
         from_attributes = True

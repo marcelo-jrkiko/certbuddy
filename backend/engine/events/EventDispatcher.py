@@ -18,7 +18,7 @@ class EventDispatcher:
     def dispatch(self, event_id: str, user_id: str, payload: dict):
         """Dispatch an event to the appropriate listeners."""
         self.logger.info(f"Dispatching event '{event_id}' for user '{user_id}'")
-        listeners = self.get_listeners_for_user(user_id)
+        listeners = self.get_listeners_for_user(user_id, event_id)
         self.logger.info(f"Found {len(listeners)} listeners for user '{user_id}'")
         for listener in listeners:
             self.logger.info(f"Processing listener '{listener.id}' for event '{event_id}'")
@@ -38,8 +38,11 @@ class EventDispatcher:
                 self.logger.error(f"Error dispatching event '{event_id}' to listener '{listener.id}': {e}")
                          
         
-    def get_listeners_for_user(self, user_id: str) -> list[EventListener]:
+    def get_listeners_for_user(self, user_id: str, event_id: str = None) -> list[EventListener]:
         """Get event listeners for a specific user."""
+        if event_id:
+            return [listener for listener in self._listeners if listener.event_user == user_id and listener.event_id == event_id]
+        
         return [listener for listener in self._listeners if listener.event_user == user_id]
     
     def load(self):
