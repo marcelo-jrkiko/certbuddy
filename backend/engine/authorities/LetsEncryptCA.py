@@ -2,7 +2,7 @@
 
 import josepy
 
-from backend.engine.challenges.HttpChallenge import HttpChallenge
+from engine.challenges.HttpChallenge import HttpChallenge
 from engine.models.certificate_request import CertificateRequest, CertificateRequestType
 from engine.repositories.UserRepository import UserRepository
 from engine.repositories.CA_AccountRepository import CA_AccountRepository

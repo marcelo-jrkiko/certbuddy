@@ -152,7 +152,42 @@ class CertificateRequester:
             }
     
     
+    def renew_certificate(self, certificate_id: str):
+        """Renew a certificate by its ID"""
+        backend = getMasterBackendClient()
+        cert = backend.get("certificates", certificate_id)
         
+        self.event_dispatcher.dispatch("cert.expired", cert['issue_to'], {
+                "request_id": cert['id'],
+                "domain": cert['domain'],
+                'user_id': cert['issue_to']
+            })
+            
+        # Find the last certificate request for this certificate
+        cert_requests = backend.search("certificate_request", {
+            "certificate": cert['id'],
+            "status": "issued"
+        }, sort="-date_created", limit=1)
+        
+        
+        # Create a new certificate request with the same domain and configuration
+        last_request = cert_requests[0]
+        new_request = {
+            "domain": cert['domain'],
+            "issue_to": last_request['issue_to'],
+            "challenge_type": last_request['challenge_type'],
+            "certificate_authority": last_request['certificate_authority'],
+            "config": last_request['config'],
+            "status": "pending",
+            "date_created": datetime.datetime.now().isoformat(),
+            "type": last_request['type']
+        }
+        
+        created_request = backend.create("certificate_request", new_request)
+        self.logger.info(f"Created renewal request {created_request['id']} for certificate {cert['id']}")
+        
+        return self.start_request_async(created_request)
+    
     def process_request(self, request: CertificateRequest):         
         backendClient = getMasterBackendClient()  
              
@@ -297,4 +332,11 @@ class CertificateRequester:
             backendClient.update("certificate_request", request.id, {
                 "status": CertificateRequestStatus.FAILED,
                 "config": request.config
+            })
+            
+            self.event_dispatcher.dispatch("cert.failed", request.issue_to, {
+                "request_id": request.id,
+                "domain": request.domain,
+                'user_id': request.issue_to,
+                "error": str(e)
             })

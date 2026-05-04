@@ -7,7 +7,7 @@ import tempfile
 
 from flask import Blueprint, request, send_file
 import zipfile
-from backend.engine.events.EventDispatcher import EventDispatcher
+from engine.events.EventDispatcher import EventDispatcher
 from helpers.CertificateViewer import CertificateViewer
 from helpers.Auth import require_bearer_token
 from helpers.DataBackend import BackendClient

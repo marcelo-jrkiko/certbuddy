@@ -24,47 +24,14 @@ class RenewalTask:
             "expires_at": {
                 "_lte": expire_limit.isoformat()
             }
-        })
-        
+        })        
             
         for cert in expiring_certs:
             self.logger.info(f"Certificate {cert['id']} is expiring at {cert['expires_at']}. Requesting renewal...")
-            
-            self.event_dispatcher.dispatch("cert.expired", cert['issue_to'], {
-                "request_id": cert['id'],
-                "domain": cert['domain'],
-                'user_id': cert['issue_to']
-            })
-            
-            # Find the last certificate request for this certificate
-            cert_requests = backend.search("certificate_request", {
-                "certificate": cert['id'],
-                "status": "issued"
-            }, sort="-date_created", limit=1)
-            
-            if not cert_requests:
-                self.logger.warning(f"No previous certificate request found for certificate {cert['id']}. Skipping renewal.")
-                continue
-            
-            # Create a new certificate request with the same domain and configuration
-            last_request = cert_requests[0]
-            new_request = {
-                "domain": cert['domain'],
-                "issue_to": last_request['issue_to'],
-                "challenge_type": last_request['challenge_type'],
-                "certificate_authority": last_request['certificate_authority'],
-                "config": last_request['config'],
-                "status": "pending",
-                "date_created": datetime.datetime.now().isoformat(),
-                "type": last_request['type']
-            }
-            
-            created_request = backend.create("certificate_request", new_request)
-            self.logger.info(f"Created renewal request {created_request['id']} for certificate {cert['id']}")
-            
-            thread = self.requester.start_request_async(created_request)
+                        
+            thread = self.requester.renew_certificate(cert['id'])
             self.started_threads.add(thread)
-            self.logger.info(f"Started renewal thread {thread} for request {created_request['id']}")
+            self.logger.info(f"Started renewal thread {thread} for certificate {cert['id']}")
                 
         # Wait for all threads to complete before exiting
         self.wait_for_threads()
