@@ -21,7 +21,6 @@ import { ExpiryBadge } from "@/components/certificates/ExpiryBadge";
 import { CertificateStatsCards } from "@/components/certificates/CertificateStatsCards";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
-import { useState as _useState } from "react";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
