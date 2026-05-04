@@ -22,6 +22,19 @@ class EventDispatcher:
         self.logger.info(f"Found {len(listeners)} listeners for user '{user_id}'")
         for listener in listeners:
             self.logger.info(f"Processing listener '{listener.id}' for event '{event_id}'")
+            
+            payload = payload if payload else {}
+            payload["event_id"] = event_id
+            payload["user_id"] = user_id
+            payload["listener_id"] = listener.id
+            
+            # Merge the config from the listener
+            if listener.config:
+                for key, value in listener.config.items():
+                    if key not in payload:
+                        payload[key] = value
+                   
+            
             try:
                 # Call the Directus Flow API to trigger the flow associated with this listener
                 self.backend._make_request(
