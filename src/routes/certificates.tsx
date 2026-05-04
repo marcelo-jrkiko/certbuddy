@@ -49,6 +49,8 @@ import {
 import { CheckCircle2, Trash2, Upload, Plus, FilePlus, Download } from "lucide-react";
 import { RequestCertificateDialog } from "@/components/certificates/RequestCertificateDialog";
 import { CertificateRequestsTable } from "@/components/certificates/CertificateRequestsTable";
+import { ExpiryBadge } from "@/components/certificates/ExpiryBadge";
+import { CertificateStatsCards } from "@/components/certificates/CertificateStatsCards";
 
 export const Route = createFileRoute("/certificates")({
   head: () => ({
