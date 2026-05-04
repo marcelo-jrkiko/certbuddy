@@ -40,6 +40,18 @@ function DashboardPage() {
   const [certs, setCerts] = useState<Certificate[]>([]);
   const [certsLoading, setCertsLoading] = useState(true);
   const [certsError, setCertsError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function handleDownload(c: Certificate) {
+    setBusyId(c.id);
+    try {
+      await certificatesService.downloadCertificate(c.id, c.common_name ?? c.id);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to download");
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   useEffect(() => {
     if (!directusService.isAuthenticated()) {
