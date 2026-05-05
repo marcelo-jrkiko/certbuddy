@@ -9,7 +9,7 @@ COPY . .
 RUN npm run build
 
 # ---------- Runtime stage ----------
-FROM node:24 as runtime
+FROM node:24 AS runtime
 WORKDIR /app
 
 COPY --from=builder /app/package.json ./
