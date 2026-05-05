@@ -155,11 +155,18 @@ def register_certificate_routes(app):
             # Get the list of certificates for the user from Directus
             client = BackendClient(app.config["core"], request.authdata['token'])
             
+            filters = {
+                "issued_to": {"_eq": user_id}
+            }
+            
+            if request.args.get("id"):
+                filters["id"] = {"_eq": request.args.get("id")}
+            elif request.args.get("common_name"):
+                filters["common_name"] = {"_icontains": request.args.get("common_name")}
+            
             # Get the certificates for the user
             certificates = client.search("certificates", 
-                {
-                    "issued_to": user_id
-                }, 
+                filters,
                 fields=["id", "common_name", "tags", "is_active", "date_updated", "date_created", "expires_at"]
             )
             
