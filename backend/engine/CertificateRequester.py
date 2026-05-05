@@ -282,6 +282,9 @@ class CertificateRequester:
             # tags
             tags = request.config.get("tags", []) if request.config else []
             
+            if isinstance(tags, str):
+                tags = [tag.strip() for tag in tags.split(",")]
+                        
             cert_details = CertificateViewer.get_details(temp_cert_file)                    
             new_certificate = backendClient.create("certificates", {
                 "issued_to": request.issue_to,
