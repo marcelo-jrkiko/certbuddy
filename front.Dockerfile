@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y apache2 && rm -rf /var/lib/apt/lists/*
 # Enable Apache modules for proxy
 RUN a2enmod proxy && \
     a2enmod proxy_http && \
-    a2enmod rewrite
+    a2enmod rewrite && \
+    a2enmod headers
 
 WORKDIR /app
 COPY . /app/
