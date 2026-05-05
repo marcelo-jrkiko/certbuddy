@@ -3,3 +3,6 @@
 dist
 node_modules
 .tanstack
+package-lock.json
+bun.lock
+bun.lockb
