@@ -41,3 +41,4 @@ __pycache__
 *.pyc
 src/routeTree.gen.ts
 package-lock.json
+shared/Dump.sql

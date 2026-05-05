@@ -57,7 +57,7 @@ services:
       - default
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8055/server/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8055/server/health"]
       interval: 10s
       timeout: 5s
       retries: 5
