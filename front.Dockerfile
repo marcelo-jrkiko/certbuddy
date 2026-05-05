@@ -1,24 +1,24 @@
 
-# Stage 1 - Build
 FROM node:24 AS builder
 WORKDIR /app
 
-COPY --exclude=backend/ . .
+COPY package*.json ./
+COPY tsconfig.json vite.config.ts ./
+COPY src ./src
+RUN npm install && npm run build
 
-RUN npm install && \
-    npm run build
-
-# Stage 2 - Runtime
 FROM node:24
 WORKDIR /app
 
-# Copy built application from builder
+COPY package*.json ./
+RUN npm install --production
+
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
+COPY .docker/front-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 80
-
 ENV PORT=80
-CMD ["node", "dist/server/index.js"]
+
+ENTRYPOINT [ "/entrypoint.sh" ]
 
