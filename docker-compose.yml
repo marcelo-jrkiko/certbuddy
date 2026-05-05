@@ -24,7 +24,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - data_backend
+      data_backend:
+        condition: service_healthy
     networks:
       - default
     restart: unless-stopped
@@ -55,6 +56,12 @@ services:
     networks:
       - default
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8055/server/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 
 volumes:
