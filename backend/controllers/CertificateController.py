@@ -7,11 +7,12 @@ import tempfile
 
 from flask import Blueprint, request, send_file
 import zipfile
+from engine.storage.BaseCertificateStorage import CertificateStorageFileType
 from engine.events.EventDispatcher import EventDispatcher
 from helpers.CertificateViewer import CertificateViewer
 from helpers.Auth import canhave_bearer_token, require_bearer_token
 from helpers.DataBackend import BackendClient, getMasterBackendClient
-
+import utils 
 
 certificates_blueprint = Blueprint('certificates', __name__, url_prefix='/certificates')
 
@@ -86,36 +87,30 @@ def register_certificate_routes(app):
             }, 404
         
         # Download the certificate and key files from Directus and return them as a zip file or similar for the user to download
-        temp_cert_file = tempfile.NamedTemporaryFile(delete=False, suffix=".crt")
-        temp_key_file = tempfile.NamedTemporaryFile(delete=False, suffix=".key")
+        storage = utils.get_certificate_storage(backend_client)
         
-        # Store paths and close file objects to prevent file handle conflicts
-        cert_path = temp_cert_file.name
-        key_path = temp_key_file.name
-        temp_cert_file.close()
-        temp_key_file.close()
         
         try:
-            backend_client.download_file(certificate[0].get("certificate_file"), cert_path)
-            backend_client.download_file(certificate[0].get("certificate_key"), key_path)
+            with storage.get(CertificateStorageFileType.CERTIFICATE, certificate[0].get("certificate_file")) as cert_path, \
+                 storage.get(CertificateStorageFileType.KEY, certificate[0].get("certificate_key")) as key_path:
             
-            # Create zip in memory
-            zip_buffer = io.BytesIO()
-            zip_filename = f"{certificate[0].get('common_name')}_{certificate_id}.zip"
-            
-            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
-                zipf.write(cert_path, f"{certificate[0].get('common_name')}.crt")
-                zipf.write(key_path, f"{certificate[0].get('common_name')}.key")
-            
-            # Prepare zip buffer for sending
-            zip_buffer.seek(0)
-            
-            return send_file(
-                zip_buffer,
-                mimetype='application/zip',
-                as_attachment=True,
-                download_name=zip_filename
-            )
+              # Create zip in memory
+              zip_buffer = io.BytesIO()
+              zip_filename = f"{certificate[0].get('common_name')}_{certificate_id}.zip"
+              
+              with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                  zipf.writestr(f"{certificate[0].get('common_name')}.crt", cert_path.read())
+                  zipf.writestr(f"{certificate[0].get('common_name')}.key", key_path.read())
+                              
+              # Prepare zip buffer for sending
+              zip_buffer.seek(0)
+              
+              return send_file(
+                  zip_buffer,
+                  mimetype='application/zip',
+                  as_attachment=True,
+                  download_name=zip_filename
+              )
         finally:
             # Clean up temporary files
             try:
@@ -246,28 +241,10 @@ def register_certificate_routes(app):
                 }, 400
             
             client = BackendClient(app.config["core"], request.authdata['token'])
+            storage = utils.get_certificate_storage(client)
             
-            # Generete a unique id for the certificate file name
-            cert_filename = f"{common_name}_{user_id[0:8]}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-            
-            # Copy the certificate to temporary files to be uploaded to directus and reutilized
-            temp_cert_file = f"{tempfile.gettempdir()}/{cert_filename}.crt"
-            with open(temp_cert_file, 'wb') as f:
-                f.write(cert_file.read())
-                
-            temp_key_file = f"{tempfile.gettempdir()}/{cert_filename}.key"
-            with open(temp_key_file, 'wb') as f:
-                f.write(key_file.read())
-            
-            # Upload certificate and key files to Directus
-            with open(temp_cert_file, 'rb') as cert_f:
-                cert_data = client.upload_file(cert_f, f"{cert_filename}.crt")
-            
-            with open(temp_key_file, 'rb') as key_f:
-                key_data = client.upload_file(key_f, f"{cert_filename}.key")
-            
-            cert_file_id = cert_data.get('id')
-            key_file_id = key_data.get('id')
+            cert_file_id = storage.store(CertificateStorageFileType.CERTIFICATE, user_id, common_name, cert_file)
+            key_file_id = storage.store(CertificateStorageFileType.KEY, user_id, common_name, key_file)
             
             if not cert_file_id or not key_file_id:
                 return {
@@ -283,7 +260,7 @@ def register_certificate_routes(app):
                     tags = []
             
             # Create a new certificate record in Directus with file references
-            cert_details = CertificateViewer.get_details(temp_cert_file)
+            cert_details = CertificateViewer.get_details(cert_file)
                         
             new_certificate = client.create("certificates", {
                 "issued_to": user_id,

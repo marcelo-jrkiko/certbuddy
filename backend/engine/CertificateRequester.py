@@ -4,6 +4,8 @@ import tempfile
 
 from flask import config
 
+from backend.engine.storage.BaseCertificateStorage import CertificateStorageFileType
+import utils
 from engine.events.EventDispatcher import EventDispatcher
 from engine.authorities.CloudflareOriginCA import CloudflareOriginCA
 from engine.authorities.LetsEncryptCA import LetsEncryptCA
@@ -249,29 +251,28 @@ class CertificateRequester:
             
             # Store the issued certificate and key in the storage 
             self.logger.info(f"Storing issued certificate for request {request.id} in storage")
+            storage = utils.get_certificate_storage(backendClient)
             
-            cert_filename = f"{request.domain}_{request.issue_to[0:8]}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+            cert_file_id = None
+            key_file_id = None
+            cert_details = None
             
             # create temporary files for the certificate and key
-            temp_cert_file = f"{tempfile.gettempdir()}/{cert_filename}.crt"
-            with open(temp_cert_file, 'wb') as f:
-                f.write(ca_response.get("certificate_file").encode())
+            temp_cert_file = tempfile.NamedTemporaryFile(delete=False, suffix=".crt").name
+            with open(temp_cert_file, 'wb') as cert_f:
+                cert_f.write(ca_response.get("certificate_file").encode())                
+                cert_f.seek(0)
+                cert_file_id = storage.store(CertificateStorageFileType.CERTIFICATE, request.issue_to, request.domain, cert_f)           
             
-            temp_key_file = f"{tempfile.gettempdir()}/{cert_filename}.key"
-            with open(temp_key_file, 'wb') as f:
-                f.write(ca_response.get("certificate_key").encode())
-            
-            # Upload certificate and key files to Directus
-            self.logger.info(f"Uploading certificate and key files for request {request.id} to Directus")
-            with open(temp_cert_file, 'rb') as cert_f:
-                cert_data = backendClient.upload_file(cert_f, f"{cert_filename}.crt")
-            
-            with open(temp_key_file, 'rb') as key_f:
-                key_data = backendClient.upload_file(key_f, f"{cert_filename}.key")
-            
-            cert_file_id = cert_data.get('id')
-            key_file_id = key_data.get('id')
-            
+            cert_details = CertificateViewer.get_details(temp_cert_file)                    
+                
+            # ---
+            temp_key_file = tempfile.NamedTemporaryFile(delete=False, suffix=".key").name
+            with open(temp_key_file, 'wb') as key_f:
+                key_f.write(ca_response.get("certificate_key").encode())
+                key_f.seek(0)
+                key_file_id = storage.store(CertificateStorageFileType.KEY, request.issue_to, request.domain, key_f)
+                      
             # 
             if not cert_file_id or not key_file_id:
                 self.logger.error(f"Failed to upload certificate or key for request {request.id}")
@@ -284,8 +285,7 @@ class CertificateRequester:
             
             if isinstance(tags, str):
                 tags = [tag.strip() for tag in tags.split(",")]
-                        
-            cert_details = CertificateViewer.get_details(temp_cert_file)                    
+                                  
             new_certificate = backendClient.create("certificates", {
                 "issued_to": request.issue_to,
                 "common_name": request.domain,
