@@ -139,35 +139,27 @@ def register_certificate_routes(app):
         # Download the certificate and key files from Directus and return them as a zip file or similar for the user to download
         storage = StorageBackend.get_certificate_storage(backend_client)
         
+      
+        with storage.get(CertificateStorageFileType.CERTIFICATE, certificate[0].get("certificate_file")) as cert_path, \
+             storage.get(CertificateStorageFileType.KEY, certificate[0].get("certificate_key")) as key_path:
         
-        try:
-            with storage.get(CertificateStorageFileType.CERTIFICATE, certificate[0].get("certificate_file")) as cert_path, \
-                 storage.get(CertificateStorageFileType.KEY, certificate[0].get("certificate_key")) as key_path:
+            # Create zip in memory
+            zip_buffer = io.BytesIO()
+            zip_filename = f"{certificate[0].get('common_name')}_{certificate_id}.zip"
             
-              # Create zip in memory
-              zip_buffer = io.BytesIO()
-              zip_filename = f"{certificate[0].get('common_name')}_{certificate_id}.zip"
-              
-              with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
-                  zipf.writestr(f"{certificate[0].get('common_name')}.crt", cert_path.read())
-                  zipf.writestr(f"{certificate[0].get('common_name')}.key", key_path.read())
-                              
-              # Prepare zip buffer for sending
-              zip_buffer.seek(0)
-              
-              return send_file(
-                  zip_buffer,
-                  mimetype='application/zip',
-                  as_attachment=True,
-                  download_name=zip_filename
-              )
-        finally:
-            # Clean up temporary files
-            try:
-                os.remove(cert_path)
-                os.remove(key_path)
-            except OSError:
-                pass
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                zipf.writestr(f"{certificate[0].get('common_name')}.crt", cert_path.read())
+                zipf.writestr(f"{certificate[0].get('common_name')}.key", key_path.read())
+                            
+            # Prepare zip buffer for sending
+            zip_buffer.seek(0)
+            
+            return send_file(
+                zip_buffer,
+                mimetype='application/zip',
+                as_attachment=True,
+                download_name=zip_filename
+            )
         
       except Exception as e:
         logging.getLogger(__name__).error(f"Error downloading certificate {certificate_id}: {e}")

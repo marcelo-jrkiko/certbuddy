@@ -34,7 +34,7 @@ class DataBackendCertificateStorage(BaseCertificateStorage):
         temp_cert_file = tempfile.NamedTemporaryFile(delete=False, suffix=f".{type}")
         cert_path = temp_cert_file.name
         
-        self.backend_client.download_file(file_id, cert_path)
+        self.backendClient.download_file(file_id, cert_path)
         
         return open(cert_path, 'rb')
 
