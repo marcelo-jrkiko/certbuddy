@@ -41,7 +41,55 @@ def register_certificate_routes(app):
       if not isGlobalMatch:
           filter["issued_to"] = {"_eq": request.authdata['user_data'].get('id')}
       
+      # Get the certificates for the user
       certificates = backend.search("certificates", filter, fields=["id", "common_name", "issued_to", "expires_at"])           
+      
+      # If no certificates found, break the doain into parts and try to find wildcard matches
+      if not certificates or len(certificates) == 0:
+          main_domain = utils.get_main_domain(domain)
+          remaining_parts = domain.replace(main_domain, "").strip(".")
+          
+          # Foreach remaining part and main domain, try to find wildcard matches
+          # examples:
+          #  domain: sub1.sub2.main.com -> try *.sub2.main.com, *.main.com
+          #  domain sub1.main.com -> try *.main.com
+          
+          if remaining_parts:
+              parts = remaining_parts.split(".")
+              # Try progressively shorter subdomain paths, skipping parts from the left
+              for i in range(1, len(parts)):
+                  wildcard_domain = "*." + ".".join(parts[i:]) + "." + main_domain
+                  
+                  wildcard_filter = {
+                      "common_name": {"_icontains": wildcard_domain},
+                      "is_active": True
+                  }
+                  
+                  if not isGlobalMatch:
+                      wildcard_filter["issued_to"] = {"_eq": request.authdata['user_data'].get('id')}
+                  
+                  wildcard_certificates = backend.search("certificates", wildcard_filter, 
+                                                         fields=["id", "common_name", "issued_to", "expires_at"])
+                  
+                  if wildcard_certificates:
+                      certificates = wildcard_certificates
+                      break
+          
+          # If still no certificates found, try wildcard on main domain itself
+          if not certificates or len(certificates) == 0:
+              wildcard_domain = "*." + main_domain
+              
+              wildcard_filter = {
+                  "common_name": {"_icontains": wildcard_domain},
+                  "is_active": True
+              }
+              
+              if not isGlobalMatch:
+                  wildcard_filter["issued_to"] = {"_eq": request.authdata['user_data'].get('id')}
+              
+              certificates = backend.search("certificates", wildcard_filter, 
+                                           fields=["id", "common_name", "issued_to", "expires_at"])
+      
       return certificates, 200
     
     @certificates_blueprint.route('/<certificate_id>/download', methods=['GET'])
