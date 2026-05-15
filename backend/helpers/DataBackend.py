@@ -45,7 +45,7 @@ class BackendClient:
             
             return response.json() if response.text else {}
         except requests.exceptions.RequestException as e:
-            logging.error(f"Backend request failed: {e} -> {response.text if response else 'No response'}")
+            logging.error(f"Backend request failed: {e} -> {response.text}")
             raise Exception(f"Failed to request the backend!")
 
     def get_user_info(self) -> Dict[str, Any]:

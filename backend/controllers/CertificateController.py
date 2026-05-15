@@ -12,6 +12,8 @@ from engine.events.EventDispatcher import EventDispatcher
 from helpers.CertificateViewer import CertificateViewer
 from helpers.Auth import canhave_bearer_token, require_bearer_token
 from helpers.DataBackend import BackendClient, getMasterBackendClient
+from engine.storage import StorageBackend
+
 import utils 
 
 certificates_blueprint = Blueprint('certificates', __name__, url_prefix='/certificates')
@@ -87,7 +89,7 @@ def register_certificate_routes(app):
             }, 404
         
         # Download the certificate and key files from Directus and return them as a zip file or similar for the user to download
-        storage = utils.get_certificate_storage(backend_client)
+        storage = StorageBackend.get_certificate_storage(backend_client)
         
         
         try:
@@ -241,10 +243,10 @@ def register_certificate_routes(app):
                 }, 400
             
             client = BackendClient(app.config["core"], request.authdata['token'])
-            storage = utils.get_certificate_storage(client)
+            storage = StorageBackend.get_certificate_storage(client)
             
-            cert_file_id = storage.store(CertificateStorageFileType.CERTIFICATE, user_id, common_name, cert_file)
-            key_file_id = storage.store(CertificateStorageFileType.KEY, user_id, common_name, key_file)
+            cert_file_id = storage.store(CertificateStorageFileType.CERTIFICATE, user_id, common_name, cert_file.stream.read())
+            key_file_id = storage.store(CertificateStorageFileType.KEY, user_id, common_name, key_file.stream.read())
             
             if not cert_file_id or not key_file_id:
                 return {
@@ -260,7 +262,8 @@ def register_certificate_routes(app):
                     tags = []
             
             # Create a new certificate record in Directus with file references
-            cert_details = CertificateViewer.get_details(cert_file)
+            cert_file.stream.seek(0)  # Reset stream position to read certificate details
+            cert_details = CertificateViewer.get_details(cert_file.stream.read())
                         
             new_certificate = client.create("certificates", {
                 "issued_to": user_id,

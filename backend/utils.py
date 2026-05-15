@@ -1,7 +1,5 @@
 import os
 from dotenv import load_dotenv
-from engine.storage.DataBackendCertificateStorage import DataBackendCertificateStorage
-from engine.storage.BaseCertificateStorage import BaseCertificateStorage
 
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
@@ -63,13 +61,3 @@ def get_main_domain(domain: str) -> str:
     # Default: return last two parts (for .com, .org, .net, etc.)
     return '.'.join(parts[-2:])   
         
-
-def get_certificate_storage(backendClient) -> BaseCertificateStorage:
-    """Factory function to get the appropriate certificate storage implementation based on configuration."""
-    config = Config()
-    storage_type = config.CERT_STORAGE.lower()
-    
-    if storage_type == "default_vault":
-        return DataBackendCertificateStorage(backendClient)
-    else:
-        raise ValueError(f"Unsupported certificate storage type: {storage_type}")

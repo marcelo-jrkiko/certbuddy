@@ -4,7 +4,7 @@ import tempfile
 
 from flask import config
 
-from backend.engine.storage.BaseCertificateStorage import CertificateStorageFileType
+from engine.storage.BaseCertificateStorage import CertificateStorageFileType
 import utils
 from engine.events.EventDispatcher import EventDispatcher
 from engine.authorities.CloudflareOriginCA import CloudflareOriginCA
@@ -19,7 +19,7 @@ from helpers.CertificateViewer import CertificateViewer
 
 from helpers.DataBackend import BackendClient, getMasterBackendClient
 from engine.models.ca_response import CA_Response
-
+from engine.storage import StorageBackend
 
 from engine.repositories.UserRepository import UserRepository
 from engine.models.certificate_request import CertificateRequest, CertificateRequestStatus, CertificateRequestType
@@ -251,7 +251,7 @@ class CertificateRequester:
             
             # Store the issued certificate and key in the storage 
             self.logger.info(f"Storing issued certificate for request {request.id} in storage")
-            storage = utils.get_certificate_storage(backendClient)
+            storage = StorageBackend.get_certificate_storage(backendClient)
             
             cert_file_id = None
             key_file_id = None
