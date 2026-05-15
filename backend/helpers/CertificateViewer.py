@@ -6,12 +6,15 @@ from cryptography.hazmat.backends import default_backend
             
 class CertificateViewer:
     @staticmethod
-    def get_details(cert_file: str):
+    def get_details(cert_file: str | bytes):
         """Helper function to read certificate details from a .crt file."""
         try:
-            with open(cert_file, 'rb') as f:
-                cert_data = f.read()
-            
+            if isinstance(cert_file, str):
+                with open(cert_file, "rb") as f:
+                    cert_data = f.read()
+            else:
+                cert_data = cert_file
+
             cert = x509.load_pem_x509_certificate(cert_data, default_backend())
             
             details = {
