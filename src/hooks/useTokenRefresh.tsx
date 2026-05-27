@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { directusService } from "@/lib/directus";
 
-const TOKEN_REFRESH_INTERVAL = 5 * 60 * 1000; // Refresh every 5 minutes
-const TOKEN_CHECK_INTERVAL = 30 * 1000; // Check token validity every 30 seconds
+const TOKEN_REFRESH_INTERVAL = 5 * 60 * 1000;
+const TOKEN_VALIDATE_INTERVAL = 60 * 1000;
 
 /**
  * Hook to keep Directus token refreshed while the page is open.
@@ -11,6 +11,9 @@ const TOKEN_CHECK_INTERVAL = 30 * 1000; // Check token validity every 30 seconds
  */
 export function useTokenRefresh() {
   const navigate = useNavigate();
+  const isHandlingExpiryRef = useRef(false);
+  const isRefreshingRef = useRef(false);
+  const isValidatingRef = useRef(false);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -19,74 +22,118 @@ export function useTokenRefresh() {
     }
 
     let refreshInterval: ReturnType<typeof setInterval> | null = null;
-    let checkInterval: ReturnType<typeof setInterval> | null = null;
+    let validateInterval: ReturnType<typeof setInterval> | null = null;
 
-    const checkTokenExpiration = async () => {
-      const session = directusService.getSession();
-      if (!session) {
-        // Session lost, redirect to login
-        navigate({ to: "/login", replace: true });
-        return;
+    const handleExpiredSession = async () => {
+      if (isHandlingExpiryRef.current) return;
+      isHandlingExpiryRef.current = true;
+
+      try {
+        await directusService.logout();
+      } catch {
+        // Ignore logout errors and proceed to sign-out flow.
       }
 
-      // Check if token has expired
-      if (session.expires_at <= Date.now()) {
-        navigate({ to: "/login", replace: true });
-        return;
-      }
-
-      // Check if token is expiring soon (within 1 minute) and try to refresh
-      if (session.expires_at - Date.now() < 60 * 1000) {
-        const refreshed = await directusService.refresh();
-        if (!refreshed) {
-          navigate({ to: "/login", replace: true });
-        }
-      }
+      window.alert("Your session expired. Please sign in again.");
+      await navigate({ to: "/login", replace: true });
     };
 
     const refreshToken = async () => {
+      if (isRefreshingRef.current || isHandlingExpiryRef.current) return;
+      isRefreshingRef.current = true;
+
       try {
         const session = directusService.getSession();
-        if (!session) return;
+        if (!session) {
+          await handleExpiredSession();
+          return;
+        }
 
-        // Only refresh if not expiring very soon (refreshed recently)
-        if (session.expires_at - Date.now() > 30 * 1000) {
-          await directusService.refresh();
+        const refreshed = await directusService.refresh();
+        if (!refreshed) {
+          await handleExpiredSession();
         }
       } catch (error) {
         console.error("Token refresh failed:", error);
-        navigate({ to: "/login", replace: true });
+        await handleExpiredSession();
+      } finally {
+        isRefreshingRef.current = false;
+      }
+    };
+
+    const validateToken = async () => {
+      if (isValidatingRef.current || isHandlingExpiryRef.current) return;
+      isValidatingRef.current = true;
+
+      try {
+        const session = directusService.getSession();
+        if (!session) {
+          await handleExpiredSession();
+          return;
+        }
+
+        await directusService.getCurrentUser();
+      } catch {
+        const refreshed = await directusService.refresh();
+        if (!refreshed) {
+          await handleExpiredSession();
+          return;
+        }
+
+        try {
+          await directusService.getCurrentUser();
+        } catch {
+          await handleExpiredSession();
+        }
+      } finally {
+        isValidatingRef.current = false;
+      }
+    };
+
+    const startIntervals = () => {
+      if (!refreshInterval) {
+        refreshInterval = setInterval(() => {
+          void refreshToken();
+        }, TOKEN_REFRESH_INTERVAL);
+      }
+
+      if (!validateInterval) {
+        validateInterval = setInterval(() => {
+          void validateToken();
+        }, TOKEN_VALIDATE_INTERVAL);
+      }
+    };
+
+    const clearIntervals = () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+      }
+
+      if (validateInterval) {
+        clearInterval(validateInterval);
+        validateInterval = null;
       }
     };
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // Page is hidden, clear intervals
-        if (refreshInterval) clearInterval(refreshInterval);
-        if (checkInterval) clearInterval(checkInterval);
-      } else {
-        // Page is visible again, restart intervals and check token
-        checkTokenExpiration();
-        refreshInterval = setInterval(refreshToken, TOKEN_REFRESH_INTERVAL);
-        checkInterval = setInterval(checkTokenExpiration, TOKEN_CHECK_INTERVAL);
+        clearIntervals();
+        return;
       }
+
+      void validateToken();
+      startIntervals();
     };
 
-    // Initial check
-    checkTokenExpiration();
+    void validateToken();
+    startIntervals();
 
-    // Set up refresh intervals
-    refreshInterval = setInterval(refreshToken, TOKEN_REFRESH_INTERVAL);
-    checkInterval = setInterval(checkTokenExpiration, TOKEN_CHECK_INTERVAL);
-
-    // Listen for visibility changes (tab switch, minimize window, etc.)
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    // Cleanup
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      if (refreshInterval) clearInterval(refreshInterval);
-      if (checkInterval) clearInterval(checkInterval);
+      clearIntervals();
     };
   }, [navigate]);
 }

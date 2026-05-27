@@ -7,6 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { directusService } from "@/lib/directus";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    token: typeof search.token === "string" ? search.token : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Certbuddy - Sign in" },
@@ -18,14 +21,50 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { token } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isAutoLoggingIn, setIsAutoLoggingIn] = useState(false);
 
   useEffect(() => {
-    if (directusService.isAuthenticated()) navigate({ to: "/dashboard" });
-  }, [navigate]);
+    let cancelled = false;
+
+    async function runAutoLogin() {      
+      if (directusService.isAuthenticated()) {
+        await navigate({ to: "/dashboard" });
+        return;
+      }
+
+      if (!import.meta.env.VITE_ALLOW_AUTO_LOGIN) return; 
+
+      if (!token) return;
+
+      setError(null);
+      setIsAutoLoggingIn(true);
+      try {
+        await directusService.loginWithToken(token);
+        if (!cancelled) {
+          await navigate({ to: "/dashboard", replace: true });
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Auto login failed");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsAutoLoggingIn(false);
+        }
+      }
+    }
+
+    runAutoLogin();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, token]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,41 +88,45 @@ function LoginPage() {
           <CardDescription>Sign in with your Certbuddy account.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            {error && (
-              <p className="text-sm text-destructive" role="alert">
-                {error}
+          {isAutoLoggingIn ? (
+            <p className="text-sm text-muted-foreground">Signing you in automatically...</p>
+          ) : (
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              {error && (
+                <p className="text-sm text-destructive" role="alert">
+                  {error}
+                </p>
+              )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Signing in..." : "Sign in"}
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                <Link to="/" className="hover:underline">Back to home</Link>
               </p>
-            )}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
-            </Button>
-            <p className="text-center text-xs text-muted-foreground">
-              <Link to="/" className="hover:underline">Back to home</Link>
-            </p>
-          </form>
+            </form>
+          )}
         </CardContent>
       </Card>
     </main>

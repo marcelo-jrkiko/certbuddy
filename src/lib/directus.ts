@@ -13,6 +13,31 @@ export type DirectusUser = {
 
 export class DirectusService extends BackendClient {
 
+  public async loginWithToken(token: string): Promise<void> {
+    const cleanedToken = token.trim();
+    if (!cleanedToken) throw new Error("Missing login token.");
+
+    const res = await fetch(
+      `${this.getApiUrl()}/users/me?fields=id,email,first_name,last_name,avatar`,
+      {
+        headers: {
+          Authorization: `Bearer ${cleanedToken}`,
+        },
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error("Invalid or expired login token.");
+    }
+
+    this.setSession({
+      access_token: cleanedToken,
+      refresh_token: "",
+      // Tokens passed by query param may not include refresh capability.
+      expires_at: Date.now() + 55 * 60 * 1000,
+    });
+  }
+
   public async authFetch(
     path: string,
     init: RequestInit = {},
