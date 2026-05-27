@@ -7,9 +7,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { directusService } from "@/lib/directus";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    token: typeof search.token === "string" ? search.token : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>) => {
+    const params: {
+      token?: string;
+      registered?: string;
+      email?: string;
+    } = {};
+
+    if (typeof search.token === "string") {
+      params.token = search.token;
+    }
+    if (typeof search.registered === "string") {
+      params.registered = search.registered;
+    }
+    if (typeof search.email === "string") {
+      params.email = search.email;
+    }
+
+    return params;
+  },
   head: () => ({
     meta: [
       { title: "Certbuddy - Sign in" },
@@ -21,8 +37,8 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { token } = Route.useSearch();
-  const [email, setEmail] = useState("");
+  const { token, registered, email: prefilledEmail } = Route.useSearch();
+  const [email, setEmail] = useState(prefilledEmail ?? "");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -119,10 +135,17 @@ function LoginPage() {
                   {error}
                 </p>
               )}
+              {registered === "1" && !error && (
+                <p className="text-sm text-emerald-600" role="status">
+                  Account created successfully. You can sign in now.
+                </p>
+              )}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
               <p className="text-center text-xs text-muted-foreground">
+                <Link to="/register" className="hover:underline">Create account</Link>
+                {" | "}
                 <Link to="/" className="hover:underline">Back to home</Link>
               </p>
             </form>

@@ -11,6 +11,20 @@ export type DirectusUser = {
   avatar?: string | null;
 };
 
+export type RegisterUserInput = {
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+};
+
+export type UpdateCurrentUserInput = {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+};
+
 export class DirectusService extends BackendClient {
 
   public async loginWithToken(token: string): Promise<void> {
@@ -98,6 +112,33 @@ export class DirectusService extends BackendClient {
     this.setSession(this.toSession(data));
   }
 
+  public async register(input: RegisterUserInput): Promise<void> {
+    const payload: Record<string, string> = {
+      email: input.email,
+      password: input.password,
+    };
+
+    if (input.firstName?.trim()) {
+      payload.first_name = input.firstName.trim();
+    }
+    if (input.lastName?.trim()) {
+      payload.last_name = input.lastName.trim();
+    }
+
+    const res = await fetch(`${this.getApiUrl()}/users/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(
+        err?.errors?.[0]?.message || "Failed to create account.",
+      );
+    }
+  }
+
   public async refresh(): Promise<UserSession | null> {
     const current = this.getSession();
     if (!current?.refresh_token) return null;
@@ -124,6 +165,38 @@ export class DirectusService extends BackendClient {
       "/users/me?fields=id,email,first_name,last_name,avatar",
     );
     if (!res.ok) throw new Error("Failed to load user");
+    const { data } = await res.json();
+    return data as DirectusUser;
+  }
+
+  public async updateCurrentUser(
+    input: UpdateCurrentUserInput,
+  ): Promise<DirectusUser> {
+    const payload: Record<string, string> = {
+      email: input.email,
+      first_name: input.firstName ?? "",
+      last_name: input.lastName ?? "",
+    };
+
+    if (input.password) {
+      payload.password = input.password;
+    }
+
+    const res = await this.authFetch("/users/me", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(
+        err?.errors?.[0]?.message || "Failed to update account details.",
+      );
+    }
+
     const { data } = await res.json();
     return data as DirectusUser;
   }
