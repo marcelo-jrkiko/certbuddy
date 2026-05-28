@@ -18,12 +18,15 @@ class BackendClient:
     def __init__(self, config, token: str):
         self.base_url =  config.DIRECTUS_URL
         self.token = token
-        disable_ssl_verify = os.getenv("ENGINE_DISABLE_SSL_VERIFY", "False").strip().lower() in {"1", "true", "yes", "on"}
+        disable_ssl_verify = os.getenv("ENGINE_DISABLE_SSL_VERIFY", "false") == "true"
         self.verify_ssl = not disable_ssl_verify
         self.headers = {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
         }
+        
+        if disable_ssl_verify:
+            logging.warning("SSL verification is disabled for Backend Client")
     
     def _make_request(self, method: str, endpoint: str, params: Dict[str, Any] = None, data: Dict[str, Any] = None) -> Dict[str, Any]:
         """Make a direct HTTP request to the Directus API"""
