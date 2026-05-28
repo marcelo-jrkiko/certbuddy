@@ -17,6 +17,13 @@ This document explains all environment variables used by CertBuddy for configura
 - **Example**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
 - **Security**: Keep this token secure and never commit it to version control. Use `.env` file or secrets management
 
+### `ENGINE_DISABLE_SSL_VERIFY`
+- **Type**: Boolean (`True` or `False`)
+- **Default**: `False`
+- **Description**: Disable TLS/SSL certificate verification for backend requests to Directus. Intended for local development and self-signed certificates.
+- **Example**: `True` (disable verification), `False` (keep verification enabled)
+- **Warning**: Do not enable in production environments
+
 ## Engine API Configuration
 
 ### `ENGINE_API_PORT`
@@ -84,6 +91,7 @@ Environment variables are loaded from the `.env` file located in the root of the
 # Directus Configuration
 DIRECTUS_URL=http://localhost:8055
 ENGINE_MASTER_TOKEN=your-secret-token-here
+ENGINE_DISABLE_SSL_VERIFY=False
 
 # Engine API Configuration
 ENGINE_API_PORT=3000

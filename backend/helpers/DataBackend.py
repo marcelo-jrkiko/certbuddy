@@ -18,6 +18,8 @@ class BackendClient:
     def __init__(self, config, token: str):
         self.base_url =  config.DIRECTUS_URL
         self.token = token
+        disable_ssl_verify = os.getenv("ENGINE_DISABLE_SSL_VERIFY", "False").strip().lower() in {"1", "true", "yes", "on"}
+        self.verify_ssl = not disable_ssl_verify
         self.headers = {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
@@ -30,13 +32,13 @@ class BackendClient:
         
         try:
             if method == "GET":
-                response = requests.get(url, headers=self.headers, params=params)
+                response = requests.get(url, headers=self.headers, params=params, verify=self.verify_ssl)
             elif method == "POST":
-                response = requests.post(url, headers=self.headers, json=data)
+                response = requests.post(url, headers=self.headers, json=data, verify=self.verify_ssl)
             elif method == "PATCH":
-                response = requests.patch(url, headers=self.headers, json=data)
+                response = requests.patch(url, headers=self.headers, json=data, verify=self.verify_ssl)
             elif method == "DELETE":
-                response = requests.delete(url, headers=self.headers)
+                response = requests.delete(url, headers=self.headers, verify=self.verify_ssl)
             else:
                 raise ValueError(f"Unsupported HTTP method: {method}")
             
@@ -94,7 +96,7 @@ class BackendClient:
         """Download a file from Directus and save it locally"""
         url = f"{self.base_url}/assets/{file_id}"
         try:
-            response = requests.get(url, headers=self.headers, stream=True)
+            response = requests.get(url, headers=self.headers, stream=True, verify=self.verify_ssl)
             response.raise_for_status()
             
             with open(save_path, 'wb') as f:
@@ -115,7 +117,7 @@ class BackendClient:
         
         try:
             files = {'file': (filename or file_obj.name, file_obj, 'application/octet-stream')}
-            response = requests.post(url, headers=headers, files=files)
+            response = requests.post(url, headers=headers, files=files, verify=self.verify_ssl)
             
             if response.status_code >= 400:
                 logging.error(f"File upload failed: {response.status_code} \r\n\t - {response.text}")
