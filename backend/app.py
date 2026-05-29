@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask("certbuddy-backend")
+# Avoid automatic 308 redirects for trailing slash differences (e.g. /certificates vs /certificates/).
+app.url_map.strict_slashes = False
 CORS(app, resources={r"/*": {
     "origins": "*",
     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
