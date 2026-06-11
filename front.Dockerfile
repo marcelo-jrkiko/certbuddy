@@ -24,6 +24,9 @@ COPY --from=builder /app/wrangler.jsonc ./
 
 RUN apt-get update && apt-get install -y apache2 && rm -rf /var/lib/apt/lists/*
 
+# Suppress Apache FQDN warning inside container
+RUN echo "ServerName localhost" > /etc/apache2/conf-available/servername.conf && a2enconf servername
+
 # Enable Apache modules for proxy
 RUN a2enmod proxy && \
     a2enmod proxy_http && \
