@@ -3,10 +3,12 @@ import json
 import os
 from typing import Any, Dict
 import requests
+import urllib3
 
 from utils import Config
 
-
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    
 def getMasterBackendClient() -> "BackendClient":
     """Get a backend client instance using the master token"""
     token = os.getenv("ENGINE_MASTER_TOKEN", "").strip('"').strip("'")

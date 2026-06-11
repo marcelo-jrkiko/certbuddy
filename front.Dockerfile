@@ -20,6 +20,7 @@ RUN npm ci --production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/wrangler.jsonc ./
 
 RUN apt-get update && apt-get install -y apache2 && rm -rf /var/lib/apt/lists/*
 
