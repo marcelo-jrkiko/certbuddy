@@ -194,6 +194,8 @@ class CertificateRequester:
         backendClient = getMasterBackendClient()  
              
         try:  
+            self.logger.addHandler(logging.FileHandler(f"{utils.Config.LOGS_DIR}/request_{request.id}.log"))
+            
             self.logger.info(f"Processing certificate request {request.id} for domain {request.domain} and user {request.issue_to}")
             
             self.event_dispatcher.dispatch("cert.requested", request.issue_to, {
