@@ -24,6 +24,12 @@ class Config:
     
     CERT_STORAGE = os.getenv('ENGINE_CERT_STORAGE', 'default_vault') 
     
+    LOGS_DIR = os.getenv('ENGINE_LOGS_DIR', 'logs')
+    
+    LOGS_DIR = os.path.abspath(LOGS_DIR)
+    if not os.path.exists(LOGS_DIR):
+        os.makedirs(LOGS_DIR, exist_ok=True)        
+    
 
 
 def get_main_domain(domain: str) -> str:

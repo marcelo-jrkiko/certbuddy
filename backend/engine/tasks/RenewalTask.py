@@ -16,10 +16,10 @@ class RenewalTask:
     def run(self):
         backend = getMasterBackendClient()
 
-        # List all certificate that expired or will expire today and is active
+        # List all certificates that expired or will expire today and are active
         expire_limit = datetime.datetime.now() + datetime.timedelta(days=1)
         
-        expiring_certs = backend.search("certificate", {
+        expiring_certs = backend.search("certificates", {
             "is_active": True,
             "expires_at": {
                 "_lte": expire_limit.isoformat()

@@ -1,5 +1,6 @@
 # Load environment variables
 import logging
+import sys
 from flask.cli import load_dotenv
 from utils import Config
 from helpers.DataBackend import getMasterBackendClient
@@ -15,7 +16,14 @@ def startup():
     config = Config()
     
     # Configure logging
-    logging.basicConfig(level=logging.DEBUG if config.DEBUG else logging.INFO)
+    logging.basicConfig(
+        level=logging.DEBUG if config.DEBUG else logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(f"{config.LOGS_DIR}/api.log"),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
     logger = logging.getLogger(__name__)
     
     test_backend_connection()
