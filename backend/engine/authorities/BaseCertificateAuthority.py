@@ -11,6 +11,7 @@ class BaseCertificateAuthority(ABC):
     def __init__(self):
         self.compatibleChallengesTypes = [ "DNS-01" , "HTTP-01" ]
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.DEBUG)
     
     def configure(self, config: dict | str | None):
         if config:

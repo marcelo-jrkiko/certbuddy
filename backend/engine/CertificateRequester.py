@@ -245,7 +245,7 @@ class CertificateRequester:
             ca_obj.configure(ca_config.get('config'))
             
             # Call the CA to issue the certificate based on the request and challenge
-            self.logger.info(f"Issuing certificate for request {request.id}")
+            self.logger.info(f"Issuing certificate for request {request.id}, ca: {ca_obj.__class__.__name__}, challenge: {challenge_obj.__class__.__name__}")
             ca_response : CA_Response = ca_obj.issue(request, challenge_obj)
             
             if not ca_response.get("okay"):
