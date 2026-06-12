@@ -17,7 +17,7 @@ def startup():
     
     # Configure logging
     logging.basicConfig(
-        level=logging.DEBUG if config.DEBUG else logging.INFO,
+        level=logging.DEBUG,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.FileHandler(f"{config.LOGS_DIR}/api.log"),
