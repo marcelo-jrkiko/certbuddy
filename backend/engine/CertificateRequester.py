@@ -195,6 +195,7 @@ class CertificateRequester:
              
         try:  
             self.logger.addHandler(logging.FileHandler(f"{utils.Config.LOGS_DIR}/request_{request.id}.log"))
+            self.logger.setLevel(logging.DEBUG)
             
             self.logger.info(f"Processing certificate request {request.id} for domain {request.domain} and user {request.issue_to}")
             
