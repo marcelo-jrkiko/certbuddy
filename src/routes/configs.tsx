@@ -51,6 +51,22 @@ function ConfigsPage() {
 
   const configsService = new ConfigsService();
 
+  const toId = (value: unknown): string | null => {
+    if (typeof value === "string" && value.length > 0) return value;
+    if (typeof value === "number") return String(value);
+    return null;
+  };
+
+  const getItemId = (item: any): string | null => toId(item?.id);
+
+  const getMergedConfigId = (value: unknown): string | null => {
+    if (!value) return null;
+    if (typeof value === "string" || typeof value === "number") {
+      return toId(value);
+    }
+    return toId((value as { id?: unknown }).id);
+  };
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -60,36 +76,61 @@ function ConfigsPage() {
         configsService.listItems<any>("shared"),
       ]);
       const sharedKeyById = new Map<string, string>(
-        shared.map((s: any) => [s.id, s.key ?? ""]),
+        shared
+          .map((s: any) => {
+            const id = getItemId(s);
+            return id ? [id, s.key ?? ""] : null;
+          })
+          .filter((entry): entry is [string, string] => !!entry),
       );
-      const resolveSharedKey = (id: string | null | undefined) =>
-        id ? sharedKeyById.get(id) ?? null : null;
+      const resolveSharedKey = (mergedConfig: unknown) => {
+        const mergedId = getMergedConfigId(mergedConfig);
+        return mergedId ? sharedKeyById.get(mergedId) ?? null : null;
+      };
 
       const next: ConfigRow[] = [
-        ...challenges.map((i) => ({
-          id: i.id,
-          kind: "challenge" as const,
-          key: i.challenge_key ?? "",
-          domain: i.domain,
-          merged_config: resolveSharedKey(i.merged_config),
-          raw: i,
-        })),
-        ...cas.map((i) => ({
-          id: i.id,
-          kind: "ca" as const,
-          key: i.ca_key ?? "",
-          domain: i.domain,
-          merged_config: resolveSharedKey(i.merged_config),
-          raw: i,
-        })),
-        ...shared.map((i) => ({
-          id: i.id,
-          kind: "shared" as const,
-          key: i.key ?? "",
-          domain: i.domain,
-          merged_config: null,
-          raw: i,
-        })),
+        ...challenges.flatMap((i) => {
+          const id = getItemId(i);
+          if (!id) return [];
+          return [
+            {
+              id,
+              kind: "challenge" as const,
+              key: i.challenge_key ?? "",
+              domain: i.domain,
+              merged_config: resolveSharedKey(i.merged_config),
+              raw: i,
+            },
+          ];
+        }),
+        ...cas.flatMap((i) => {
+          const id = getItemId(i);
+          if (!id) return [];
+          return [
+            {
+              id,
+              kind: "ca" as const,
+              key: i.ca_key ?? "",
+              domain: i.domain,
+              merged_config: resolveSharedKey(i.merged_config),
+              raw: i,
+            },
+          ];
+        }),
+        ...shared.flatMap((i) => {
+          const id = getItemId(i);
+          if (!id) return [];
+          return [
+            {
+              id,
+              kind: "shared" as const,
+              key: i.key ?? "",
+              domain: null,
+              merged_config: null,
+              raw: i,
+            },
+          ];
+        }),
       ];
       setRows(next);
     } catch (e) {
@@ -121,6 +162,10 @@ function ConfigsPage() {
 
   const confirmDelete = async () => {
     if (!deleteRow) return;
+    if (!deleteRow.id) {
+      toast.error("Missing configuration id");
+      return;
+    }
     try {
       await configsService.deleteItem(deleteRow.kind, deleteRow.id);
       toast.success("Deleted");

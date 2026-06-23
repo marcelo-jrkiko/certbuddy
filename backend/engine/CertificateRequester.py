@@ -274,8 +274,10 @@ class CertificateRequester:
             temp_cert_file = tempfile.NamedTemporaryFile(delete=False, suffix=".crt").name
             with open(temp_cert_file, 'wb') as cert_f:
                 cert_f.write(ca_response.get("certificate_file").encode())                
-                cert_f.seek(0)
-                cert_file_id = storage.store(CertificateStorageFileType.CERTIFICATE, request.issue_to, request.domain, cert_f)           
+                cert_f.flush()                
+            
+            with open(temp_cert_file, 'rb') as cert_f:    
+                cert_file_id = storage.store(CertificateStorageFileType.CERTIFICATE, request.issue_to, request.domain, cert_f.read())           
             
             cert_details = CertificateViewer.get_details(temp_cert_file)                    
                 
@@ -283,8 +285,10 @@ class CertificateRequester:
             temp_key_file = tempfile.NamedTemporaryFile(delete=False, suffix=".key").name
             with open(temp_key_file, 'wb') as key_f:
                 key_f.write(ca_response.get("certificate_key").encode())
-                key_f.seek(0)
-                key_file_id = storage.store(CertificateStorageFileType.KEY, request.issue_to, request.domain, key_f)
+                key_f.flush() 
+            
+            with open(temp_key_file, 'rb') as key_f:    
+                key_file_id = storage.store(CertificateStorageFileType.KEY, request.issue_to, request.domain, key_f.read())
                       
             # 
             if not cert_file_id or not key_file_id:

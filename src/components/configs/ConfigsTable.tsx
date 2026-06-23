@@ -71,7 +71,7 @@ export function ConfigsTable({ rows, loading, onEdit, onDelete }: Props) {
             <TableCell>
               <Badge variant={kindVariant[r.kind]}>{kindLabel[r.kind]}</Badge>
             </TableCell>
-            <TableCell className="font-mono text-sm">{r.kind === "shared" && r.key ? r.key : "—"}</TableCell>
+            <TableCell className="font-mono text-sm">{r.key || "—"}</TableCell>
             <TableCell>{r.domain || "—"}</TableCell>
             <TableCell className="font-mono text-sm">
               {r.merged_config || "—"}

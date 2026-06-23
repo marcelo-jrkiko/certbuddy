@@ -43,7 +43,13 @@ export function ConfigEditorDialog({
   item,
   onSaved,
 }: ConfigEditorDialogProps) {
-  const isEdit = !!item?.id;
+  const toId = (value: unknown): string | null => {
+    if (typeof value === "string" && value.length > 0) return value;
+    if (typeof value === "number") return String(value);
+    return null;
+  };
+  const itemId = toId(item?.id);
+  const isEdit = !!itemId;
   const [domain, setDomain] = useState("");
   const [keyField, setKeyField] = useState("");
   const [mergedConfig, setMergedConfig] = useState<string>("");
@@ -63,6 +69,7 @@ export function ConfigEditorDialog({
 
   useEffect(() => {
     if (!open) return;
+    const mergedRaw = item?.merged_config;
     setDomain(item?.domain ?? "");
     setKeyField(
       kind === "challenge"
@@ -71,7 +78,11 @@ export function ConfigEditorDialog({
           ? item?.ca_key ?? ""
           : item?.key ?? "",
     );
-    setMergedConfig(item?.merged_config ?? "");
+    setMergedConfig(
+      typeof mergedRaw === "string"
+        ? mergedRaw
+        : toId(mergedRaw?.id) ?? "",
+    );
     setConfig(item?.config ?? {});
   }, [open, item, kind]);
 
@@ -85,18 +96,20 @@ export function ConfigEditorDialog({
   const handleSave = async () => {
     setSaving(true);
     try {
-      const payload: Record<string, unknown> = { config, domain: domain || null };
+      const payload: Record<string, unknown> = { config };
       if (kind === "challenge") {
         payload.challenge_key = keyField || null;
+        payload.domain = domain || null;
         payload.merged_config = mergedConfig || null;
       } else if (kind === "ca") {
         payload.ca_key = keyField || null;
+        payload.domain = domain || null;
         payload.merged_config = mergedConfig || null;
       } else {
         payload.key = keyField || null;
       }
 
-      if (isEdit) await configsService.updateItem(kind, item.id, payload);
+      if (isEdit && itemId) await configsService.updateItem(kind, itemId, payload);
       else await configsService.createItem(kind, payload);
 
       toast.success(isEdit ? "Updated" : "Created");
