@@ -4,18 +4,22 @@ from abc import ABC, abstractmethod
 import logging
 import json
 
+from engine.models.certificate_request import CertificateRequest
+
 class DnsChallenge(ABC):    
     def __init__(self):
         self.type = "DNS-01"
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def configure(self, config: dict | str | None):
+    def configure(self, request: CertificateRequest, config: dict | str | None):
         if config:
             if isinstance(config, str):
                 config = json.loads(config)
             else:
                 self.config = config      
-
+        
+        self.request = request
+            
     @abstractmethod
     def apply(self, domain: str, key: str, token: str) -> None:
         """

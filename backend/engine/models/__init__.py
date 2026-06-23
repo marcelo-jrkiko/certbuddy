@@ -3,6 +3,7 @@
 from .certificate_request import (
     CertificateRequest,
     CertificateRequestStatus,
+    CertificateRequestType,
 )
 from .certificateauthority_account import (
     CertificateAuthorityAccount,
@@ -22,14 +23,19 @@ from .event_listener import (
 from .shared_config import (
     SharedConfig,
 )
+from .interaction_request import (
+    InteractionRequest,
+)
 
 __all__ = [
     "CertificateRequest",
     "CertificateRequestStatus",
+    "CertificateRequestType",
     "CertificateAuthorityAccount",
     "CertificateAuthorityConfig",
     "Certificate",
     "ChallengeConfig",
     "EventListener",
     "SharedConfig",
+    "InteractionRequest",
 ]

@@ -8,6 +8,7 @@ collections:
       archive_app_filter: true
       archive_field: null
       archive_value: null
+      autosave_revision_interval: null
       collapse: open
       collection: certificate_request
       color: null
@@ -21,6 +22,7 @@ collections:
       singleton: false
       sort: null
       sort_field: null
+      status: active
       translations: null
       unarchive_value: null
       versioning: false
@@ -32,6 +34,7 @@ collections:
       archive_app_filter: true
       archive_field: null
       archive_value: null
+      autosave_revision_interval: null
       collapse: open
       collection: certificateauthority_account
       color: null
@@ -45,6 +48,7 @@ collections:
       singleton: false
       sort: null
       sort_field: null
+      status: active
       translations: null
       unarchive_value: null
       versioning: false
@@ -56,6 +60,7 @@ collections:
       archive_app_filter: true
       archive_field: null
       archive_value: null
+      autosave_revision_interval: null
       collapse: open
       collection: certificateauthority_config
       color: null
@@ -69,6 +74,7 @@ collections:
       singleton: false
       sort: null
       sort_field: null
+      status: active
       translations: null
       unarchive_value: null
       versioning: false
@@ -80,6 +86,7 @@ collections:
       archive_app_filter: true
       archive_field: null
       archive_value: null
+      autosave_revision_interval: null
       collapse: open
       collection: certificates
       color: null
@@ -93,6 +100,7 @@ collections:
       singleton: false
       sort: null
       sort_field: null
+      status: active
       translations: null
       unarchive_value: null
       versioning: false
@@ -104,6 +112,7 @@ collections:
       archive_app_filter: true
       archive_field: null
       archive_value: null
+      autosave_revision_interval: null
       collapse: open
       collection: challenge_config
       color: null
@@ -117,6 +126,7 @@ collections:
       singleton: false
       sort: null
       sort_field: null
+      status: active
       translations: null
       unarchive_value: null
       versioning: false
@@ -128,6 +138,7 @@ collections:
       archive_app_filter: true
       archive_field: null
       archive_value: null
+      autosave_revision_interval: null
       collapse: open
       collection: event_listener
       color: null
@@ -141,17 +152,45 @@ collections:
       singleton: false
       sort: null
       sort_field: null
+      status: active
       translations: null
       unarchive_value: null
       versioning: false
     schema:
       name: event_listener
+  - collection: interaction_request
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      autosave_revision_interval: null
+      collapse: open
+      collection: interaction_request
+      color: null
+      display_template: null
+      group: null
+      hidden: false
+      icon: null
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: null
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: interaction_request
   - collection: shared_config
     meta:
       accountability: all
       archive_app_filter: true
       archive_field: null
       archive_value: null
+      autosave_revision_interval: null
       collapse: open
       collection: shared_config
       color: null
@@ -165,6 +204,7 @@ collections:
       singleton: false
       sort: null
       sort_field: null
+      status: active
       translations: null
       unarchive_value: null
       versioning: false
@@ -1884,6 +1924,348 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: interaction_request
+    field: id
+    type: uuid
+    meta:
+      collection: interaction_request
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      searchable: true
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: interaction_request
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_indexed: false
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: interaction_request
+    field: date_created
+    type: timestamp
+    meta:
+      collection: interaction_request
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_created
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      searchable: true
+      sort: 2
+      special:
+        - date-created
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_created
+      table: interaction_request
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: interaction_request
+    field: date_updated
+    type: timestamp
+    meta:
+      collection: interaction_request
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_updated
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      searchable: true
+      sort: 3
+      special:
+        - date-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_updated
+      table: interaction_request
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: interaction_request
+    field: user
+    type: uuid
+    meta:
+      collection: interaction_request
+      conditions: null
+      display: null
+      display_options: null
+      field: user
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        enableCreate: false
+        template: '{{first_name}} {{last_name}}'
+      readonly: false
+      required: false
+      searchable: true
+      sort: 4
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: user
+      table: interaction_request
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: interaction_request
+    field: status
+    type: string
+    meta:
+      collection: interaction_request
+      conditions: null
+      display: null
+      display_options: null
+      field: status
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        choices:
+          - text: New
+            value: new
+          - text: Rejected
+            value: rejected
+          - text: Finished
+            value: finished
+          - text: Responded
+            value: responded
+      readonly: false
+      required: false
+      searchable: true
+      sort: 5
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: status
+      table: interaction_request
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: interaction_request
+    field: type
+    type: string
+    meta:
+      collection: interaction_request
+      conditions: null
+      display: null
+      display_options: null
+      field: type
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        choices:
+          - text: Dns Change
+            value: dns_change
+      readonly: false
+      required: false
+      searchable: true
+      sort: 6
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: type
+      table: interaction_request
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: interaction_request
+    field: request_data
+    type: json
+    meta:
+      collection: interaction_request
+      conditions: null
+      display: null
+      display_options: null
+      field: request_data
+      group: null
+      hidden: false
+      interface: input-code
+      note: null
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 7
+      special:
+        - cast-json
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: request_data
+      table: interaction_request
+      data_type: json
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: interaction_request
+    field: response_data
+    type: json
+    meta:
+      collection: interaction_request
+      conditions: null
+      display: null
+      display_options: null
+      field: response_data
+      group: null
+      hidden: false
+      interface: input-code
+      note: null
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 8
+      special:
+        - cast-json
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: response_data
+      table: interaction_request
+      data_type: json
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: shared_config
     field: id
     type: uuid
@@ -2354,6 +2736,27 @@ relations:
       foreign_key_table: directus_flows
       foreign_key_column: id
       constraint_name: event_listener_event_flow_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: interaction_request
+    field: user
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: interaction_request
+      many_field: user
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: interaction_request
+      column: user
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: interaction_request_user_foreign
       on_update: NO ACTION
       on_delete: SET NULL
   - collection: shared_config

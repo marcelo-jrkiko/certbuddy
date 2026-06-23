@@ -12,6 +12,7 @@ from engine.authorities.LetsEncryptCA import LetsEncryptCA
 
 from engine.challenges.NoChallenge import NoChallenge
 from engine.challenges.CloudflareChallenge import CloudflareDnsChallenge
+from engine.challenges.ManualDnsChallenge import ManualDnsChallenge
 from engine.challenges.LocalFileHttpChallenge import LocalFileHttpChallenge
 from engine.challenges.SFTPFileHttpChallenge import SFTPFileHttpChallenge
 
@@ -43,6 +44,16 @@ class CertificateRequester:
                 "config_preset" : {
                   "zone_id": "",
                   "api_token": "", 
+                },
+                "type": "dns"
+            },
+            "MANUAL_DNS" : {
+                "name": "Manual DNS Challenge",
+                "class" : ManualDnsChallenge,
+                "config_preset" : {
+                  "user_id": "",
+                  "timeout_seconds": 900,
+                  "poll_interval_seconds": 2
                 },
                 "type": "dns"
             },
@@ -241,7 +252,7 @@ class CertificateRequester:
             
             # Loads the challenge and CA configuration
             self.logger.info(f"Configuring challenge and CA for request {request.id}")
-            challenge_obj.configure(challenge_config.get('config'))
+            challenge_obj.configure(request, challenge_config.get('config'))
             ca_obj.configure(ca_config.get('config'))
             
             # Call the CA to issue the certificate based on the request and challenge

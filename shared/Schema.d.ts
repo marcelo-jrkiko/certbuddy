@@ -765,44 +765,200 @@ export interface paths {
      */
     patch: operations["updateSetting"];
   };
-  "/items/certificateauthority_account": {
+  "/items/directus_oauth_clients": {
     /**
      * List Items
-     * @description List the certificateauthority_account items.
+     * @description List the directus_oauth_clients items.
      */
-    get: operations["readItemsCertificateauthorityAccount"];
+    get: operations["readItemsDirectusOauthClients"];
     /**
      * Create an Item
-     * @description Create a new certificateauthority_account item.
+     * @description Create a new directus_oauth_clients item.
      */
-    post: operations["createItemsCertificateauthorityAccount"];
+    post: operations["createItemsDirectusOauthClients"];
     /**
      * Delete Multiple Items
-     * @description Delete multiple existing certificateauthority_account items.
+     * @description Delete multiple existing directus_oauth_clients items.
      */
-    delete: operations["deleteItemsCertificateauthorityAccount"];
+    delete: operations["deleteItemsDirectusOauthClients"];
     /**
      * Update Multiple Items
-     * @description Update multiple certificateauthority_account items at the same time.
+     * @description Update multiple directus_oauth_clients items at the same time.
      */
-    patch: operations["updateItemsCertificateauthorityAccount"];
+    patch: operations["updateItemsDirectusOauthClients"];
   };
-  "/items/certificateauthority_account/{id}": {
+  "/items/directus_oauth_clients/{id}": {
     /**
      * Retrieve an Item
-     * @description Retrieve a single certificateauthority_account item by unique identifier.
+     * @description Retrieve a single directus_oauth_clients item by unique identifier.
      */
-    get: operations["readSingleItemsCertificateauthorityAccount"];
+    get: operations["readSingleItemsDirectusOauthClients"];
     /**
      * Delete an Item
-     * @description Delete an existing certificateauthority_account item.
+     * @description Delete an existing directus_oauth_clients item.
      */
-    delete: operations["deleteSingleItemsCertificateauthorityAccount"];
+    delete: operations["deleteSingleItemsDirectusOauthClients"];
     /**
      * Update an Item
-     * @description Update an existing certificateauthority_account item.
+     * @description Update an existing directus_oauth_clients item.
      */
-    patch: operations["updateSingleItemsCertificateauthorityAccount"];
+    patch: operations["updateSingleItemsDirectusOauthClients"];
+  };
+  "/items/directus_oauth_consents": {
+    /**
+     * List Items
+     * @description List the directus_oauth_consents items.
+     */
+    get: operations["readItemsDirectusOauthConsents"];
+    /**
+     * Create an Item
+     * @description Create a new directus_oauth_consents item.
+     */
+    post: operations["createItemsDirectusOauthConsents"];
+    /**
+     * Delete Multiple Items
+     * @description Delete multiple existing directus_oauth_consents items.
+     */
+    delete: operations["deleteItemsDirectusOauthConsents"];
+    /**
+     * Update Multiple Items
+     * @description Update multiple directus_oauth_consents items at the same time.
+     */
+    patch: operations["updateItemsDirectusOauthConsents"];
+  };
+  "/items/directus_oauth_consents/{id}": {
+    /**
+     * Retrieve an Item
+     * @description Retrieve a single directus_oauth_consents item by unique identifier.
+     */
+    get: operations["readSingleItemsDirectusOauthConsents"];
+    /**
+     * Delete an Item
+     * @description Delete an existing directus_oauth_consents item.
+     */
+    delete: operations["deleteSingleItemsDirectusOauthConsents"];
+    /**
+     * Update an Item
+     * @description Update an existing directus_oauth_consents item.
+     */
+    patch: operations["updateSingleItemsDirectusOauthConsents"];
+  };
+  "/items/directus_oauth_codes": {
+    /**
+     * List Items
+     * @description List the directus_oauth_codes items.
+     */
+    get: operations["readItemsDirectusOauthCodes"];
+    /**
+     * Create an Item
+     * @description Create a new directus_oauth_codes item.
+     */
+    post: operations["createItemsDirectusOauthCodes"];
+    /**
+     * Delete Multiple Items
+     * @description Delete multiple existing directus_oauth_codes items.
+     */
+    delete: operations["deleteItemsDirectusOauthCodes"];
+    /**
+     * Update Multiple Items
+     * @description Update multiple directus_oauth_codes items at the same time.
+     */
+    patch: operations["updateItemsDirectusOauthCodes"];
+  };
+  "/items/directus_oauth_codes/{id}": {
+    /**
+     * Retrieve an Item
+     * @description Retrieve a single directus_oauth_codes item by unique identifier.
+     */
+    get: operations["readSingleItemsDirectusOauthCodes"];
+    /**
+     * Delete an Item
+     * @description Delete an existing directus_oauth_codes item.
+     */
+    delete: operations["deleteSingleItemsDirectusOauthCodes"];
+    /**
+     * Update an Item
+     * @description Update an existing directus_oauth_codes item.
+     */
+    patch: operations["updateSingleItemsDirectusOauthCodes"];
+  };
+  "/items/directus_oauth_tokens": {
+    /**
+     * List Items
+     * @description List the directus_oauth_tokens items.
+     */
+    get: operations["readItemsDirectusOauthTokens"];
+    /**
+     * Create an Item
+     * @description Create a new directus_oauth_tokens item.
+     */
+    post: operations["createItemsDirectusOauthTokens"];
+    /**
+     * Delete Multiple Items
+     * @description Delete multiple existing directus_oauth_tokens items.
+     */
+    delete: operations["deleteItemsDirectusOauthTokens"];
+    /**
+     * Update Multiple Items
+     * @description Update multiple directus_oauth_tokens items at the same time.
+     */
+    patch: operations["updateItemsDirectusOauthTokens"];
+  };
+  "/items/directus_oauth_tokens/{id}": {
+    /**
+     * Retrieve an Item
+     * @description Retrieve a single directus_oauth_tokens item by unique identifier.
+     */
+    get: operations["readSingleItemsDirectusOauthTokens"];
+    /**
+     * Delete an Item
+     * @description Delete an existing directus_oauth_tokens item.
+     */
+    delete: operations["deleteSingleItemsDirectusOauthTokens"];
+    /**
+     * Update an Item
+     * @description Update an existing directus_oauth_tokens item.
+     */
+    patch: operations["updateSingleItemsDirectusOauthTokens"];
+  };
+  "/items/certificate_request": {
+    /**
+     * List Items
+     * @description List the certificate_request items.
+     */
+    get: operations["readItemsCertificateRequest"];
+    /**
+     * Create an Item
+     * @description Create a new certificate_request item.
+     */
+    post: operations["createItemsCertificateRequest"];
+    /**
+     * Delete Multiple Items
+     * @description Delete multiple existing certificate_request items.
+     */
+    delete: operations["deleteItemsCertificateRequest"];
+    /**
+     * Update Multiple Items
+     * @description Update multiple certificate_request items at the same time.
+     */
+    patch: operations["updateItemsCertificateRequest"];
+  };
+  "/items/certificate_request/{id}": {
+    /**
+     * Retrieve an Item
+     * @description Retrieve a single certificate_request item by unique identifier.
+     */
+    get: operations["readSingleItemsCertificateRequest"];
+    /**
+     * Delete an Item
+     * @description Delete an existing certificate_request item.
+     */
+    delete: operations["deleteSingleItemsCertificateRequest"];
+    /**
+     * Update an Item
+     * @description Update an existing certificate_request item.
+     */
+    patch: operations["updateSingleItemsCertificateRequest"];
   };
   "/items/certificates": {
     /**
@@ -843,44 +999,83 @@ export interface paths {
      */
     patch: operations["updateSingleItemsCertificates"];
   };
-  "/items/event_listener": {
+  "/items/certificateauthority_account": {
     /**
      * List Items
-     * @description List the event_listener items.
+     * @description List the certificateauthority_account items.
      */
-    get: operations["readItemsEventListener"];
+    get: operations["readItemsCertificateauthorityAccount"];
     /**
      * Create an Item
-     * @description Create a new event_listener item.
+     * @description Create a new certificateauthority_account item.
      */
-    post: operations["createItemsEventListener"];
+    post: operations["createItemsCertificateauthorityAccount"];
     /**
      * Delete Multiple Items
-     * @description Delete multiple existing event_listener items.
+     * @description Delete multiple existing certificateauthority_account items.
      */
-    delete: operations["deleteItemsEventListener"];
+    delete: operations["deleteItemsCertificateauthorityAccount"];
     /**
      * Update Multiple Items
-     * @description Update multiple event_listener items at the same time.
+     * @description Update multiple certificateauthority_account items at the same time.
      */
-    patch: operations["updateItemsEventListener"];
+    patch: operations["updateItemsCertificateauthorityAccount"];
   };
-  "/items/event_listener/{id}": {
+  "/items/certificateauthority_account/{id}": {
     /**
      * Retrieve an Item
-     * @description Retrieve a single event_listener item by unique identifier.
+     * @description Retrieve a single certificateauthority_account item by unique identifier.
      */
-    get: operations["readSingleItemsEventListener"];
+    get: operations["readSingleItemsCertificateauthorityAccount"];
     /**
      * Delete an Item
-     * @description Delete an existing event_listener item.
+     * @description Delete an existing certificateauthority_account item.
      */
-    delete: operations["deleteSingleItemsEventListener"];
+    delete: operations["deleteSingleItemsCertificateauthorityAccount"];
     /**
      * Update an Item
-     * @description Update an existing event_listener item.
+     * @description Update an existing certificateauthority_account item.
      */
-    patch: operations["updateSingleItemsEventListener"];
+    patch: operations["updateSingleItemsCertificateauthorityAccount"];
+  };
+  "/items/certificateauthority_config": {
+    /**
+     * List Items
+     * @description List the certificateauthority_config items.
+     */
+    get: operations["readItemsCertificateauthorityConfig"];
+    /**
+     * Create an Item
+     * @description Create a new certificateauthority_config item.
+     */
+    post: operations["createItemsCertificateauthorityConfig"];
+    /**
+     * Delete Multiple Items
+     * @description Delete multiple existing certificateauthority_config items.
+     */
+    delete: operations["deleteItemsCertificateauthorityConfig"];
+    /**
+     * Update Multiple Items
+     * @description Update multiple certificateauthority_config items at the same time.
+     */
+    patch: operations["updateItemsCertificateauthorityConfig"];
+  };
+  "/items/certificateauthority_config/{id}": {
+    /**
+     * Retrieve an Item
+     * @description Retrieve a single certificateauthority_config item by unique identifier.
+     */
+    get: operations["readSingleItemsCertificateauthorityConfig"];
+    /**
+     * Delete an Item
+     * @description Delete an existing certificateauthority_config item.
+     */
+    delete: operations["deleteSingleItemsCertificateauthorityConfig"];
+    /**
+     * Update an Item
+     * @description Update an existing certificateauthority_config item.
+     */
+    patch: operations["updateSingleItemsCertificateauthorityConfig"];
   };
   "/items/shared_config": {
     /**
@@ -960,83 +1155,83 @@ export interface paths {
      */
     patch: operations["updateSingleItemsChallengeConfig"];
   };
-  "/items/certificateauthority_config": {
+  "/items/event_listener": {
     /**
      * List Items
-     * @description List the certificateauthority_config items.
+     * @description List the event_listener items.
      */
-    get: operations["readItemsCertificateauthorityConfig"];
+    get: operations["readItemsEventListener"];
     /**
      * Create an Item
-     * @description Create a new certificateauthority_config item.
+     * @description Create a new event_listener item.
      */
-    post: operations["createItemsCertificateauthorityConfig"];
+    post: operations["createItemsEventListener"];
     /**
      * Delete Multiple Items
-     * @description Delete multiple existing certificateauthority_config items.
+     * @description Delete multiple existing event_listener items.
      */
-    delete: operations["deleteItemsCertificateauthorityConfig"];
+    delete: operations["deleteItemsEventListener"];
     /**
      * Update Multiple Items
-     * @description Update multiple certificateauthority_config items at the same time.
+     * @description Update multiple event_listener items at the same time.
      */
-    patch: operations["updateItemsCertificateauthorityConfig"];
+    patch: operations["updateItemsEventListener"];
   };
-  "/items/certificateauthority_config/{id}": {
+  "/items/event_listener/{id}": {
     /**
      * Retrieve an Item
-     * @description Retrieve a single certificateauthority_config item by unique identifier.
+     * @description Retrieve a single event_listener item by unique identifier.
      */
-    get: operations["readSingleItemsCertificateauthorityConfig"];
+    get: operations["readSingleItemsEventListener"];
     /**
      * Delete an Item
-     * @description Delete an existing certificateauthority_config item.
+     * @description Delete an existing event_listener item.
      */
-    delete: operations["deleteSingleItemsCertificateauthorityConfig"];
+    delete: operations["deleteSingleItemsEventListener"];
     /**
      * Update an Item
-     * @description Update an existing certificateauthority_config item.
+     * @description Update an existing event_listener item.
      */
-    patch: operations["updateSingleItemsCertificateauthorityConfig"];
+    patch: operations["updateSingleItemsEventListener"];
   };
-  "/items/certificate_request": {
+  "/items/interaction_request": {
     /**
      * List Items
-     * @description List the certificate_request items.
+     * @description List the interaction_request items.
      */
-    get: operations["readItemsCertificateRequest"];
+    get: operations["readItemsInteractionRequest"];
     /**
      * Create an Item
-     * @description Create a new certificate_request item.
+     * @description Create a new interaction_request item.
      */
-    post: operations["createItemsCertificateRequest"];
+    post: operations["createItemsInteractionRequest"];
     /**
      * Delete Multiple Items
-     * @description Delete multiple existing certificate_request items.
+     * @description Delete multiple existing interaction_request items.
      */
-    delete: operations["deleteItemsCertificateRequest"];
+    delete: operations["deleteItemsInteractionRequest"];
     /**
      * Update Multiple Items
-     * @description Update multiple certificate_request items at the same time.
+     * @description Update multiple interaction_request items at the same time.
      */
-    patch: operations["updateItemsCertificateRequest"];
+    patch: operations["updateItemsInteractionRequest"];
   };
-  "/items/certificate_request/{id}": {
+  "/items/interaction_request/{id}": {
     /**
      * Retrieve an Item
-     * @description Retrieve a single certificate_request item by unique identifier.
+     * @description Retrieve a single interaction_request item by unique identifier.
      */
-    get: operations["readSingleItemsCertificateRequest"];
+    get: operations["readSingleItemsInteractionRequest"];
     /**
      * Delete an Item
-     * @description Delete an existing certificate_request item.
+     * @description Delete an existing interaction_request item.
      */
-    delete: operations["deleteSingleItemsCertificateRequest"];
+    delete: operations["deleteSingleItemsInteractionRequest"];
     /**
      * Update an Item
-     * @description Update an existing certificate_request item.
+     * @description Update an existing interaction_request item.
      */
-    patch: operations["updateSingleItemsCertificateRequest"];
+    patch: operations["updateSingleItemsInteractionRequest"];
   };
 }
 
@@ -1457,6 +1652,9 @@ export interface components {
       collapse?: string;
       preview_url?: string | null;
       versioning?: boolean;
+      status?: string;
+      /** Format: float */
+      autosave_revision_interval?: number | null;
     };
     Presets: {
       /**
@@ -2020,13 +2218,91 @@ export interface components {
       ai_google_allowed_models?: unknown;
       /** @description $t:fields.directus_settings.collaborative_editing_note */
       collaborative_editing_enabled?: boolean;
+      ai_translation_default_model?: string | null;
+      ai_translation_glossary?: unknown;
+      ai_translation_style_guide?: string | null;
+      license_key?: string | null;
+      license_token?: string | null;
+      mcp_oauth_enabled?: boolean;
+      mcp_oauth_dcr_enabled?: boolean;
+      mcp_oauth_cimd_enabled?: boolean;
     };
-    ItemsCertificateauthorityAccount: {
+    ItemsDirectusOauthClients: {
+      client_id: string;
+      client_name: string;
+      redirect_uris: unknown;
+      grant_types: unknown;
+      token_endpoint_auth_method?: string;
+      client_secret_hash?: string | null;
+      registration_type?: string;
+      client_uri?: string | null;
+      logo_uri?: string | null;
+      tos_uri?: string | null;
+      policy_uri?: string | null;
+      /** Format: timestamp */
+      metadata_fetched_at?: string | null;
+      /** Format: timestamp */
+      metadata_expires_at?: string | null;
+      metadata_etag?: string | null;
+      /** Format: timestamp */
+      date_created?: string;
+    };
+    ItemsDirectusOauthConsents: {
       /** Format: uuid */
       id: string;
-      user_created?: string | components["schemas"]["Users"] | null;
-      account_key?: string | null;
-      account_data?: unknown;
+      user: string | components["schemas"]["Users"];
+      client: string | components["schemas"]["ItemsDirectusOauthClients"];
+      redirect_uri: string;
+      scope?: string | null;
+      /** Format: timestamp */
+      date_created: string;
+      /** Format: timestamp */
+      date_updated: string;
+    };
+    ItemsDirectusOauthCodes: {
+      /** Format: uuid */
+      id: string;
+      code_hash: string;
+      client: string | components["schemas"]["ItemsDirectusOauthClients"];
+      user: string | components["schemas"]["Users"];
+      redirect_uri: string;
+      resource: string;
+      code_challenge: string;
+      code_challenge_method: string;
+      scope?: string | null;
+      /** Format: timestamp */
+      expires_at: string;
+      /** Format: timestamp */
+      used_at?: string | null;
+    };
+    ItemsDirectusOauthTokens: {
+      /** Format: uuid */
+      id: string;
+      client: string | components["schemas"]["ItemsDirectusOauthClients"];
+      user: string | components["schemas"]["Users"];
+      session: string;
+      previous_session?: string | null;
+      resource: string;
+      code_hash: string;
+      scope?: string | null;
+      /** Format: timestamp */
+      expires_at: string;
+      /** Format: timestamp */
+      date_created: string;
+    };
+    ItemsCertificateRequest: {
+      /** Format: uuid */
+      id: string;
+      /** Format: timestamp */
+      date_created?: string | null;
+      domain?: string | null;
+      issue_to?: string | components["schemas"]["Users"] | null;
+      status?: string | null;
+      challenge_type?: string | null;
+      certificate_authority?: string | null;
+      config?: unknown;
+      certificate?: string | components["schemas"]["ItemsCertificates"] | null;
+      type?: string | null;
     };
     ItemsCertificates: {
       /** Format: uuid */
@@ -2044,12 +2320,21 @@ export interface components {
       /** Format: date-time */
       expires_at?: string | null;
     };
-    ItemsEventListener: {
+    ItemsCertificateauthorityAccount: {
       /** Format: uuid */
       id: string;
-      event_user?: string | components["schemas"]["Users"] | null;
-      event_flow?: string | components["schemas"]["Flows"] | null;
-      event_id?: string | null;
+      user_created?: string | components["schemas"]["Users"] | null;
+      account_key?: string | null;
+      account_data?: unknown;
+    };
+    ItemsCertificateauthorityConfig: {
+      /** Format: uuid */
+      id: string;
+      user_created?: string | components["schemas"]["Users"] | null;
+      ca_key?: string | null;
+      config?: unknown;
+      domain?: string;
+      merged_config?: string | components["schemas"]["ItemsSharedConfig"] | null;
     };
     ItemsSharedConfig: {
       /** Format: uuid */
@@ -2069,28 +2354,26 @@ export interface components {
       domain?: string;
       merged_config?: string | components["schemas"]["ItemsSharedConfig"] | null;
     };
-    ItemsCertificateauthorityConfig: {
+    ItemsEventListener: {
       /** Format: uuid */
       id: string;
-      user_created?: string | components["schemas"]["Users"] | null;
-      ca_key?: string | null;
+      event_user?: string | components["schemas"]["Users"] | null;
+      event_flow?: string | components["schemas"]["Flows"] | null;
+      event_id?: string | null;
       config?: unknown;
-      domain?: string;
-      merged_config?: string | components["schemas"]["ItemsSharedConfig"] | null;
     };
-    ItemsCertificateRequest: {
+    ItemsInteractionRequest: {
       /** Format: uuid */
       id: string;
       /** Format: timestamp */
       date_created?: string | null;
-      domain?: string | null;
-      issue_to?: string | components["schemas"]["Users"] | null;
+      /** Format: timestamp */
+      date_updated?: string | null;
+      user?: string | components["schemas"]["Users"] | null;
       status?: string | null;
-      challenge_type?: string | null;
-      certificate_authority?: string | null;
-      config?: unknown;
-      certificate?: string | components["schemas"]["ItemsCertificates"] | null;
       type?: string | null;
+      request_data?: unknown;
+      response_data?: unknown;
     };
   };
   responses: {
@@ -6338,9 +6621,9 @@ export interface operations {
   };
   /**
    * List Items
-   * @description List the certificateauthority_account items.
+   * @description List the directus_oauth_clients items.
    */
-  readItemsCertificateauthorityAccount: {
+  readItemsDirectusOauthClients: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -6357,7 +6640,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityAccount"][];
+            data?: components["schemas"]["ItemsDirectusOauthClients"][];
             meta?: components["schemas"]["x-metadata"];
           };
         };
@@ -6367,9 +6650,9 @@ export interface operations {
   };
   /**
    * Create an Item
-   * @description Create a new certificateauthority_account item.
+   * @description Create a new directus_oauth_clients item.
    */
-  createItemsCertificateauthorityAccount: {
+  createItemsDirectusOauthClients: {
     parameters: {
       query?: {
         meta?: components["parameters"]["Meta"];
@@ -6377,7 +6660,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsCertificateauthorityAccount"][] | components["schemas"]["ItemsCertificateauthorityAccount"];
+        "application/json": components["schemas"]["ItemsDirectusOauthClients"][] | components["schemas"]["ItemsDirectusOauthClients"];
       };
     };
     responses: {
@@ -6385,7 +6668,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityAccount"][];
+            data?: components["schemas"]["ItemsDirectusOauthClients"][];
           };
         };
       };
@@ -6394,9 +6677,9 @@ export interface operations {
   };
   /**
    * Delete Multiple Items
-   * @description Delete multiple existing certificateauthority_account items.
+   * @description Delete multiple existing directus_oauth_clients items.
    */
-  deleteItemsCertificateauthorityAccount: {
+  deleteItemsDirectusOauthClients: {
     responses: {
       /** @description Successful request */
       200: {
@@ -6407,9 +6690,9 @@ export interface operations {
   };
   /**
    * Update Multiple Items
-   * @description Update multiple certificateauthority_account items at the same time.
+   * @description Update multiple directus_oauth_clients items at the same time.
    */
-  updateItemsCertificateauthorityAccount: {
+  updateItemsDirectusOauthClients: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -6423,7 +6706,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsCertificateauthorityAccount"][] | components["schemas"]["ItemsCertificateauthorityAccount"];
+        "application/json": components["schemas"]["ItemsDirectusOauthClients"][] | components["schemas"]["ItemsDirectusOauthClients"];
       };
     };
     responses: {
@@ -6431,7 +6714,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityAccount"][];
+            data?: components["schemas"]["ItemsDirectusOauthClients"][];
           };
         };
       };
@@ -6439,9 +6722,9 @@ export interface operations {
   };
   /**
    * Retrieve an Item
-   * @description Retrieve a single certificateauthority_account item by unique identifier.
+   * @description Retrieve a single directus_oauth_clients item by unique identifier.
    */
-  readSingleItemsCertificateauthorityAccount: {
+  readSingleItemsDirectusOauthClients: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -6458,7 +6741,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityAccount"];
+            data?: components["schemas"]["ItemsDirectusOauthClients"];
           };
         };
       };
@@ -6468,9 +6751,9 @@ export interface operations {
   };
   /**
    * Delete an Item
-   * @description Delete an existing certificateauthority_account item.
+   * @description Delete an existing directus_oauth_clients item.
    */
-  deleteSingleItemsCertificateauthorityAccount: {
+  deleteSingleItemsDirectusOauthClients: {
     parameters: {
       path: {
         /** @description Index of the item. */
@@ -6488,9 +6771,9 @@ export interface operations {
   };
   /**
    * Update an Item
-   * @description Update an existing certificateauthority_account item.
+   * @description Update an existing directus_oauth_clients item.
    */
-  updateSingleItemsCertificateauthorityAccount: {
+  updateSingleItemsDirectusOauthClients: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -6503,7 +6786,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsCertificateauthorityAccount"];
+        "application/json": components["schemas"]["ItemsDirectusOauthClients"];
       };
     };
     responses: {
@@ -6511,7 +6794,739 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityAccount"];
+            data?: components["schemas"]["ItemsDirectusOauthClients"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * List Items
+   * @description List the directus_oauth_consents items.
+   */
+  readItemsDirectusOauthConsents: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthConsents"][];
+            meta?: components["schemas"]["x-metadata"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Create an Item
+   * @description Create a new directus_oauth_consents item.
+   */
+  createItemsDirectusOauthConsents: {
+    parameters: {
+      query?: {
+        meta?: components["parameters"]["Meta"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsDirectusOauthConsents"][] | components["schemas"]["ItemsDirectusOauthConsents"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthConsents"][];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Delete Multiple Items
+   * @description Delete multiple existing directus_oauth_consents items.
+   */
+  deleteItemsDirectusOauthConsents: {
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Update Multiple Items
+   * @description Update multiple directus_oauth_consents items at the same time.
+   */
+  updateItemsDirectusOauthConsents: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsDirectusOauthConsents"][] | components["schemas"]["ItemsDirectusOauthConsents"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthConsents"][];
+          };
+        };
+      };
+    };
+  };
+  /**
+   * Retrieve an Item
+   * @description Retrieve a single directus_oauth_consents item by unique identifier.
+   */
+  readSingleItemsDirectusOauthConsents: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+        version?: components["parameters"]["Version"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthConsents"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Delete an Item
+   * @description Delete an existing directus_oauth_consents item.
+   */
+  deleteSingleItemsDirectusOauthConsents: {
+    parameters: {
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Update an Item
+   * @description Update an existing directus_oauth_consents item.
+   */
+  updateSingleItemsDirectusOauthConsents: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsDirectusOauthConsents"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthConsents"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * List Items
+   * @description List the directus_oauth_codes items.
+   */
+  readItemsDirectusOauthCodes: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthCodes"][];
+            meta?: components["schemas"]["x-metadata"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Create an Item
+   * @description Create a new directus_oauth_codes item.
+   */
+  createItemsDirectusOauthCodes: {
+    parameters: {
+      query?: {
+        meta?: components["parameters"]["Meta"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsDirectusOauthCodes"][] | components["schemas"]["ItemsDirectusOauthCodes"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthCodes"][];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Delete Multiple Items
+   * @description Delete multiple existing directus_oauth_codes items.
+   */
+  deleteItemsDirectusOauthCodes: {
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Update Multiple Items
+   * @description Update multiple directus_oauth_codes items at the same time.
+   */
+  updateItemsDirectusOauthCodes: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsDirectusOauthCodes"][] | components["schemas"]["ItemsDirectusOauthCodes"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthCodes"][];
+          };
+        };
+      };
+    };
+  };
+  /**
+   * Retrieve an Item
+   * @description Retrieve a single directus_oauth_codes item by unique identifier.
+   */
+  readSingleItemsDirectusOauthCodes: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+        version?: components["parameters"]["Version"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthCodes"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Delete an Item
+   * @description Delete an existing directus_oauth_codes item.
+   */
+  deleteSingleItemsDirectusOauthCodes: {
+    parameters: {
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Update an Item
+   * @description Update an existing directus_oauth_codes item.
+   */
+  updateSingleItemsDirectusOauthCodes: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsDirectusOauthCodes"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthCodes"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * List Items
+   * @description List the directus_oauth_tokens items.
+   */
+  readItemsDirectusOauthTokens: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthTokens"][];
+            meta?: components["schemas"]["x-metadata"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Create an Item
+   * @description Create a new directus_oauth_tokens item.
+   */
+  createItemsDirectusOauthTokens: {
+    parameters: {
+      query?: {
+        meta?: components["parameters"]["Meta"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsDirectusOauthTokens"][] | components["schemas"]["ItemsDirectusOauthTokens"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthTokens"][];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Delete Multiple Items
+   * @description Delete multiple existing directus_oauth_tokens items.
+   */
+  deleteItemsDirectusOauthTokens: {
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Update Multiple Items
+   * @description Update multiple directus_oauth_tokens items at the same time.
+   */
+  updateItemsDirectusOauthTokens: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsDirectusOauthTokens"][] | components["schemas"]["ItemsDirectusOauthTokens"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthTokens"][];
+          };
+        };
+      };
+    };
+  };
+  /**
+   * Retrieve an Item
+   * @description Retrieve a single directus_oauth_tokens item by unique identifier.
+   */
+  readSingleItemsDirectusOauthTokens: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+        version?: components["parameters"]["Version"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthTokens"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Delete an Item
+   * @description Delete an existing directus_oauth_tokens item.
+   */
+  deleteSingleItemsDirectusOauthTokens: {
+    parameters: {
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Update an Item
+   * @description Update an existing directus_oauth_tokens item.
+   */
+  updateSingleItemsDirectusOauthTokens: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsDirectusOauthTokens"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsDirectusOauthTokens"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * List Items
+   * @description List the certificate_request items.
+   */
+  readItemsCertificateRequest: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateRequest"][];
+            meta?: components["schemas"]["x-metadata"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Create an Item
+   * @description Create a new certificate_request item.
+   */
+  createItemsCertificateRequest: {
+    parameters: {
+      query?: {
+        meta?: components["parameters"]["Meta"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsCertificateRequest"][] | components["schemas"]["ItemsCertificateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateRequest"][];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Delete Multiple Items
+   * @description Delete multiple existing certificate_request items.
+   */
+  deleteItemsCertificateRequest: {
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Update Multiple Items
+   * @description Update multiple certificate_request items at the same time.
+   */
+  updateItemsCertificateRequest: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsCertificateRequest"][] | components["schemas"]["ItemsCertificateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateRequest"][];
+          };
+        };
+      };
+    };
+  };
+  /**
+   * Retrieve an Item
+   * @description Retrieve a single certificate_request item by unique identifier.
+   */
+  readSingleItemsCertificateRequest: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+        version?: components["parameters"]["Version"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateRequest"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Delete an Item
+   * @description Delete an existing certificate_request item.
+   */
+  deleteSingleItemsCertificateRequest: {
+    parameters: {
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Update an Item
+   * @description Update an existing certificate_request item.
+   */
+  updateSingleItemsCertificateRequest: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsCertificateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateRequest"];
           };
         };
       };
@@ -6704,9 +7719,9 @@ export interface operations {
   };
   /**
    * List Items
-   * @description List the event_listener items.
+   * @description List the certificateauthority_account items.
    */
-  readItemsEventListener: {
+  readItemsCertificateauthorityAccount: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -6723,7 +7738,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsEventListener"][];
+            data?: components["schemas"]["ItemsCertificateauthorityAccount"][];
             meta?: components["schemas"]["x-metadata"];
           };
         };
@@ -6733,9 +7748,9 @@ export interface operations {
   };
   /**
    * Create an Item
-   * @description Create a new event_listener item.
+   * @description Create a new certificateauthority_account item.
    */
-  createItemsEventListener: {
+  createItemsCertificateauthorityAccount: {
     parameters: {
       query?: {
         meta?: components["parameters"]["Meta"];
@@ -6743,7 +7758,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsEventListener"][] | components["schemas"]["ItemsEventListener"];
+        "application/json": components["schemas"]["ItemsCertificateauthorityAccount"][] | components["schemas"]["ItemsCertificateauthorityAccount"];
       };
     };
     responses: {
@@ -6751,7 +7766,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsEventListener"][];
+            data?: components["schemas"]["ItemsCertificateauthorityAccount"][];
           };
         };
       };
@@ -6760,9 +7775,9 @@ export interface operations {
   };
   /**
    * Delete Multiple Items
-   * @description Delete multiple existing event_listener items.
+   * @description Delete multiple existing certificateauthority_account items.
    */
-  deleteItemsEventListener: {
+  deleteItemsCertificateauthorityAccount: {
     responses: {
       /** @description Successful request */
       200: {
@@ -6773,9 +7788,9 @@ export interface operations {
   };
   /**
    * Update Multiple Items
-   * @description Update multiple event_listener items at the same time.
+   * @description Update multiple certificateauthority_account items at the same time.
    */
-  updateItemsEventListener: {
+  updateItemsCertificateauthorityAccount: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -6789,7 +7804,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsEventListener"][] | components["schemas"]["ItemsEventListener"];
+        "application/json": components["schemas"]["ItemsCertificateauthorityAccount"][] | components["schemas"]["ItemsCertificateauthorityAccount"];
       };
     };
     responses: {
@@ -6797,7 +7812,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsEventListener"][];
+            data?: components["schemas"]["ItemsCertificateauthorityAccount"][];
           };
         };
       };
@@ -6805,9 +7820,9 @@ export interface operations {
   };
   /**
    * Retrieve an Item
-   * @description Retrieve a single event_listener item by unique identifier.
+   * @description Retrieve a single certificateauthority_account item by unique identifier.
    */
-  readSingleItemsEventListener: {
+  readSingleItemsCertificateauthorityAccount: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -6824,7 +7839,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsEventListener"];
+            data?: components["schemas"]["ItemsCertificateauthorityAccount"];
           };
         };
       };
@@ -6834,9 +7849,9 @@ export interface operations {
   };
   /**
    * Delete an Item
-   * @description Delete an existing event_listener item.
+   * @description Delete an existing certificateauthority_account item.
    */
-  deleteSingleItemsEventListener: {
+  deleteSingleItemsCertificateauthorityAccount: {
     parameters: {
       path: {
         /** @description Index of the item. */
@@ -6854,9 +7869,9 @@ export interface operations {
   };
   /**
    * Update an Item
-   * @description Update an existing event_listener item.
+   * @description Update an existing certificateauthority_account item.
    */
-  updateSingleItemsEventListener: {
+  updateSingleItemsCertificateauthorityAccount: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -6869,7 +7884,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsEventListener"];
+        "application/json": components["schemas"]["ItemsCertificateauthorityAccount"];
       };
     };
     responses: {
@@ -6877,7 +7892,190 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsEventListener"];
+            data?: components["schemas"]["ItemsCertificateauthorityAccount"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * List Items
+   * @description List the certificateauthority_config items.
+   */
+  readItemsCertificateauthorityConfig: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateauthorityConfig"][];
+            meta?: components["schemas"]["x-metadata"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Create an Item
+   * @description Create a new certificateauthority_config item.
+   */
+  createItemsCertificateauthorityConfig: {
+    parameters: {
+      query?: {
+        meta?: components["parameters"]["Meta"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsCertificateauthorityConfig"][] | components["schemas"]["ItemsCertificateauthorityConfig"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateauthorityConfig"][];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Delete Multiple Items
+   * @description Delete multiple existing certificateauthority_config items.
+   */
+  deleteItemsCertificateauthorityConfig: {
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+    };
+  };
+  /**
+   * Update Multiple Items
+   * @description Update multiple certificateauthority_config items at the same time.
+   */
+  updateItemsCertificateauthorityConfig: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        limit?: components["parameters"]["Limit"];
+        meta?: components["parameters"]["Meta"];
+        offset?: components["parameters"]["Offset"];
+        sort?: components["parameters"]["Sort"];
+        filter?: components["parameters"]["Filter"];
+        search?: components["parameters"]["Search"];
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsCertificateauthorityConfig"][] | components["schemas"]["ItemsCertificateauthorityConfig"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateauthorityConfig"][];
+          };
+        };
+      };
+    };
+  };
+  /**
+   * Retrieve an Item
+   * @description Retrieve a single certificateauthority_config item by unique identifier.
+   */
+  readSingleItemsCertificateauthorityConfig: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+        version?: components["parameters"]["Version"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateauthorityConfig"];
+          };
+        };
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Delete an Item
+   * @description Delete an existing certificateauthority_config item.
+   */
+  deleteSingleItemsCertificateauthorityConfig: {
+    parameters: {
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: never;
+      };
+      401: components["responses"]["UnauthorizedError"];
+      404: components["responses"]["NotFoundError"];
+    };
+  };
+  /**
+   * Update an Item
+   * @description Update an existing certificateauthority_config item.
+   */
+  updateSingleItemsCertificateauthorityConfig: {
+    parameters: {
+      query?: {
+        fields?: components["parameters"]["Fields"];
+        meta?: components["parameters"]["Meta"];
+      };
+      path: {
+        /** @description Index of the item. */
+        id: number | string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ItemsCertificateauthorityConfig"];
+      };
+    };
+    responses: {
+      /** @description Successful request */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["ItemsCertificateauthorityConfig"];
           };
         };
       };
@@ -7253,9 +8451,9 @@ export interface operations {
   };
   /**
    * List Items
-   * @description List the certificateauthority_config items.
+   * @description List the event_listener items.
    */
-  readItemsCertificateauthorityConfig: {
+  readItemsEventListener: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -7272,7 +8470,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityConfig"][];
+            data?: components["schemas"]["ItemsEventListener"][];
             meta?: components["schemas"]["x-metadata"];
           };
         };
@@ -7282,9 +8480,9 @@ export interface operations {
   };
   /**
    * Create an Item
-   * @description Create a new certificateauthority_config item.
+   * @description Create a new event_listener item.
    */
-  createItemsCertificateauthorityConfig: {
+  createItemsEventListener: {
     parameters: {
       query?: {
         meta?: components["parameters"]["Meta"];
@@ -7292,7 +8490,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsCertificateauthorityConfig"][] | components["schemas"]["ItemsCertificateauthorityConfig"];
+        "application/json": components["schemas"]["ItemsEventListener"][] | components["schemas"]["ItemsEventListener"];
       };
     };
     responses: {
@@ -7300,7 +8498,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityConfig"][];
+            data?: components["schemas"]["ItemsEventListener"][];
           };
         };
       };
@@ -7309,9 +8507,9 @@ export interface operations {
   };
   /**
    * Delete Multiple Items
-   * @description Delete multiple existing certificateauthority_config items.
+   * @description Delete multiple existing event_listener items.
    */
-  deleteItemsCertificateauthorityConfig: {
+  deleteItemsEventListener: {
     responses: {
       /** @description Successful request */
       200: {
@@ -7322,9 +8520,9 @@ export interface operations {
   };
   /**
    * Update Multiple Items
-   * @description Update multiple certificateauthority_config items at the same time.
+   * @description Update multiple event_listener items at the same time.
    */
-  updateItemsCertificateauthorityConfig: {
+  updateItemsEventListener: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -7338,7 +8536,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsCertificateauthorityConfig"][] | components["schemas"]["ItemsCertificateauthorityConfig"];
+        "application/json": components["schemas"]["ItemsEventListener"][] | components["schemas"]["ItemsEventListener"];
       };
     };
     responses: {
@@ -7346,7 +8544,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityConfig"][];
+            data?: components["schemas"]["ItemsEventListener"][];
           };
         };
       };
@@ -7354,9 +8552,9 @@ export interface operations {
   };
   /**
    * Retrieve an Item
-   * @description Retrieve a single certificateauthority_config item by unique identifier.
+   * @description Retrieve a single event_listener item by unique identifier.
    */
-  readSingleItemsCertificateauthorityConfig: {
+  readSingleItemsEventListener: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -7373,7 +8571,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityConfig"];
+            data?: components["schemas"]["ItemsEventListener"];
           };
         };
       };
@@ -7383,9 +8581,9 @@ export interface operations {
   };
   /**
    * Delete an Item
-   * @description Delete an existing certificateauthority_config item.
+   * @description Delete an existing event_listener item.
    */
-  deleteSingleItemsCertificateauthorityConfig: {
+  deleteSingleItemsEventListener: {
     parameters: {
       path: {
         /** @description Index of the item. */
@@ -7403,9 +8601,9 @@ export interface operations {
   };
   /**
    * Update an Item
-   * @description Update an existing certificateauthority_config item.
+   * @description Update an existing event_listener item.
    */
-  updateSingleItemsCertificateauthorityConfig: {
+  updateSingleItemsEventListener: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -7418,7 +8616,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsCertificateauthorityConfig"];
+        "application/json": components["schemas"]["ItemsEventListener"];
       };
     };
     responses: {
@@ -7426,7 +8624,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateauthorityConfig"];
+            data?: components["schemas"]["ItemsEventListener"];
           };
         };
       };
@@ -7436,9 +8634,9 @@ export interface operations {
   };
   /**
    * List Items
-   * @description List the certificate_request items.
+   * @description List the interaction_request items.
    */
-  readItemsCertificateRequest: {
+  readItemsInteractionRequest: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -7455,7 +8653,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateRequest"][];
+            data?: components["schemas"]["ItemsInteractionRequest"][];
             meta?: components["schemas"]["x-metadata"];
           };
         };
@@ -7465,9 +8663,9 @@ export interface operations {
   };
   /**
    * Create an Item
-   * @description Create a new certificate_request item.
+   * @description Create a new interaction_request item.
    */
-  createItemsCertificateRequest: {
+  createItemsInteractionRequest: {
     parameters: {
       query?: {
         meta?: components["parameters"]["Meta"];
@@ -7475,7 +8673,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsCertificateRequest"][] | components["schemas"]["ItemsCertificateRequest"];
+        "application/json": components["schemas"]["ItemsInteractionRequest"][] | components["schemas"]["ItemsInteractionRequest"];
       };
     };
     responses: {
@@ -7483,7 +8681,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateRequest"][];
+            data?: components["schemas"]["ItemsInteractionRequest"][];
           };
         };
       };
@@ -7492,9 +8690,9 @@ export interface operations {
   };
   /**
    * Delete Multiple Items
-   * @description Delete multiple existing certificate_request items.
+   * @description Delete multiple existing interaction_request items.
    */
-  deleteItemsCertificateRequest: {
+  deleteItemsInteractionRequest: {
     responses: {
       /** @description Successful request */
       200: {
@@ -7505,9 +8703,9 @@ export interface operations {
   };
   /**
    * Update Multiple Items
-   * @description Update multiple certificate_request items at the same time.
+   * @description Update multiple interaction_request items at the same time.
    */
-  updateItemsCertificateRequest: {
+  updateItemsInteractionRequest: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -7521,7 +8719,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsCertificateRequest"][] | components["schemas"]["ItemsCertificateRequest"];
+        "application/json": components["schemas"]["ItemsInteractionRequest"][] | components["schemas"]["ItemsInteractionRequest"];
       };
     };
     responses: {
@@ -7529,7 +8727,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateRequest"][];
+            data?: components["schemas"]["ItemsInteractionRequest"][];
           };
         };
       };
@@ -7537,9 +8735,9 @@ export interface operations {
   };
   /**
    * Retrieve an Item
-   * @description Retrieve a single certificate_request item by unique identifier.
+   * @description Retrieve a single interaction_request item by unique identifier.
    */
-  readSingleItemsCertificateRequest: {
+  readSingleItemsInteractionRequest: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -7556,7 +8754,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateRequest"];
+            data?: components["schemas"]["ItemsInteractionRequest"];
           };
         };
       };
@@ -7566,9 +8764,9 @@ export interface operations {
   };
   /**
    * Delete an Item
-   * @description Delete an existing certificate_request item.
+   * @description Delete an existing interaction_request item.
    */
-  deleteSingleItemsCertificateRequest: {
+  deleteSingleItemsInteractionRequest: {
     parameters: {
       path: {
         /** @description Index of the item. */
@@ -7586,9 +8784,9 @@ export interface operations {
   };
   /**
    * Update an Item
-   * @description Update an existing certificate_request item.
+   * @description Update an existing interaction_request item.
    */
-  updateSingleItemsCertificateRequest: {
+  updateSingleItemsInteractionRequest: {
     parameters: {
       query?: {
         fields?: components["parameters"]["Fields"];
@@ -7601,7 +8799,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ItemsCertificateRequest"];
+        "application/json": components["schemas"]["ItemsInteractionRequest"];
       };
     };
     responses: {
@@ -7609,7 +8807,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["ItemsCertificateRequest"];
+            data?: components["schemas"]["ItemsInteractionRequest"];
           };
         };
       };
@@ -7621,11 +8819,16 @@ export interface operations {
 
 
 export type Schema = {
-  certificateauthority_account: components["schemas"]["ItemsCertificateauthorityAccount"][];
+  directus_oauth_clients: components["schemas"]["ItemsDirectusOauthClients"][];
+  directus_oauth_consents: components["schemas"]["ItemsDirectusOauthConsents"][];
+  directus_oauth_codes: components["schemas"]["ItemsDirectusOauthCodes"][];
+  directus_oauth_tokens: components["schemas"]["ItemsDirectusOauthTokens"][];
+  certificate_request: components["schemas"]["ItemsCertificateRequest"][];
   certificates: components["schemas"]["ItemsCertificates"][];
-  event_listener: components["schemas"]["ItemsEventListener"][];
+  certificateauthority_account: components["schemas"]["ItemsCertificateauthorityAccount"][];
+  certificateauthority_config: components["schemas"]["ItemsCertificateauthorityConfig"][];
   shared_config: components["schemas"]["ItemsSharedConfig"][];
   challenge_config: components["schemas"]["ItemsChallengeConfig"][];
-  certificateauthority_config: components["schemas"]["ItemsCertificateauthorityConfig"][];
-  certificate_request: components["schemas"]["ItemsCertificateRequest"][];
+  event_listener: components["schemas"]["ItemsEventListener"][];
+  interaction_request: components["schemas"]["ItemsInteractionRequest"][];
 };
