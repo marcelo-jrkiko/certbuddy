@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as InteractionRequestsRouteImport } from './routes/interaction-requests'
 import { Route as EventListenersRouteImport } from './routes/event-listeners'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ConfigsRouteImport } from './routes/configs'
@@ -26,6 +27,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InteractionRequestsRoute = InteractionRequestsRouteImport.update({
+  id: '/interaction-requests',
+  path: '/interaction-requests',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventListenersRoute = EventListenersRouteImport.update({
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/configs': typeof ConfigsRoute
   '/dashboard': typeof DashboardRoute
   '/event-listeners': typeof EventListenersRoute
+  '/interaction-requests': typeof InteractionRequestsRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/configs': typeof ConfigsRoute
   '/dashboard': typeof DashboardRoute
   '/event-listeners': typeof EventListenersRoute
+  '/interaction-requests': typeof InteractionRequestsRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/configs': typeof ConfigsRoute
   '/dashboard': typeof DashboardRoute
   '/event-listeners': typeof EventListenersRoute
+  '/interaction-requests': typeof InteractionRequestsRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/configs'
     | '/dashboard'
     | '/event-listeners'
+    | '/interaction-requests'
     | '/login'
     | '/register'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/configs'
     | '/dashboard'
     | '/event-listeners'
+    | '/interaction-requests'
     | '/login'
     | '/register'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/configs'
     | '/dashboard'
     | '/event-listeners'
+    | '/interaction-requests'
     | '/login'
     | '/register'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   ConfigsRoute: typeof ConfigsRoute
   DashboardRoute: typeof DashboardRoute
   EventListenersRoute: typeof EventListenersRoute
+  InteractionRequestsRoute: typeof InteractionRequestsRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
 }
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/interaction-requests': {
+      id: '/interaction-requests'
+      path: '/interaction-requests'
+      fullPath: '/interaction-requests'
+      preLoaderRoute: typeof InteractionRequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/event-listeners': {
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConfigsRoute: ConfigsRoute,
   DashboardRoute: DashboardRoute,
   EventListenersRoute: EventListenersRoute,
+  InteractionRequestsRoute: InteractionRequestsRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
 }

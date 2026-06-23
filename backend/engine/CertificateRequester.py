@@ -51,9 +51,8 @@ class CertificateRequester:
                 "name": "Manual DNS Challenge",
                 "class" : ManualDnsChallenge,
                 "config_preset" : {
-                  "user_id": "",
-                  "timeout_seconds": 900,
-                  "poll_interval_seconds": 2
+                  "timeout_seconds": 86400,
+                  "poll_interval_seconds": 30
                 },
                 "type": "dns"
             },
