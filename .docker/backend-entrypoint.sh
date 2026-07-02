@@ -2,4 +2,5 @@
 set -e 
 eval "$(pyenv init -)"
 
-python app.py
+python app.py &
+nginx -g "daemon off;"

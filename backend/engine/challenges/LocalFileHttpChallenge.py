@@ -2,30 +2,91 @@
 
 import os
 
+from flask import Config
+import requests
+
 from engine.challenges.HttpChallenge import HttpChallenge
+from engine.repositories.InteractionRequestRepository import InteractionRequestRepository
 
 
 class LocalFileHttpChallenge(HttpChallenge):
     def __init__(self):
         super().__init__()
-            
-    def apply(self, domain: str, key: str, content: str) -> None:
-        self.challenge_path = self.config.get("base_path")
-        if not self.challenge_path:
-            raise Exception("Base path for LocalFileHttpChallenge is not configured")
         
+    def _generate_nginx_config(self, domain: str) -> str:            
+        domain_www_path = os.path.join(Config.HTTP_CHALLENGE_DIR, f"{domain}")
+        nginx_config_path = os.path.join(Config.NGINX_CONFIG_DIR, f"{domain}.conf")
+        nginx_config_content = f"""
+server {{
+    listen 8080;
+    server_name {domain};
+
+    location /.well-known/acme-challenge/ {{
+        root {os.path.dirname(domain_www_path)};
+    }}
+    
+    location / {{
+        return 404;
+    }}
+}}
+"""
+        with open(nginx_config_path, "w") as f:
+            f.write(nginx_config_content)
+
+    def apply(self, domain: str, key: str, content: str) -> None:
+        self.challenge_path = Config.HTTP_CHALLENGE_DIR + "/{$domain}/.well-known/acme-challenge/{$key}"
+        interaction_repo = InteractionRequestRepository()
+        user_id = self.request.issue_to
+                
         # Parse variables in the path
         self.challenge_path = self.challenge_path.replace("{$domain}", domain)
         self.challenge_path = self.challenge_path.replace("{$key}", key)
         
         baseDirectory = os.path.dirname(self.challenge_path)
-        
+                
         if not os.path.exists(baseDirectory):
             os.makedirs(baseDirectory)
         
+        # Write the challenge content to the file
         with open(self.challenge_path, "w") as f:
             f.write(content)            
             
+        # Generate the Nginx configuration for this challenge
+        self._generate_nginx_config(domain)
+        
+        # Reload Nginx to apply the new configuration
+        os.system("nginx -s reload")
+        
+        # - Check if the challenge is valid by making a GET request to the challenge URL
+        url = f"http://{domain}/.well-known/acme-challenge/{key}"
+        response = requests.get(url)
+        
+        if response.status_code != 200 or response.text.strip() != content.strip():
+            # Create a InteractionRequest to notify the user that the challenge failed                   
+            interaction_request = interaction_repo.create_request(
+                user_id=user_id,
+                request_type="http_challenge_failed",
+                request_data={
+                    "domain": domain,
+                    "url": url,
+                    "expected_content": content,
+                    "reason": f"Expected content '{content}' but got '{response.text.strip()}' with status code {response.status_code}"
+                },
+                status="new",
+            )
+
+            result = interaction_repo.wait_for_answer(
+                interaction_request.id,
+                timeout_seconds=84600,
+                poll_interval_seconds=30,
+            )
+            
+            if (result.status or "").lower() == "rejected":
+                response_data = result.response_data or {}
+                reason = response_data.get("reason") or "Manual HTTP challenge was rejected"
+                self.logger.error(f"Manual HTTP challenge request {interaction_request.id} rejected: {reason}")
+                raise Exception(reason)
+        
         self.logger.info(f"Applied LocalFileHttpChallenge for domain {domain} with key {key} at path {self.challenge_path}")
         
         

@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   data_backend:
-    image: directus/directus:latest
+    image: directus/directus:11
     ports:
       - "8055:8055"
     env_file:

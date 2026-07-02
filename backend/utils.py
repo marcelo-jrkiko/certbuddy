@@ -24,12 +24,22 @@ class Config:
     
     CERT_STORAGE = os.getenv('ENGINE_CERT_STORAGE', 'default_vault') 
     
+    # Directories
     LOGS_DIR = os.getenv('ENGINE_LOGS_DIR', 'logs')
+    HTTP_CHALLENGE_DIR = os.getenv('ENGINE_HTTP_CHALLENGE_DIR', '/var/www/http_challenges')
+    NGINX_CONFIG_DIR = os.getenv('ENGINE_NGINX_CONFIG_DIR', '/etc/nginx/conf.d')
     
     LOGS_DIR = os.path.abspath(LOGS_DIR)
     if not os.path.exists(LOGS_DIR):
         os.makedirs(LOGS_DIR, exist_ok=True)        
+        
+    HTTP_CHALLENGE_DIR = os.path.abspath(HTTP_CHALLENGE_DIR)
+    if not os.path.exists(HTTP_CHALLENGE_DIR):
+        os.makedirs(HTTP_CHALLENGE_DIR, exist_ok=True)
     
+    NGINX_CONFIG_DIR = os.path.abspath(NGINX_CONFIG_DIR)
+    if not os.path.exists(NGINX_CONFIG_DIR):
+        os.makedirs(NGINX_CONFIG_DIR, exist_ok=True)
 
 
 def get_main_domain(domain: str) -> str:
