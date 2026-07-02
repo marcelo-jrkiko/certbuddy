@@ -29,8 +29,85 @@ import { directusService } from "@/lib/directus";
 import { components } from "../../../shared/Schema";
 
 type CertificateRequest = components["schemas"]["ItemsCertificateRequest"];
+type InteractionRequest = components["schemas"]["ItemsInteractionRequest"];
 
 const REFRESH_MS = 60_000;
+const AWAITING_INTERACTION_LABEL = "awaiting inraction response";
+
+function normalizeValue(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function extractUserId(
+  user: CertificateRequest["issue_to"] | InteractionRequest["user"],
+): string | null {
+  if (typeof user === "string" && user.trim()) return user;
+  if (user && typeof user === "object" && "id" in user) {
+    const id = (user as { id?: unknown }).id;
+    if (typeof id === "string" && id.trim()) return id;
+  }
+  return null;
+}
+
+function buildAwaitingInteractionIndex(items: InteractionRequest[]) {
+  const byRequestId = new Set<string>();
+  const byUserAndDomain = new Set<string>();
+  const byDomain = new Set<string>();
+
+  for (const item of items) {
+    const userId = extractUserId(item.user);
+    const payload =
+      item.request_data && typeof item.request_data === "object"
+        ? (item.request_data as Record<string, unknown>)
+        : null;
+
+    const requestId =
+      payload && typeof payload.request_id === "string"
+        ? payload.request_id.trim()
+        : "";
+    if (requestId) {
+      byRequestId.add(requestId);
+    }
+
+    const domain =
+      payload && typeof payload.domain === "string"
+        ? normalizeValue(payload.domain)
+        : "";
+    if (!domain) continue;
+
+    byDomain.add(domain);
+    if (userId) {
+      byUserAndDomain.add(`${userId}|${domain}`);
+    }
+  }
+
+  return { byRequestId, byUserAndDomain, byDomain };
+}
+
+function hasAwaitingInteraction(
+  request: CertificateRequest,
+  index: ReturnType<typeof buildAwaitingInteractionIndex>,
+): boolean {
+  if (index.byRequestId.has(request.id)) {
+    return true;
+  }
+
+  if (!request.domain) {
+    return false;
+  }
+
+  const normalizedDomain = normalizeValue(request.domain);
+  if (!normalizedDomain) {
+    return false;
+  }
+
+  const userId = extractUserId(request.issue_to);
+  if (userId && index.byUserAndDomain.has(`${userId}|${normalizedDomain}`)) {
+    return true;
+  }
+
+  return index.byDomain.has(normalizedDomain);
+}
 
 function getRequestError(r: CertificateRequest): string | null {
   const cfg = r.config as Record<string, unknown> | null | undefined;
@@ -57,6 +134,7 @@ function statusVariant(status?: string | null) {
 
 export function CertificateRequestsTable() {
   const [items, setItems] = useState<CertificateRequest[]>([]);
+  const [interactionItems, setInteractionItems] = useState<InteractionRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,12 +143,27 @@ export function CertificateRequestsTable() {
   const load = useCallback(async (showSpinner = false) => {
     if (showSpinner) setRefreshing(true);
     try {
-      const res = await directusService.authFetch(
-        `/items/certificate_request?fields=*&limit=-1&filter[status][_neq]=issued&sort=-date_created`,
-      );
-      if (!res.ok) throw new Error("Failed to load requests");
-      const { data } = await res.json();
-      setItems(Array.isArray(data) ? data : []);
+      const [requestsRes, interactionsRes] = await Promise.all([
+        directusService.authFetch(
+          `/items/certificate_request?fields=*&limit=-1&filter[status][_neq]=issued&sort=-date_created`,
+        ),
+        directusService.authFetch(
+          `/items/interaction_request?fields=id,user,status,type,request_data&limit=-1&filter[status][_eq]=new`,
+        ),
+      ]);
+
+      if (!requestsRes.ok) throw new Error("Failed to load requests");
+      if (!interactionsRes.ok) throw new Error("Failed to load interaction requests");
+
+      const requestsJson = (await requestsRes.json()) as {
+        data?: CertificateRequest[];
+      };
+      const interactionsJson = (await interactionsRes.json()) as {
+        data?: InteractionRequest[];
+      };
+
+      setItems(Array.isArray(requestsJson.data) ? requestsJson.data : []);
+      setInteractionItems(Array.isArray(interactionsJson.data) ? interactionsJson.data : []);
       setError(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load requests");
@@ -79,6 +172,8 @@ export function CertificateRequestsTable() {
       setRefreshing(false);
     }
   }, []);
+
+  const awaitingInteractionIndex = buildAwaitingInteractionIndex(interactionItems);
 
   useEffect(() => {
     void load();
@@ -137,13 +232,19 @@ export function CertificateRequestsTable() {
                 {items.map((r) => {
                   const failed = r.status === "failed" || r.status === "rejected";
                   const errMsg = failed ? getRequestError(r) : null;
+                  const awaitingInteraction = hasAwaitingInteraction(
+                    r,
+                    awaitingInteractionIndex,
+                  );
+                  const statusLabel = awaitingInteraction
+                    ? AWAITING_INTERACTION_LABEL
+                    : (r.status ?? "unknown");
+
                   return (
                     <TableRow key={r.id}>
                       <TableCell className="font-medium">{r.domain ?? "—"}</TableCell>
                       <TableCell>
-                        <Badge variant={statusVariant(r.status)}>
-                          {r.status ?? "unknown"}
-                        </Badge>
+                        <Badge variant={statusVariant(r.status)}>{statusLabel}</Badge>
                       </TableCell>
                       <TableCell>{r.challenge_type ?? "—"}</TableCell>
                       <TableCell>{r.certificate_authority ?? "—"}</TableCell>

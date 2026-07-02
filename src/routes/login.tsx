@@ -49,14 +49,14 @@ function LoginPage() {
     let cancelled = false;
 
     async function runAutoLogin() {      
-      if (directusService.isAuthenticated()) {
+      if (!token) return;
+
+      if (directusService.isAuthenticated() && !token) {
         await navigate({ to: "/dashboard" });
         return;
       }
 
       if (!import.meta.env.VITE_ALLOW_AUTO_LOGIN) return; 
-
-      if (!token) return;
 
       setError(null);
       setIsAutoLoggingIn(true);
