@@ -32,6 +32,7 @@ COPY ./challengeserver/default.conf /etc/nginx/conf.d/default.conf
 
 COPY .docker/backend-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN useradd --system --no-create-home --shell /bin/false nginx
 
 EXPOSE 3000 8080
 STOPSIGNAL SIGQUIT
