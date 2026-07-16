@@ -2,8 +2,8 @@
 
 import os
 
-from flask import Config
 import requests
+from utils import Config
 
 from engine.challenges.HttpChallenge import HttpChallenge
 from engine.repositories.InteractionRequestRepository import InteractionRequestRepository
@@ -34,7 +34,7 @@ server {{
             f.write(nginx_config_content)
 
     def apply(self, domain: str, key: str, content: str) -> None:
-        self.challenge_path = Config.HTTP_CHALLENGE_DIR + "/{$domain}/.well-known/acme-challenge/{$key}"
+        self.challenge_path = Config.HTTP_CHALLENGE_DIR + "/{$domain}/{$key}"
         interaction_repo = InteractionRequestRepository()
         user_id = self.request.issue_to
                 

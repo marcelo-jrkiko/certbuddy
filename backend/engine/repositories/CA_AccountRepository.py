@@ -15,7 +15,7 @@ class CA_AccountRepository:
         account_item = self.backend_client.search("certificateauthority_account", 
             {
                 "account_key": account_key,
-                "user_created": user_id
+                "user_id": user_id
             },
         )
         
@@ -27,7 +27,7 @@ class CA_AccountRepository:
     def create_account(self, account_key: str, user_id: str, account_data: any) -> CertificateAuthorityAccount:
         new_account = self.backend_client.create("certificateauthority_account", {
             "account_key": account_key,
-            "user_created": user_id,
+            "user_id": user_id,
             "account_data": json.dumps(account_data)
         })
         
