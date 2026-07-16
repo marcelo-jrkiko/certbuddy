@@ -40,6 +40,11 @@ server {{
                 
         # Parse variables in the path
         self.challenge_path = self.challenge_path.replace("{$domain}", domain)
+        
+        # Remove the first / from the key
+        if key.startswith("/"):
+            key = key[1:]
+        
         self.challenge_path = self.challenge_path.replace("{$key}", key)
         
         baseDirectory = os.path.dirname(self.challenge_path)
@@ -58,7 +63,7 @@ server {{
         os.system("nginx -s reload")
         
         # - Check if the challenge is valid by making a GET request to the challenge URL
-        url = f"http://{domain}/.well-known/acme-challenge/{key}"
+        url = f"http://{domain}/{key}"
         response = requests.get(url)
         
         if response.status_code != 200 or response.text.strip() != content.strip():
