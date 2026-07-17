@@ -33,6 +33,10 @@ class LetsEncryptCA(BaseCertificateAuthority):
         
         if(self.config.get("environment") == "production"):
             self.directory_url = "https://acme-v02.api.letsencrypt.org/directory"
+            self.environment = "production"
+        else:
+            self.directory_url = "https://acme-staging-v02.api.letsencrypt.org/directory"
+            self.environment = "staging"
 
     def _safe_attr(self, obj, attr, default=None):
         try:
@@ -105,7 +109,7 @@ class LetsEncryptCA(BaseCertificateAuthority):
     
     def get_account_key(self, user_id: str):
         self.logger.info(f"Loading Let's Encrypt account for user_id={user_id}")
-        account = self.carepository.get_account("letsencrypt", user_id)
+        account = self.carepository.get_account(f"letsencrypt-{self.environment}", user_id)
         
         userRepo = UserRepository()
         user_details = userRepo.get_user(user_id)
@@ -132,7 +136,7 @@ class LetsEncryptCA(BaseCertificateAuthority):
             account_uri = resource.uri if hasattr(resource, 'uri') else None
             account_body_json = resource.body.json_dumps() if hasattr(resource, 'body') else None
             
-            self.carepository.create_account("letsencrypt", user_id, {
+            self.carepository.create_account(f"letsencrypt-{self.environment}", user_id, {
                 "account_key": account_key_json,
                 "account_uri": account_uri,
                 "account_body": account_body_json,
