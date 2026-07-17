@@ -10,6 +10,8 @@ class HttpChallenge(ABC):
     def __init__(self):
         self.type = "HTTP-01"
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.DEBUG)
+        
 
     def configure(self, request: CertificateRequest, config: dict | str | None):
         if config:

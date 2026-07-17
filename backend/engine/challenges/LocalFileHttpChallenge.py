@@ -72,10 +72,12 @@ server {{
         
         while tryCount < 3 and not isOk:
             try:
+                self.logger.info(f"Making GET request to {url} to validate the challenge for domain {domain} with key {key}")
                 response = requests.get(url)
                 if response.status_code == 200 and response.text.strip() == content.strip():
                     isOk = True
                 else:
+                    self.logger.error(f"HTTP challenge validation failed for domain {domain} with key {key}. status code {response.status_code}")
                     time.sleep(15)  # Wait for 15 seconds before retrying
                     tryCount += 1
             except requests.RequestException as e:

@@ -66,7 +66,7 @@ class CertificateRequester:
                 "name": "Local File HTTP Challenge",
                 "class" : LocalFileHttpChallenge,
                 "config_preset" : {
-                  "base_path": "/path/to/challenges/{$domain}/{$key}"
+                  
                 },
                 "type": "http"
             },
