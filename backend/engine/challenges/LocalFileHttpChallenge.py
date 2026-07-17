@@ -76,14 +76,14 @@ server {{
                 if response.status_code == 200 and response.text.strip() == content.strip():
                     isOk = True
                 else:
-                    time.sleep(15)  # Wait for 5 seconds before retrying
+                    time.sleep(15)  # Wait for 15 seconds before retrying
                     tryCount += 1
-            except requests.RequestException:
-                self.logger.error(f"Error while making GET request to {url}. Retrying...")
+            except requests.RequestException as e:
+                self.logger.error(f"Error while making GET request to {url}. {e}")
                 tryCount += 1
 
         if not isOk:
-            self.logger.error(f"HTTP challenge validation failed for domain {domain} with key {key}. Expected content '{content}' but got '{response.text.strip()}' with status code {response.status_code}")
+            self.logger.error(f"HTTP challenge validation failed for domain {domain} with key {key}")
             # Create a InteractionRequest to notify the user that the challenge failed                   
             interaction_request = interaction_repo.create_request(
                 user_id=user_id,
