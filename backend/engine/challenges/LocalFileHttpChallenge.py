@@ -1,6 +1,7 @@
 
 
 import os
+import time
 
 import requests
 from utils import Config
@@ -64,9 +65,22 @@ server {{
         
         # - Check if the challenge is valid by making a GET request to the challenge URL
         url = f"http://{domain}/{key}"
-        response = requests.get(url)
+        isOk = False
+        tryCount = 0
         
-        if response.status_code != 200 or response.text.strip() != content.strip():
+        while tryCount < 3 and not isOk:
+            try:
+                response = requests.get(url)
+                if response.status_code == 200 and response.text.strip() == content.strip():
+                    isOk = True
+                else:
+                    time.sleep(15)  # Wait for 5 seconds before retrying
+                    tryCount += 1
+            except requests.RequestException:
+                self.logger.error(f"Error while making GET request to {url}. Retrying...")
+                tryCount += 1
+
+        if not isOk:
             # Create a InteractionRequest to notify the user that the challenge failed                   
             interaction_request = interaction_repo.create_request(
                 user_id=user_id,
