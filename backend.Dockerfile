@@ -19,12 +19,16 @@ RUN curl -fsSL https://pyenv.run | bash && \
         python -m pip install --no-cache-dir requests python-dotenv gitpython watchdog dotenv
 
 WORKDIR /app
-COPY ./backend/ /app/
+
+COPY ./backend/requirements.txt /app/requirements.txt
 
 # Install Python dependencies
 RUN eval "$(pyenv init -)" && \
     pyenv global 3.12.0 && \
     python -m pip install --no-cache-dir -r requirements.txt
+
+
+COPY ./backend/ /app/
 
 # 
 COPY ./challengeserver/server.conf /etc/nginx/nginx.conf
