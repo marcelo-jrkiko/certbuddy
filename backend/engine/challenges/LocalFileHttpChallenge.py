@@ -33,7 +33,7 @@ server {{
 """
         with open(nginx_config_path, "w") as f:
             f.write(nginx_config_content)
-
+            
     def apply(self, domain: str, key: str, content: str) -> None:
         self.challenge_path = Config.HTTP_CHALLENGE_DIR + "/{$domain}/{$key}"
         

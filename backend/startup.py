@@ -28,6 +28,9 @@ def startup():
     
     test_backend_connection()
     
+    logger.info(f"Configuration loaded successfully: \n\t - CHALLENGE_DIR: {config.HTTP_CHALLENGE_DIR}\n\t - NGINX_CONFIG_DIR: {config.NGINX_CONFIG_DIR}\n\t - CERT_STORAGE: {config.CERT_STORAGE}\n\t - LOGS_DIR: {config.LOGS_DIR}")  
+       
+    
     return config
     
 def test_backend_connection():
