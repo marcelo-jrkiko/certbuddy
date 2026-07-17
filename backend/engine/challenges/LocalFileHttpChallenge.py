@@ -36,20 +36,20 @@ server {{
 
     def apply(self, domain: str, key: str, content: str) -> None:
         self.challenge_path = Config.HTTP_CHALLENGE_DIR + "/{$domain}/{$key}"
+        
+        self.logger.info(f"Applying LocalFileHttpChallenge for domain {domain} with key {key} at path {self.challenge_path}")        
+        
         interaction_repo = InteractionRequestRepository()
         user_id = self.request.issue_to
                 
         # Parse variables in the path
-        self.challenge_path = self.challenge_path.replace("{$domain}", domain)
-        
+        self.challenge_path = self.challenge_path.replace("{$domain}", domain)        
         # Remove the first / from the key
         if key.startswith("/"):
             key = key[1:]
         
-        self.challenge_path = self.challenge_path.replace("{$key}", key)
-        
-        baseDirectory = os.path.dirname(self.challenge_path)
-                
+        self.challenge_path = self.challenge_path.replace("{$key}", key)        
+        baseDirectory = os.path.dirname(self.challenge_path)                
         if not os.path.exists(baseDirectory):
             os.makedirs(baseDirectory)
         
