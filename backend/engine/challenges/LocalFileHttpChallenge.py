@@ -56,6 +56,8 @@ server {{
         # Write the challenge content to the file
         with open(self.challenge_path, "w") as f:
             f.write(content)            
+         
+        self.logger.info(f"Challenge file created at {self.challenge_path} for domain {domain} with key {key}")   
             
         # Generate the Nginx configuration for this challenge
         self._generate_nginx_config(domain)
@@ -81,6 +83,7 @@ server {{
                 tryCount += 1
 
         if not isOk:
+            self.logger.error(f"HTTP challenge validation failed for domain {domain} with key {key}. Expected content '{content}' but got '{response.text.strip()}' with status code {response.status_code}")
             # Create a InteractionRequest to notify the user that the challenge failed                   
             interaction_request = interaction_repo.create_request(
                 user_id=user_id,
