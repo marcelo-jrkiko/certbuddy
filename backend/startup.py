@@ -22,14 +22,13 @@ def startup():
         handlers=[
             logging.FileHandler(f"{config.LOGS_DIR}/api.log"),
             logging.StreamHandler(sys.stdout)
-        ]
+        ],        
     )
-    logger = logging.getLogger(__name__)
-    
     test_backend_connection()
     
-    logger.info(f"Configuration loaded successfully: \n\t - CHALLENGE_DIR: {config.HTTP_CHALLENGE_DIR}\n\t - NGINX_CONFIG_DIR: {config.NGINX_CONFIG_DIR}\n\t - CERT_STORAGE: {config.CERT_STORAGE}\n\t - LOGS_DIR: {config.LOGS_DIR}")  
-       
+    logger = logging.getLogger("MAIN")
+    logging.info(f"Configuration loaded successfully: \n\t - CHALLENGE_DIR: {config.HTTP_CHALLENGE_DIR}\n\t - NGINX_CONFIG_DIR: {config.NGINX_CONFIG_DIR}\n\t - CERT_STORAGE: {config.CERT_STORAGE}\n\t - LOGS_DIR: {config.LOGS_DIR}")  
+      
     
     return config
     
