@@ -37,7 +37,7 @@ def test_backend_connection():
     try:
         backend_client = getMasterBackendClient()
         user_info = backend_client.get_user_info()
-        logger.info(f"Successfully connected to backend. Master user info: {user_info.get('email', 'N/A')}")
+        logging.info(f"Successfully connected to backend. Master user info: {user_info.get('email', 'N/A')}")
     except Exception as e:
-        logger.error(f"FAILED TO CONNECT USING MASTER TOKEN: {str(e)}")
+        logging.error(f"FAILED TO CONNECT USING MASTER TOKEN: {str(e)}")
         raise Exception("Failed to connect to the backend with the master token. Please check the configuration and try again.")
