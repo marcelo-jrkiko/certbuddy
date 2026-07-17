@@ -36,7 +36,7 @@ COPY ./challengeserver/default.conf /etc/nginx/conf.d/default.conf
 COPY .docker/backend-entrypoint.sh /entrypoint.sh
 
 RUN mkdir -p /etc/nginx/challenges
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh && chmod 777 /var/log/certbuddy && chmod 777 /var/www/http_challenges && chmod 777 /etc/nginx/conf.d
 RUN useradd --system --no-create-home --shell /bin/false nginx
 
 EXPOSE 3000 8080
