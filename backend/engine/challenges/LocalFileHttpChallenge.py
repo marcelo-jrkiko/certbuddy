@@ -15,15 +15,15 @@ class LocalFileHttpChallenge(HttpChallenge):
         super().__init__()
         
     def _generate_nginx_config(self, domain: str) -> str:            
-        domain_www_path = os.path.join(Config.HTTP_CHALLENGE_DIR, f"{domain}")
-        nginx_config_path = os.path.join(Config.NGINX_CONFIG_DIR, f"{domain}.conf")
+        domain_www_path = f"{Config.HTTP_CHALLENGE_DIR}/{domain}"
+        nginx_config_path = f"{Config.NGINX_CONFIG_DIR}/{domain}.conf"
         nginx_config_content = f"""
 server {{
     listen 8080;
     server_name {domain};
 
     location /.well-known/acme-challenge/ {{
-        root {os.path.dirname(domain_www_path)};
+        root {domain_www_path};
     }}
     
     location / {{
@@ -33,6 +33,9 @@ server {{
 """
         with open(nginx_config_path, "w") as f:
             f.write(nginx_config_content)
+            f.flush()
+        
+        self.logger.info(f"Nginx configuration generated at {nginx_config_path} for domain {domain}")    
             
     def apply(self, domain: str, key: str, content: str) -> None:
         self.challenge_path = Config.HTTP_CHALLENGE_DIR + "/{$domain}/{$key}"
@@ -52,10 +55,13 @@ server {{
         baseDirectory = os.path.dirname(self.challenge_path)                
         if not os.path.exists(baseDirectory):
             os.makedirs(baseDirectory)
+            
+        self.logger.info(f"Challenge directory created at {baseDirectory} for domain {domain} with key {key}")
         
         # Write the challenge content to the file
         with open(self.challenge_path, "w") as f:
-            f.write(content)            
+            f.write(content)          
+            f.flush()  
          
         self.logger.info(f"Challenge file created at {self.challenge_path} for domain {domain} with key {key}")   
             
