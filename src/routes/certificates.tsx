@@ -42,15 +42,21 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { directusService } from "@/lib/directus";
+import { certificatesService, type Certificate } from "@/lib/certificates";
 import {
-  certificatesService,
-  type Certificate,
-} from "@/lib/certificates";
-import { CheckCircle2, Trash2, Upload, Plus, FilePlus, Download } from "lucide-react";
+  CheckCircle2,
+  Trash2,
+  Upload,
+  Plus,
+  FilePlus,
+  Download,
+  SquarePen,
+} from "lucide-react";
 import { RequestCertificateDialog } from "@/components/certificates/RequestCertificateDialog";
 import { CertificateRequestsTable } from "@/components/certificates/CertificateRequestsTable";
 import { ExpiryBadge } from "@/components/certificates/ExpiryBadge";
 import { CertificateStatsCards } from "@/components/certificates/CertificateStatsCards";
+import { EditCertificateDialog } from "@/components/certificates/EditCertificateDialog";
 
 export const Route = createFileRoute("/certificates")({
   head: () => ({
@@ -72,6 +78,7 @@ function CertificatesPage() {
   const [error, setError] = useState<string | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [requestOpen, setRequestOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Certificate | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Certificate | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -135,6 +142,29 @@ function CertificatesPage() {
       await certificatesService.downloadCertificate(c.id, c.common_name ?? c.id);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to download");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleUpdateCertificate(params: {
+    tags: string[];
+    canRenew: boolean;
+  }) {
+    if (!editTarget) return;
+
+    const target = editTarget;
+    setBusyId(target.id);
+    try {
+      await certificatesService.updateCertificate(target.id, {
+        tags: params.tags,
+        can_renew: params.canRenew,
+      });
+      toast.success(`Updated ${target.common_name}`);
+      setEditTarget(null);
+      await load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update certificate");
     } finally {
       setBusyId(null);
     }
@@ -230,9 +260,7 @@ function CertificatesPage() {
                   <TableBody>
                     {certs.map((c) => (
                       <TableRow key={c.id}>
-                        <TableCell className="font-medium">
-                          {c.common_name}
-                        </TableCell>
+                        <TableCell className="font-medium">{c.common_name}</TableCell>
                         <TableCell>
                           {c.is_active ? (
                             <Badge className="bg-primary text-primary-foreground">
@@ -244,7 +272,7 @@ function CertificatesPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
-                            {(c.tags as string[] ?? []).map((t: string) => (
+                            {((c.tags as string[] | null) ?? []).map((t: string) => (
                               <Badge key={t} variant="outline">
                                 {t}
                               </Badge>
@@ -254,7 +282,7 @@ function CertificatesPage() {
                         <TableCell className="text-muted-foreground text-xs">
                           {c.date_created
                             ? new Date(c.date_created).toLocaleString()
-                            : "—"}
+                            : "-"}
                         </TableCell>
                         <TableCell>
                           <ExpiryBadge expiresAt={c.expires_at} />
@@ -273,6 +301,15 @@ function CertificatesPage() {
                                 Download
                               </Button>
                             )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={busyId === c.id}
+                              onClick={() => setEditTarget(c)}
+                            >
+                              <SquarePen className="mr-1 h-4 w-4" />
+                              Edit
+                            </Button>
                             {!c.is_active && (
                               <Button
                                 size="sm"
@@ -308,6 +345,20 @@ function CertificatesPage() {
           <CertificateRequestsTable />
         </div>
       </section>
+
+      <Dialog
+        open={!!editTarget}
+        onOpenChange={(open) => !open && setEditTarget(null)}
+      >
+        {editTarget && (
+          <EditCertificateDialog
+            certificate={editTarget}
+            submitting={busyId === editTarget.id}
+            onClose={() => setEditTarget(null)}
+            onSave={handleUpdateCertificate}
+          />
+        )}
+      </Dialog>
 
       <AlertDialog
         open={!!deleteTarget}

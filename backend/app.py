@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 from engine.events.EventDispatcher import EventDispatcher
-from startup import startup
+from startup import on_start, startup
 from controllers.CertificateController import register_certificate_routes
 from controllers.EngineController import register_engine_routes
 from controllers.TasksController import register_tasks_routes
@@ -21,7 +21,7 @@ app = Flask("certbuddy-backend")
 app.url_map.strict_slashes = False
 CORS(app, resources={r"/*": {
     "origins": "*",
-    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     "allow_headers": ["Content-Type", "Authorization"]
 }})
 app.config["core"] = config
@@ -29,6 +29,7 @@ app.config["core"] = config
 # Initialize Scheduler
 scheduler = Scheduler()
 scheduler.init_tasks(config)
+
 
 app.scheduler = scheduler
 
@@ -67,6 +68,9 @@ def internal_error(error):
 
 if __name__ == '__main__':
     scheduler.start()
+    
+    on_start()
+        
     app.run(
         host='0.0.0.0',
         port=config.API_PORT

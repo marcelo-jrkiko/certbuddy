@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   DialogContent,
   DialogDescription,
@@ -26,6 +27,7 @@ export function RequestCertificateDialog({
   const [domain, setDomain] = useState("");
   const [challengeType, setChallengeType] = useState("");
   const [certificateAuthority, setCertificateAuthority] = useState("");
+  const [canRenew, setCanRenew] = useState(false);
   const [config, setConfig] = useState<Record<string, unknown>>({
     "tags" : "",
   });
@@ -47,12 +49,14 @@ export function RequestCertificateDialog({
         domain: domain.trim(),
         challenge_type: challengeType,
         certificate_authority: certificateAuthority,
+        can_renew: canRenew,
         config,
       });
       toast.success("Certificate request submitted");
       setDomain("");
       setChallengeType("");
       setCertificateAuthority("");
+      setCanRenew(false);
       setConfig({});
       onCreated();
     } catch (err) {
@@ -93,6 +97,19 @@ export function RequestCertificateDialog({
           onValueChange={setCertificateAuthority}
           open={open}
         />
+        <div className="flex items-center justify-between rounded-md border p-3">
+          <div className="space-y-0.5">
+            <Label htmlFor="can-renew">Can renew</Label>
+            <p className="text-sm text-muted-foreground">
+              Allow this certificate to be renewed automatically.
+            </p>
+          </div>
+          <Switch
+            id="can-renew"
+            checked={canRenew}
+            onCheckedChange={setCanRenew}
+          />
+        </div>
         <DictionaryEditor value={config} onChange={setConfig} />
         <DialogFooter>
           <Button

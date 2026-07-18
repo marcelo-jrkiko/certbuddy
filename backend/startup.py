@@ -2,6 +2,7 @@
 import logging
 import sys
 from flask.cli import load_dotenv
+from engine.repositories.CertificateRepository import CertificateRepository
 from utils import Config
 from helpers.DataBackend import getMasterBackendClient
 
@@ -41,3 +42,9 @@ def test_backend_connection():
     except Exception as e:
         logging.error(f"FAILED TO CONNECT USING MASTER TOKEN: {str(e)}")
         raise Exception("Failed to connect to the backend with the master token. Please check the configuration and try again.")
+
+def on_start():
+    certRepo = CertificateRepository(getMasterBackendClient())
+    
+    logging.info("Setting all 'processing' certificate requests to 'failed' on startup...")
+    certRepo.set_processing_as_failed()

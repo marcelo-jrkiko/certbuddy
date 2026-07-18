@@ -683,48 +683,6 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: certificateauthority_account
-    field: user_created
-    type: uuid
-    meta:
-      collection: certificateauthority_account
-      conditions: null
-      display: user
-      display_options: null
-      field: user_created
-      group: null
-      hidden: false
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      searchable: true
-      sort: 2
-      special:
-        - user-created
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_created
-      table: certificateauthority_account
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_indexed: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
-  - collection: certificateauthority_account
     field: account_key
     type: string
     meta:
@@ -792,6 +750,47 @@ fields:
       name: account_data
       table: certificateauthority_account
       data_type: json
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: certificateauthority_account
+    field: user_id
+    type: uuid
+    meta:
+      collection: certificateauthority_account
+      conditions: null
+      display: null
+      display_options: null
+      field: user_id
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 5
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: user_id
+      table: certificateauthority_account
+      data_type: uuid
       default_value: null
       max_length: null
       numeric_precision: null
@@ -1471,6 +1470,47 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: certificates
+    field: can_renew
+    type: boolean
+    meta:
+      collection: certificates
+      conditions: null
+      display: null
+      display_options: null
+      field: can_renew
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 12
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: can_renew
+      table: certificates
+      data_type: boolean
+      default_value: true
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: challenge_config
     field: id
     type: uuid
@@ -1667,7 +1707,7 @@ fields:
       numeric_precision: null
       numeric_scale: null
       is_nullable: false
-      is_unique: true
+      is_unique: false
       is_indexed: false
       is_primary_key: false
       is_generated: false
@@ -2528,27 +2568,6 @@ relations:
       constraint_name: certificate_request_certificate_foreign
       on_update: NO ACTION
       on_delete: SET NULL
-  - collection: certificateauthority_account
-    field: user_created
-    related_collection: directus_users
-    meta:
-      junction_field: null
-      many_collection: certificateauthority_account
-      many_field: user_created
-      one_allowed_collections: null
-      one_collection: directus_users
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: null
-      sort_field: null
-    schema:
-      table: certificateauthority_account
-      column: user_created
-      foreign_key_table: directus_users
-      foreign_key_column: id
-      constraint_name: certificateauthority_account_user_created_foreign
-      on_update: NO ACTION
-      on_delete: NO ACTION
   - collection: certificateauthority_config
     field: user_created
     related_collection: directus_users

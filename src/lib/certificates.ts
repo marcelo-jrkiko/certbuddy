@@ -58,10 +58,26 @@ export class CertificatesService extends BackendClient {
     if (!res.ok) throw new Error(await this.parseError(res));
   }
 
+  public async updateCertificate(
+    id: string,
+    params: { tags?: string[]; can_renew?: boolean },
+  ): Promise<void> {
+    const res = await directusService.fetchWithAuth(
+      `${this.getApiUrl()}/certificates/${encodeURIComponent(id)}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      },
+    );
+    if (!res.ok) throw new Error(await this.parseError(res));
+  }
+
   public async requestCertificate(params: {
     domain: string;
     challenge_type: string;
     certificate_authority: string;
+    can_renew: boolean;
     config: Record<string, unknown>;
   }): Promise<{ request_id: string; thread_id: string }> {
     const res = await directusService.fetchWithAuth(

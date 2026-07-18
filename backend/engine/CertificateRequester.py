@@ -334,6 +334,11 @@ class CertificateRequester:
             
             if isinstance(tags, str):
                 tags = [tag.strip() for tag in tags.split(",")]
+                
+            can_renew = challenge_class.get("flags", []) and "can-renew" in challenge_class.get("flags", [])
+            
+            if challenge_config.get("config", {}).get("can_renew") is not None:
+                can_renew = challenge_config.get("config", {}).get("can_renew")
                                   
             new_certificate = backendClient.create("certificates", {
                 "issued_to": request.issue_to,
@@ -343,7 +348,8 @@ class CertificateRequester:
                 "tags": tags,
                 "is_active": True,
                 "expires_at": cert_details.get("not_valid_after") if cert_details else None,
-                "type" : "issued"
+                "type" : "issued",
+                "can_renew": can_renew
             })
             
             self.logger.info(f"New certificate record created for request {request.id} with certificate ID: {new_certificate.get('id')}")
