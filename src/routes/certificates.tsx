@@ -174,7 +174,7 @@ function CertificatesPage() {
     <main className="min-h-screen bg-background">
       <Toaster richColors position="top-right" />
       <header className="border-b">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex  items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
             <h1 className="text-lg font-semibold">Certificates</h1>
             <nav className="hidden sm:flex items-center gap-3 text-sm text-muted-foreground">
@@ -186,7 +186,7 @@ function CertificatesPage() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-5xl px-6 py-10 space-y-6">
+      <section className="mx-auto max-w-6xl px-6 py-10 space-y-6">
         <CertificateStatsCards certs={certs} />
         <Card>
           <CardHeader>

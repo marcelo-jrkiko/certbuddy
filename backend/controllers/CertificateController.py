@@ -334,117 +334,117 @@ def register_certificate_routes(app):
                 "details": str(e)
             }, 500
 
-        @certificates_blueprint.route('/<certificate_id>', methods=['PATCH'])
-        @require_bearer_token
-        def update_certificate(certificate_id: str):
-          """
-          Update editable certificate metadata (tags and can_renew) for the authenticated user.
-          ---
-          tags:
-            - certificates
-          parameters:
-            - name: certificate_id
-            in: path
-            type: string
-            required: true
-            description: ID of the certificate to update
-          security:
-            - bearerAuth: []
-          requestBody:
-            required: true
-            content:
-            application/json:
-              schema:
-              type: object
-              properties:
-                tags:
-                type: array
-                items:
-                  type: string
-                can_renew:
-                type: boolean
-          responses:
-            200:
-            description: Certificate updated successfully
-            400:
-            description: Invalid payload
-            401:
-            description: Unauthorized
-            404:
-            description: Certificate not found
-            500:
-            description: Internal server error
-          """
-          try:
-            user_id = request.authdata['user_data'].get('id')
-            client = BackendClient(app.config["core"], request.authdata['token'])
+    @certificates_blueprint.route('/<certificate_id>', methods=['PATCH'])
+    @require_bearer_token
+    def update_certificate(certificate_id: str):
+      """
+      Update editable certificate metadata (tags and can_renew) for the authenticated user.
+      ---
+      tags:
+        - certificates
+      parameters:
+        - name: certificate_id
+        in: path
+        type: string
+        required: true
+        description: ID of the certificate to update
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+        application/json:
+          schema:
+          type: object
+          properties:
+            tags:
+            type: array
+            items:
+              type: string
+            can_renew:
+            type: boolean
+      responses:
+        200:
+        description: Certificate updated successfully
+        400:
+        description: Invalid payload
+        401:
+        description: Unauthorized
+        404:
+        description: Certificate not found
+        500:
+        description: Internal server error
+      """
+      try:
+        user_id = request.authdata['user_data'].get('id')
+        client = BackendClient(app.config["core"], request.authdata['token'])
 
-            certificate = client.search("certificates", {
-              "id": {"_eq": certificate_id},
-              "issued_to": {"_eq": user_id}
-            }, fields=["id"])
+        certificate = client.search("certificates", {
+          "id": {"_eq": certificate_id},
+          "issued_to": {"_eq": user_id}
+        }, fields=["id"])
 
-            if not certificate:
-              return {
-                "error": f"Certificate {certificate_id} not found"
-              }, 404
+        if not certificate:
+          return {
+            "error": f"Certificate {certificate_id} not found"
+          }, 404
 
-            payload = request.get_json(silent=True) or {}
-            if not isinstance(payload, dict):
-              return {
-                "error": "Invalid request payload"
-              }, 400
+        payload = request.get_json(silent=True) or {}
+        if not isinstance(payload, dict):
+          return {
+            "error": "Invalid request payload"
+          }, 400
 
-            allowed_fields = {"tags", "can_renew"}
-            unknown_fields = set(payload.keys()) - allowed_fields
-            if unknown_fields:
-              return {
-                "error": f"Unsupported fields: {', '.join(sorted(unknown_fields))}"
-              }, 400
+        allowed_fields = {"tags", "can_renew"}
+        unknown_fields = set(payload.keys()) - allowed_fields
+        if unknown_fields:
+          return {
+            "error": f"Unsupported fields: {', '.join(sorted(unknown_fields))}"
+          }, 400
 
-            update_data = {}
+        update_data = {}
 
-            if "tags" in payload:
-              tags = payload.get("tags")
-              if tags is None:
-                update_data["tags"] = []
-              elif isinstance(tags, list):
-                update_data["tags"] = [str(tag).strip() for tag in tags if str(tag).strip()]
-              elif isinstance(tags, str):
-                update_data["tags"] = [tag.strip() for tag in tags.split(",") if tag.strip()]
-              else:
-                return {
-                  "error": "Field 'tags' must be an array of strings or comma-separated string"
-                }, 400
-
-            if "can_renew" in payload:
-              can_renew = payload.get("can_renew")
-              if isinstance(can_renew, bool):
-                update_data["can_renew"] = can_renew
-              elif isinstance(can_renew, str) and can_renew.lower() in ("true", "false"):
-                update_data["can_renew"] = can_renew.lower() == "true"
-              else:
-                return {
-                  "error": "Field 'can_renew' must be a boolean"
-                }, 400
-
-            if not update_data:
-              return {
-                "error": "No editable fields provided. Use 'tags' and/or 'can_renew'."
-              }, 400
-
-            updated_certificate = client.update("certificates", certificate_id, update_data)
-
+        if "tags" in payload:
+          tags = payload.get("tags")
+          if tags is None:
+            update_data["tags"] = []
+          elif isinstance(tags, list):
+            update_data["tags"] = [str(tag).strip() for tag in tags if str(tag).strip()]
+          elif isinstance(tags, str):
+            update_data["tags"] = [tag.strip() for tag in tags.split(",") if tag.strip()]
+          else:
             return {
-              "success": True,
-              "message": f"Certificate {certificate_id} updated successfully",
-              "data": updated_certificate
-            }, 200
-          except Exception as e:
+              "error": "Field 'tags' must be an array of strings or comma-separated string"
+            }, 400
+
+        if "can_renew" in payload:
+          can_renew = payload.get("can_renew")
+          if isinstance(can_renew, bool):
+            update_data["can_renew"] = can_renew
+          elif isinstance(can_renew, str) and can_renew.lower() in ("true", "false"):
+            update_data["can_renew"] = can_renew.lower() == "true"
+          else:
             return {
-              "error": "Failed to update certificate",
-              "details": str(e)
-            }, 500
+              "error": "Field 'can_renew' must be a boolean"
+            }, 400
+
+        if not update_data:
+          return {
+            "error": "No editable fields provided. Use 'tags' and/or 'can_renew'."
+          }, 400
+
+        updated_certificate = client.update("certificates", certificate_id, update_data)
+
+        return {
+          "success": True,
+          "message": f"Certificate {certificate_id} updated successfully",
+          "data": updated_certificate
+        }, 200
+      except Exception as e:
+        return {
+          "error": "Failed to update certificate",
+          "details": str(e)
+        }, 500
     
     
     @certificates_blueprint.route('/<certificate_id>', methods=['DELETE'])

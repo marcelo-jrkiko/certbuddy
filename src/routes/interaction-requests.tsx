@@ -83,7 +83,7 @@ function InteractionRequestsPage() {
   return (
     <main className="min-h-screen bg-background">
       <header className="border-b">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
             <h1 className="text-lg font-semibold">Interaction Requests</h1>
             <nav className="hidden sm:flex items-center gap-3 text-sm text-muted-foreground">
@@ -95,7 +95,7 @@ function InteractionRequestsPage() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-5xl px-6 py-10 space-y-6">
+      <section className="mx-auto max-w-6xl px-6 py-10 space-y-6">
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div>

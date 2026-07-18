@@ -44,7 +44,7 @@ def test_backend_connection():
         raise Exception("Failed to connect to the backend with the master token. Please check the configuration and try again.")
 
 def on_start():
-    certRepo = CertificateRepository(getMasterBackendClient())
+    certRepo = CertificateRepository()
     
     logging.info("Setting all 'processing' certificate requests to 'failed' on startup...")
     certRepo.set_processing_as_failed()
