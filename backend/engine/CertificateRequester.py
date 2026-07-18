@@ -45,7 +45,10 @@ class CertificateRequester:
                   "zone_id": "",
                   "api_token": "", 
                 },
-                "type": "dns"
+                "type": "dns",
+                "flags" : [
+                    "can-renew"
+                ]
             },
             "MANUAL_DNS" : {
                 "name": "Manual DNS Challenge",
@@ -54,7 +57,8 @@ class CertificateRequester:
                   "timeout_seconds": 86400,
                   "poll_interval_seconds": 30
                 },
-                "type": "dns"
+                "type": "dns",
+                "flags" : [ ]
             },
             "EMPTY" : {
                 "name": "No Challenge",
@@ -68,7 +72,10 @@ class CertificateRequester:
                 "config_preset" : {
                   
                 },
-                "type": "http"
+                "type": "http",
+                "flags" : [
+                    "can-renew"
+                ]
             },
             "SFTP_FILE_HTTP" : {
                 "name": "SFTP File HTTP Challenge",
@@ -80,7 +87,10 @@ class CertificateRequester:
                   "remote_port": 22,
                   "private_key_path": "/path/to/private/key"
                 },
-                "type": "http"
+                "type": "http",
+                "flags" : [
+                    "can-renew"
+                ]
             }
         }
         
@@ -169,6 +179,10 @@ class CertificateRequester:
         backend = getMasterBackendClient()
         cert = backend.get("certificates", certificate_id)
         
+        if not cert.get("can_renew", True):
+            self.logger.warning(f"Certificate {certificate_id} is not eligible for renewal")
+            raise Exception("Certificate is not eligible for renewal")
+        
         self.event_dispatcher.dispatch("cert.expired", cert['issue_to'], {
                 "request_id": cert['id'],
                 "domain": cert['domain'],
@@ -180,10 +194,28 @@ class CertificateRequester:
             "certificate": cert['id'],
             "status": "issued"
         }, sort="-date_created", limit=1)
+
+        if not cert_requests:
+            self.logger.error(f"No issued certificate request found for certificate {cert['id']}")
+            raise Exception("No issued certificate request found for this certificate")
         
         
         # Create a new certificate request with the same domain and configuration
         last_request = cert_requests[0]
+        challenge_type = last_request.get('challenge_type')
+        challenge_info = self.get_avaliable_challenges().get(challenge_type)
+
+        if not challenge_info:
+            self.logger.error(f"Challenge type {challenge_type} not found for renewal of certificate {cert['id']}")
+            raise Exception(f"Challenge type {challenge_type} not found")
+
+        challenge_flags = challenge_info.get("flags", [])
+        if "can-renew" not in challenge_flags:
+            self.logger.warning(
+                f"Renewal blocked for certificate {cert['id']}: challenge {challenge_type} does not allow auto-renew"
+            )
+            raise Exception(f"Challenge {challenge_type} does not support automatic renewal")
+
         new_request = {
             "domain": cert['domain'],
             "issue_to": last_request['issue_to'],
