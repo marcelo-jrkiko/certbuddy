@@ -19,6 +19,7 @@ class EventListener(BaseModel):
         None,
         description="Handler code/template (script for shell, body template for webhook)",
     )
+    is_global: Optional[bool] = Field(False, description="Whether this listener is global (applies to all users)")
 
     # Legacy fields kept for compatibility with older data snapshots.
     event_flow: Optional[str] = Field(None, description="Legacy flow identifier")

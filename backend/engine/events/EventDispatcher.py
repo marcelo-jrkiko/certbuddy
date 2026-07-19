@@ -70,10 +70,10 @@ class EventDispatcher:
             return [
                 listener
                 for listener in self._listeners
-                if listener.event_user == user_id and listener.event_id == event_id
+                if (listener.event_user == user_id or listener.is_global) and listener.event_id == event_id
             ]
 
-        return [listener for listener in self._listeners if listener.event_user == user_id]
+        return [listener for listener in self._listeners if listener.event_user == user_id or listener.is_global]
 
     def load(self):
         """Load event listeners from the database."""
