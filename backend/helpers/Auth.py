@@ -9,6 +9,35 @@ from flask import request, jsonify, current_app
 from helpers.DataBackend import BackendClient
 
 
+def _resolve_role_name(backend: BackendClient, user_data: dict) -> str:
+    """Resolve the user role name from the user payload, with id fallback lookup."""
+    role = user_data.get("role")
+
+    if isinstance(role, dict):
+        return role.get("name") or ""
+
+    if isinstance(role, str):
+        try:
+            role_data = backend.get_item("directus_roles", role)
+            if isinstance(role_data, dict):
+                return role_data.get("name") or ""
+        except Exception as e:
+            logging.warning(f"Could not resolve role name for role id {role}: {e}")
+
+    roles = user_data.get("roles")
+    if isinstance(roles, list):
+        for role_item in roles:
+            if isinstance(role_item, dict) and role_item.get("name"):
+                return role_item.get("name")
+
+    return ""
+
+
+def _is_admin_role(backend: BackendClient, user_data: dict) -> bool:
+    role_name = _resolve_role_name(backend, user_data)
+    return role_name.strip().lower() == "administrator"
+
+
 def require_bearer_token(f):
     """
     Decorator to require bearer token authentication for protected routes.
@@ -56,7 +85,8 @@ def require_bearer_token(f):
         
         request.authdata = {
             'token': token,
-            'user_data': user_data
+            'user_data': user_data,
+            'admin': _is_admin_role(backend, user_data)
         }        
         
         # Token is valid, proceed to the route handler
@@ -105,7 +135,8 @@ def canhave_bearer_token(f):
         
         request.authdata = {
             'token': token,
-            'user_data': user_data
+            'user_data': user_data,
+            'admin': _is_admin_role(backend, user_data)
         }        
         
         # Token is valid, proceed to the route handler

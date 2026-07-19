@@ -126,10 +126,18 @@ def register_certificate_routes(app):
       try:
         # Get the certificate details from Directus to retrieve file references
         backend_client = BackendClient(app.config["core"], request.authdata['token'])
-        certificate = backend_client.search("certificates", {
+        
+        filters = {
             "id": {"_eq": certificate_id},
             "issued_to": {"_eq": request.authdata['user_data'].get('id')}
-        }, fields=["common_name", "certificate_file", "certificate_key"])
+        }
+        
+        if request.authdata['admin']:
+            # Admins can download any certificate
+            filters.pop("issued_to", None)
+        
+        certificate = backend_client.search("certificates", filters,
+                fields=["common_name", "certificate_file", "certificate_key"])
         
         if not certificate:
             return {
