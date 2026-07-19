@@ -9,6 +9,7 @@ import utils
 from engine.events.EventDispatcher import EventDispatcher
 from engine.authorities.CloudflareOriginCA import CloudflareOriginCA
 from engine.authorities.LetsEncryptCA import LetsEncryptCA
+from engine.authorities.SelfSignedCA import SelfSignedCA
 
 from engine.challenges.NoChallenge import NoChallenge
 from engine.challenges.CloudflareChallenge import CloudflareDnsChallenge
@@ -109,6 +110,14 @@ class CertificateRequester:
                 "config_preset" : {
                   "api_token": "",
                   "zone_id": "",
+                },
+            },
+            "SELF_SIGNED" : {
+                "name": "Self Signed",
+                "class" : SelfSignedCA,
+                "config_preset" : {
+                    "validity_days": 365,
+                    "key_size": 2048,
                 },
             }
         }

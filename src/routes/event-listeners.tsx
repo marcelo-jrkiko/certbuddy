@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -31,17 +32,18 @@ import {
   eventListenersService,
   eventsService,
   type EventListener,
-  type DirectusFlow,
+  type EventHandlerType,
   type EventIdOption,
 } from "@/lib/eventListeners";
-import { EventListenerDialog } from "@/components/event-listeners/EventListenerDialog";
+import { ShellEventListenerDialog } from "@/components/event-listeners/ShellEventListenerDialog";
+import { WebhookEventListenerDialog } from "@/components/event-listeners/WebhookEventListenerDialog";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/event-listeners")({
   head: () => ({
     meta: [
       { title: "Certbuddy - Event Listeners" },
-      { name: "description", content: "Manage event listeners that trigger Directus flows." },
+      { name: "description", content: "Manage event listeners and their handlers." },
     ],
   }),
   component: EventListenersPage,
@@ -50,23 +52,21 @@ export const Route = createFileRoute("/event-listeners")({
 function EventListenersPage() {
   const navigate = useNavigate();
   const [items, setItems] = useState<EventListener[]>([]);
-  const [flows, setFlows] = useState<DirectusFlow[]>([]);
   const [eventIds, setEventIds] = useState<EventIdOption[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editorOpen, setEditorOpen] = useState(false);
-  const [editing, setEditing] = useState<EventListener | null>(null);
+  const [shellEditorOpen, setShellEditorOpen] = useState(false);
+  const [webhookEditorOpen, setWebhookEditorOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<EventListener | null>(null);
   const [deleteItem, setDeleteItem] = useState<EventListener | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [list, fls, eids] = await Promise.all([
+      const [list, eids] = await Promise.all([
         eventListenersService.list(),
-        eventListenersService.listFlows(),
         eventsService.listEventIds(),
       ]);
       setItems(list);
-      setFlows(fls);
       setEventIds(eids);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to load");
@@ -83,19 +83,57 @@ function EventListenersPage() {
     load();
   }, [load, navigate]);
 
-  const flowName = (id?: string | null) =>
-    flows.find((f) => f.id === id)?.name ?? id ?? "—";
+  const getHandlerType = (item: EventListener): EventHandlerType | "unknown" => {
+    const value = (item.handler ?? "").toString().toLowerCase();
+    if (value === "shell_script") return "shell_script";
+    if (value === "webhook") return "webhook";
+    return "unknown";
+  };
+
+  const handlerBadgeLabel = (handler: EventHandlerType | "unknown") => {
+    if (handler === "shell_script") return "Shell Script";
+    if (handler === "webhook") return "Webhook";
+    return "Unknown";
+  };
+
+  const listenerDetails = (item: EventListener) => {
+    const handler = getHandlerType(item);
+    if (handler === "webhook") {
+      const params = item.event_params as Record<string, unknown> | null;
+      const url = params && typeof params.url === "string" ? params.url : null;
+      return url || "No URL configured";
+    }
+    if (handler === "shell_script") {
+      const firstLine = (item.event_code ?? "").split("\n").map((line) => line.trim()).find((line) => line.length > 0);
+      return firstLine || "No script configured";
+    }
+    return "Unsupported handler type";
+  };
+
   const eventDesc = (key?: string | null) =>
     eventIds.find((e) => e.key === key)?.description ?? "";
 
-  const openNew = () => {
-    setEditing(null);
-    setEditorOpen(true);
+  const openNew = (type: EventHandlerType) => {
+    setEditingItem(null);
+    if (type === "shell_script") {
+      setShellEditorOpen(true);
+      return;
+    }
+    setWebhookEditorOpen(true);
   };
 
   const openEdit = (item: EventListener) => {
-    setEditing(item);
-    setEditorOpen(true);
+    setEditingItem(item);
+    const handler = getHandlerType(item);
+    if (handler === "shell_script") {
+      setShellEditorOpen(true);
+      return;
+    }
+    if (handler === "webhook") {
+      setWebhookEditorOpen(true);
+      return;
+    }
+    toast.error("Unsupported handler type for this listener");
   };
 
   const confirmDelete = async () => {
@@ -116,7 +154,7 @@ function EventListenersPage() {
         <div>
           <h1 className="text-2xl font-semibold">Event Listeners</h1>
           <p className="text-muted-foreground text-sm">
-            Bind system events to Directus flows.
+            Bind system events to local handlers.
           </p>
         </div>
         <Button asChild variant="outline">
@@ -129,10 +167,15 @@ function EventListenersPage() {
           <div>
             <CardTitle>All listeners</CardTitle>
             <CardDescription>
-              Each listener triggers a flow when its event fires.
+              Each listener executes a handler when its event fires.
             </CardDescription>
           </div>
-          <Button onClick={openNew}>+ New listener</Button>
+          <div className="flex gap-2">
+            <Button onClick={() => openNew("shell_script")}>+ Shell Listener</Button>
+            <Button variant="secondary" onClick={() => openNew("webhook")}>
+              + Webhook Listener
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -140,20 +183,21 @@ function EventListenersPage() {
               <TableRow>
                 <TableHead>Event</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>Flow</TableHead>
-                <TableHead className="w-[160px] text-right">Actions</TableHead>
+                <TableHead>Handler</TableHead>
+                <TableHead>Details</TableHead>
+                <TableHead className="w-[180px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : items.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
                     No event listeners yet.
                   </TableCell>
                 </TableRow>
@@ -164,7 +208,12 @@ function EventListenersPage() {
                     <TableCell className="text-sm text-muted-foreground">
                       {eventDesc(it.event_id)}
                     </TableCell>
-                    <TableCell>{flowName(it.event_flow)}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{handlerBadgeLabel(getHandlerType(it))}</Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-[380px] truncate">
+                      {listenerDetails(it)}
+                    </TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button size="sm" variant="outline" onClick={() => openEdit(it)}>
                         Edit
@@ -181,10 +230,17 @@ function EventListenersPage() {
         </CardContent>
       </Card>
 
-      <EventListenerDialog
-        open={editorOpen}
-        onOpenChange={setEditorOpen}
-        item={editing}
+      <ShellEventListenerDialog
+        open={shellEditorOpen}
+        onOpenChange={setShellEditorOpen}
+        item={editingItem}
+        onSaved={load}
+      />
+
+      <WebhookEventListenerDialog
+        open={webhookEditorOpen}
+        onOpenChange={setWebhookEditorOpen}
+        item={editingItem}
         onSaved={load}
       />
 

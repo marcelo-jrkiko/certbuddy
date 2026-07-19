@@ -1,18 +1,15 @@
 import { BackendClient } from "./backend_client";
 import { DirectusService, directusService } from "./directus";
 
+export type EventHandlerType = "shell_script" | "webhook";
+
 export type EventListener = {
   id?: string;
   event_user?: string | null;
-  event_flow?: string | null;
   event_id?: string | null;
-};
-
-export type DirectusFlow = {
-  id: string;
-  name: string;
-  status?: string;
-  trigger?: string;
+  handler?: EventHandlerType | string | null;
+  event_params?: Record<string, unknown> | null;
+  event_code?: string | null;
 };
 
 export type EventIdOption = { key: string; description: string };
@@ -54,15 +51,6 @@ export class EventListenersService extends DirectusService {
       method: "DELETE",
     });
     if (!res.ok && res.status !== 204) throw new Error(await this.parseError(res));
-  }
-
-  async listFlows(): Promise<DirectusFlow[]> {
-    const res = await directusService.authFetch(
-      `/flows?fields=id,name,status,trigger&limit=-1`,
-    );
-    if (!res.ok) throw new Error(await this.parseError(res));
-    const { data } = await res.json();
-    return data as DirectusFlow[];
   }
 }
 
