@@ -6,7 +6,7 @@ import logging
 from functools import wraps
 from flask import request, jsonify, current_app
 
-from helpers.DataBackend import BackendClient
+from helpers.DataBackend import BackendClient, getMasterBackendClient
 
 
 def _resolve_role_name(backend: BackendClient, user_data: dict) -> str:
@@ -33,8 +33,8 @@ def _resolve_role_name(backend: BackendClient, user_data: dict) -> str:
     return ""
 
 
-def _is_admin_role(backend: BackendClient, user_data: dict) -> bool:
-    role_name = _resolve_role_name(backend, user_data)
+def _is_admin_role(user_data: dict) -> bool:
+    role_name = _resolve_role_name(getMasterBackendClient(), user_data)
     return role_name.strip().lower() == "administrator"
 
 
@@ -86,7 +86,7 @@ def require_bearer_token(f):
         request.authdata = {
             'token': token,
             'user_data': user_data,
-            'admin': _is_admin_role(backend, user_data)
+            'admin': _is_admin_role(user_data)
         }        
         
         # Token is valid, proceed to the route handler
