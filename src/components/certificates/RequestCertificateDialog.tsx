@@ -49,8 +49,10 @@ export function RequestCertificateDialog({
         domain: domain.trim(),
         challenge_type: challengeType,
         certificate_authority: certificateAuthority,
-        can_renew: canRenew,
-        config,
+        config: {
+          ...config,
+          can_renew: canRenew,
+        },
       });
       toast.success("Certificate request submitted");
       setDomain("");

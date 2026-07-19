@@ -344,10 +344,9 @@ class CertificateRequester:
             if isinstance(tags, str):
                 tags = [tag.strip() for tag in tags.split(",")]
                 
-            can_renew = challenge_class.get("flags", []) and "can-renew" in challenge_class.get("flags", [])
-            
-            if challenge_config.get("config", {}).get("can_renew") is not None:
-                can_renew = challenge_config.get("config", {}).get("can_renew")
+            challenge_flags = challenge_class.get("flags", [])
+            can_renew = "can_renew" in challenge_flags
+            can_renew = request.config.get("can_renew", False) or can_renew
                                   
             new_certificate = backendClient.create("certificates", {
                 "issued_to": request.issue_to,

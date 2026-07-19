@@ -181,38 +181,36 @@ function EventListenersPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Name</TableHead>
                 <TableHead>Event</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Handler</TableHead>
-                <TableHead>Details</TableHead>
                 <TableHead className="w-[180px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : items.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">
                     No event listeners yet.
                   </TableCell>
                 </TableRow>
               ) : (
                 items.map((it) => (
                   <TableRow key={it.id}>
+                    <TableCell className="text-sm">{it.name ?? "—"}</TableCell>
                     <TableCell className="font-mono text-xs">{it.event_id ?? "—"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {eventDesc(it.event_id)}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{handlerBadgeLabel(getHandlerType(it))}</Badge>
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground max-w-[380px] truncate">
-                      {listenerDetails(it)}
                     </TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button size="sm" variant="outline" onClick={() => openEdit(it)}>

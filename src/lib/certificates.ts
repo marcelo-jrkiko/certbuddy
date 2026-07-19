@@ -77,7 +77,6 @@ export class CertificatesService extends BackendClient {
     domain: string;
     challenge_type: string;
     certificate_authority: string;
-    can_renew: boolean;
     config: Record<string, unknown>;
   }): Promise<{ request_id: string; thread_id: string }> {
     const res = await directusService.fetchWithAuth(

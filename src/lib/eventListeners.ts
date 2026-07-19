@@ -5,6 +5,7 @@ export type EventHandlerType = "shell_script" | "webhook";
 
 export type EventListener = {
   id?: string;
+  name?: string | null;
   event_user?: string | null;
   event_id?: string | null;
   handler?: EventHandlerType | string | null;

@@ -25,6 +25,8 @@ import {
   type EventIdOption,
   type EventListener,
 } from "@/lib/eventListeners";
+import { directusService } from "@/lib/directus";
+import { EventListenerNameField } from "@/components/event-listeners/EventListenerNameField";
 import { toast } from "sonner";
 
 interface Props {
@@ -64,6 +66,7 @@ const parseJsonObject = (value: string, label: string): Record<string, unknown> 
 
 export function WebhookEventListenerDialog({ open, onOpenChange, item, onSaved }: Props) {
   const [eventIds, setEventIds] = useState<EventIdOption[]>([]);
+  const [name, setName] = useState("");
   const [eventId, setEventId] = useState("");
   const [url, setUrl] = useState("");
   const [method, setMethod] = useState("POST");
@@ -80,6 +83,7 @@ export function WebhookEventListenerDialog({ open, onOpenChange, item, onSaved }
     const params = (item?.event_params ?? {}) as Record<string, unknown>;
     const { headers: rawHeaders, query: rawQuery, timeout_seconds, url: pUrl, method: pMethod, ...rest } = params;
 
+    setName(item?.name ?? "");
     setEventId(item?.event_id ?? "");
     setUrl(typeof pUrl === "string" ? pUrl : "");
     setMethod(typeof pMethod === "string" ? pMethod.toUpperCase() : "POST");
@@ -96,6 +100,11 @@ export function WebhookEventListenerDialog({ open, onOpenChange, item, onSaved }
   }, [open, item]);
 
   const handleSave = async () => {
+    if (!name.trim()) {
+      toast.error("Name is required");
+      return;
+    }
+
     if (!eventId.trim()) {
       toast.error("Please select an event");
       return;
@@ -132,6 +141,7 @@ export function WebhookEventListenerDialog({ open, onOpenChange, item, onSaved }
     setSaving(true);
     try {
       const payload: Partial<EventListener> = {
+        name: name.trim(),
         event_id: eventId,
         handler: HANDLER_TYPE,
         event_params: params,
@@ -141,6 +151,8 @@ export function WebhookEventListenerDialog({ open, onOpenChange, item, onSaved }
       if (item?.id) {
         await eventListenersService.update(item.id, payload);
       } else {
+        const user = await directusService.getCurrentUser();
+        payload.event_user = user.id;
         await eventListenersService.create(payload);
       }
 
@@ -165,6 +177,8 @@ export function WebhookEventListenerDialog({ open, onOpenChange, item, onSaved }
         </DialogHeader>
 
         <div className="space-y-4">
+          <EventListenerNameField value={name} onChange={setName} />
+
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="space-y-2 md:col-span-2">
               <Label>Event</Label>
