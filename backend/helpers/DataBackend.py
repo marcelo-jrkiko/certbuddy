@@ -57,7 +57,10 @@ class BackendClient:
 
     def get_user_info(self) -> Dict[str, Any]:
         """Get user information based on the token"""
-        response = self._make_request("GET", "/users/me")
+        meResponse = self._make_request("GET", "/users/me")
+        
+        response = self._make_request("GET", f"/users/{meResponse.get('data', {}).get('id')}")
+        
         return response.get("data", {})
     
     def search(self, collection_name: str, query: Dict[str, Any], fields: list = None) -> list:
