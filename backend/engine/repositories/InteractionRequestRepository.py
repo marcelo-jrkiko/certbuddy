@@ -1,6 +1,7 @@
 import time
 from typing import Any, Optional
 
+from engine.events.EventDispatcher import EventDispatcher
 from engine.models.interaction_request import InteractionRequest
 from helpers.DataBackend import BackendClient, getMasterBackendClient
 
@@ -12,6 +13,7 @@ class InteractionRequestRepository:
 
     def __init__(self, backend_client: Optional[BackendClient] = None):
         self.backend_client = backend_client or getMasterBackendClient()
+        self.event_dispatcher = EventDispatcher()
 
     def create_request(
         self,
@@ -28,6 +30,12 @@ class InteractionRequestRepository:
                 "status": status,
                 "request_data": request_data or {},
             },
+        )
+        
+        self.event_dispatcher.dispatch(
+            event_id="interaction_request.created",
+            user_id=user_id,
+            payload={"request_id": created_item["id"], "type": request_type},
         )
 
         return InteractionRequest(**created_item)
@@ -70,6 +78,11 @@ class InteractionRequestRepository:
                 return interaction_request
 
             if timeout_seconds is not None and time.monotonic() - started_at >= timeout_seconds:
+                self.event_dispatcher.dispatch(
+                    event_id="interaction_request.timeout",
+                    user_id=interaction_request.user,
+                    payload={"request_id": request_id, "status": status},
+                )
                 raise TimeoutError(
                     f"Timed out waiting for interaction request '{request_id}' answer. "
                     f"Expected one of: {sorted(statuses)}"
