@@ -269,6 +269,12 @@ function CertificatesPage() {
                           ) : (
                             <Badge variant="secondary">Inactive</Badge>
                           )}
+
+                          {c.can_renew && (
+                            <Badge variant="outline" className="ml-2">
+                              Renewable
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
