@@ -74,25 +74,44 @@ server {{
         # - Check if the challenge is valid by making a GET request to the challenge URL
         url = f"http://{domain}/{key}"
         isOk = False
+        
+        skipValidation = self.config.get("skip_pre_validation", False)        
+        
         tryCount = 0
         
-        while tryCount < 3 and not isOk:
-            try:
-                self.logger.info(f"Making GET request to {url} to validate the challenge for domain {domain} with key {key}")
-                response = requests.get(url)
-                if response.status_code == 200 and response.text.strip() == content.strip():
-                    isOk = True
-                else:
-                    self.logger.error(f"HTTP challenge validation failed for domain {domain} with key {key}. status code {response.status_code}")
-                    time.sleep(15)  # Wait for 15 seconds before retrying
+        test_result = {
+            "url": url,
+            "expected_content": content,
+            "status_code": None,
+            "actual_content": None
+        }
+        
+        if not skipValidation:        
+            while tryCount < 3 and not isOk:
+                try:
+                    self.logger.info(f"Making GET request to {url} to validate the challenge for domain {domain} with key {key}")
+                    response = requests.get(url)
+                    test_result["status_code"] = response.status_code
+                    test_result["actual_content"] = response.text.strip()
+                    if response.status_code == 200 and response.text.strip() == content.strip():
+                        isOk = True
+                    else:
+                        self.logger.error(f"HTTP challenge validation failed for domain {domain} with key {key}. status code {response.status_code}. Actual content: {response.text.strip()}")
+                        time.sleep(15)  # Wait for 15 seconds before retrying
+                        tryCount += 1
+                except requests.RequestException as e:
+                    test_result["status_code"] = 500
+                    test_result["actual_content"] = "Error making the requests"
+                    self.logger.error(f"Error while making GET request to {url}. {e}")
                     tryCount += 1
-            except requests.RequestException as e:
-                self.logger.error(f"Error while making GET request to {url}. {e}")
-                tryCount += 1
+        else:
+            self.logger.info(f"Skipping HTTP challenge pre-validation for domain {domain} with key {key}")
+            isOk = True
 
         if not isOk:
             self.logger.error(f"HTTP challenge validation failed for domain {domain} with key {key}")
-            # Create a InteractionRequest to notify the user that the challenge failed                   
+            # Create a InteractionRequest to notify the user that the challenge failed              
+            
             interaction_request = interaction_repo.create_request(
                 user_id=user_id,
                 request_type="http_challenge_failed",
@@ -100,7 +119,7 @@ server {{
                     "domain": domain,
                     "url": url,
                     "expected_content": content,
-                    "reason": f"Expected content '{content}' but got '{response.text.strip()}' with status code {response.status_code}"
+                    "reason": f"Expected content '{content}' but got '{test_result['actual_content']}' with status code {test_result['status_code']}"
                 },
                 status="new",
             )
