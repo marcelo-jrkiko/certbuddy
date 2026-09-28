@@ -17,8 +17,11 @@ class HttpChallenge(ABC):
         if config:
             if isinstance(config, str):
                 config = json.loads(config)
+                self.config = config   
             else:
                 self.config = config      
+        else:
+            self.config = {}
         
         self.request = request
 
